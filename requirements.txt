@@ -1,0 +1,7 @@
+numpy==2.0.2
+numba==0.60.0
+pathos==0.3.3
+
+scipy==1.14.1
+pandas==2.2.2
+scikit-learn==1.5.1
