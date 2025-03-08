@@ -2,6 +2,8 @@
 
 TBA
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/7676a4d116f447e897b6a4260b5c5f4f)](https://app.codacy.com/gh/eustomaqua/FairML/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+
 
 ### Getting started
 

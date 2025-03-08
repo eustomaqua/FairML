@@ -1,0 +1,47 @@
+# Python CircleCI 2.1 configuration file
+#
+# Check https://circleci.com/docs/2.1/language-python/ for more details
+#
+version: 2.1
+
+# Aliases to reuse
+_defaults: &defaults
+  docker:
+    # CircleCI maintains a library of pre-built images
+    # documented at https://circleci.com/developer/images/image/cimg/python
+    - image: cimg/python:3.11.8
+  working_directory: ~/project
+
+
+jobs:
+  build-and-test:
+    <<: *defaults
+    steps:
+      - checkout
+
+      - run:
+          name: Run tests
+          command: |
+            pip install --upgrade setuptools pip
+            pip install -r requirements.txt
+            pip install carbontracker pytest
+            pip install coverage coveralls pytest-xdist
+            coverage run -m pytest --ignore-glob="*/excl_test_*"
+            coverage report
+            coverage html
+            # rm *.png && rm *.csv && rm *.log
+            coverage xml
+            export CODACY_PROJECT_TOKEN=7e7e14940a6b4a918c535adb0965b10f
+            export COVERALLS_REPO_TOKEN=MObRtHkR5WuY1WurFnTTa2ucbWGg9GWJW
+            bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.xml
+
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - .
+
+workflows:
+  version: 2
+  default:
+    jobs:
+      - build-and-test
