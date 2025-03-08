@@ -65,9 +65,9 @@ theme:
 
 
 plugins:
-  - offline
   - search
+  - offline
 
-nav:
-  - Document
-  - About
+# nav:
+#   - Document
+#   - About
