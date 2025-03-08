@@ -7,8 +7,8 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'FairML'
-copyright = '2025, Yijun Bian'
-author = 'Yijun Bian'
+copyright = '2025, Yijun'
+author = 'Yijun'
 release = '0.1.0'
 
 # -- General configuration ---------------------------------------------------
@@ -17,7 +17,7 @@ release = '0.1.0'
 extensions = []
 
 templates_path = ['_templates']
-exclude_patterns = []
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 
 
