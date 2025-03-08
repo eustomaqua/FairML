@@ -16,6 +16,8 @@ FairML documentation
    :caption: Contents:
 
 
+Welcome to MkDocs
+
 Getting started
 
 

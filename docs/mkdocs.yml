@@ -1,14 +1,55 @@
 # site_name: My Docs
-site_name: FairML
+# https://squidfunk.github.io/mkdocs-material/setup/building-for-offline-usage/
+
+site_name: FairML documentation
+site_url: https://fairml.readthedocs.io/en/latest/
+site_author: Yijun Bian
+
+# Repository
+repo_name: eustomaqua/FairML
+# repo_url: https://github.com/eustomaqua/FairML
+
+# Copyright
+copyright: Copyright &copy; 2025 Yijun
 
 theme:
-  name: readthedocs
+  # name: readthedocs
+  name: material
+  palette:
+    - media: "(prefers-color-scheme)"
+      # scheme: default
+      # primary: indigo # teal, light blue
+      # accent: indigo
+      toggle:
+        icon: material/link
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch-off
+        name: Switch to system preference
+  font:
+    text: Roboto  # Georgia, Poppins
+    code: Roboto Mono
+  features:
+    - search.suggest
+    - search.highlight
+    - search.share
+  # logo: ../docs/logo.svg  # material/library, assets/logo.png
+  logo: ../docs/github-brands-solid.svg  # pagelines-brands-solid.svg
+  icon:
+    repo: fontawesome/brands/git-alt
+    # site: fontawesome/brands/github
   highlightjs: true
-  hljs_languages:
-    - yaml
-    - rust
-  analytics:
-    gtag: G-ABC123
   include_homepage_in_sidebar: True
   prev_next_bottons_location: both
   navigation_depth: 4
@@ -16,6 +57,16 @@ theme:
   titles_only: False
   sticky_navigation: True
   locale: en
+#   hljs_languages:
+#     - yaml
+#     - rust
+#   analytics:
+#     gtag: G-ABC123
+
+
+plugins:
+  - offline
+  - search
 
 nav:
   - Document

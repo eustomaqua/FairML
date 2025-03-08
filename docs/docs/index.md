@@ -1,17 +1,8 @@
-# Welcome to MkDocs
+# FairML documentation
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
 
-## Commands
+Getting started
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
 
-## Project layout
+This is an official released library for the project [FairML](https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/how-to-participate/org-details/999999999/project/101106768/program/43108390/details>), funded by the European Union.
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
