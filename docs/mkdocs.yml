@@ -15,51 +15,51 @@ copyright: Copyright &copy; 2025 Yijun
 theme:
   # name: readthedocs
   name: material
-  palette:
-    - media: "(prefers-color-scheme)"
-      # scheme: default
-      # primary: indigo # teal, light blue
-      # accent: indigo
-      toggle:
-        icon: material/link
-        name: Switch to light mode
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: indigo
-      accent: indigo
-      toggle:
-        icon: material/toggle-switch
-        name: Switch to dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: black
-      accent: indigo
-      toggle:
-        icon: material/toggle-switch-off
-        name: Switch to system preference
-  font:
-    text: Roboto  # Georgia, Poppins
-    code: Roboto Mono
+  # palette:
+  #   - media: "(prefers-color-scheme)"
+  #     # scheme: default
+  #     # primary: indigo # teal, light blue
+  #     # accent: indigo
+  #     toggle:
+  #       icon: material/link
+  #       name: Switch to light mode
+  #   - media: "(prefers-color-scheme: light)"
+  #     scheme: default
+  #     primary: indigo
+  #     accent: indigo
+  #     toggle:
+  #       icon: material/toggle-switch
+  #       name: Switch to dark mode
+  #   - media: "(prefers-color-scheme: dark)"
+  #     scheme: slate
+  #     primary: black
+  #     accent: indigo
+  #     toggle:
+  #       icon: material/toggle-switch-off
+  #       name: Switch to system preference
+  # font:
+  #   text: Roboto  # Georgia, Poppins
+  #   code: Roboto Mono
   features:
     - search.suggest
     - search.highlight
     - search.share
     - navigation.instant
     - navigation.instant.prefetch
-    - header.autohide
-  # logo: ../docs/logo.svg  # material/library, assets/logo.png
-  logo: ../docs/github-brands-solid.svg  # pagelines-brands-solid.svg
-  icon:
-    repo: fontawesome/brands/git-alt
-    # site: fontawesome/brands/github
-  highlightjs: true
-  include_homepage_in_sidebar: True
-  prev_next_bottons_location: both
-  navigation_depth: 4
-  collapse_navigation: True
-  titles_only: False
-  sticky_navigation: True
-  locale: en
+  #   - header.autohide
+  # # logo: ../docs/logo.svg  # material/library, assets/logo.png
+  # logo: ../docs/github-brands-solid.svg  # pagelines-brands-solid.svg
+  # icon:
+  #   repo: fontawesome/brands/git-alt
+  #   # site: fontawesome/brands/github
+  # highlightjs: true
+  # include_homepage_in_sidebar: True
+  # prev_next_bottons_location: both
+  # navigation_depth: 4
+  # collapse_navigation: True
+  # titles_only: False
+  # sticky_navigation: True
+  # locale: en
 #   hljs_languages:
 #     - yaml
 #     - rust
@@ -69,7 +69,7 @@ theme:
 
 plugins:
   - search
-  - offline
+  # - offline
 
 nav:
   - Project description: index.md
