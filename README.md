@@ -2,7 +2,9 @@
 
 TBA
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/7676a4d116f447e897b6a4260b5c5f4f)](https://app.codacy.com/gh/eustomaqua/FairML/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/eustomaqua/FairML/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/eustomaqua/FairML/tree/master) 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/7676a4d116f447e897b6a4260b5c5f4f)](https://app.codacy.com/gh/eustomaqua/FairML/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade) 
+[![Coverage Status](https://coveralls.io/repos/github/eustomaqua/FairML/badge.svg?branch=master)](https://coveralls.io/github/eustomaqua/FairML?branch=master) 
 
 
 ### Getting started

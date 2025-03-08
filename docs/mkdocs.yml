@@ -1,0 +1,22 @@
+# site_name: My Docs
+site_name: FairML
+
+theme:
+  name: readthedocs
+  highlightjs: true
+  hljs_languages:
+    - yaml
+    - rust
+  analytics:
+    gtag: G-ABC123
+  include_homepage_in_sidebar: True
+  prev_next_bottons_location: both
+  navigation_depth: 4
+  collapse_navigation: True
+  titles_only: False
+  sticky_navigation: True
+  locale: en
+
+nav:
+  - Document
+  - About

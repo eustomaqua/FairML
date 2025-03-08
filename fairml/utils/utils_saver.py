@@ -3,6 +3,7 @@
 
 
 import logging
+import pandas as pd
 
 
 # elegant print

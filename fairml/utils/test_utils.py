@@ -1,6 +1,5 @@
 # coding: utf-8
-
-import pdb
+# import pdb
 
 
 def test_saver():
@@ -8,6 +7,7 @@ def test_saver():
         get_elogger, rm_ehandler, console_out,
         elegant_print)
 
+    console_out('filtest.txt')
     logger, fm, fh = get_elogger('logtest', 'filtest.txt')
     elegant_print('test print')
     elegant_print('test print log', logger)
@@ -30,7 +30,7 @@ def test_timer():
         print(fantasy_durat(pi - 3, verb))
 
         # print(fantasy_durat(pi, verb, False))
-        # print(fantasy_durat(pi, verb, True))
+        print(fantasy_durat(pi, verb, True))
         print(fantasy_durat_major(pi, verb, True))
 
         print(elegant_durat(pi, verb))  # same

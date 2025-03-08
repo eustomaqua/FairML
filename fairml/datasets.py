@@ -1,8 +1,10 @@
 # coding: utf-8
 
 import os
-import numpy as np
+import os.path as osp
+# import numpy as np
 import pandas as pd
+from fairml.utils.utils_saver import elegant_print
 
 
 # ===========================
@@ -19,7 +21,7 @@ def local_root_path():
 
 def local_data_path():
     home = local_root_path()
-    path = os.path.join(home, 'data')
+    path = osp.join(home, 'data')
     return path
 
 
@@ -165,7 +167,7 @@ class Data:
         priv_value = self._privileged_vals
         return [
             # (data_frame[sa] == pv).tolist()
-            (data_frame[sa] == pv).to_numpy() 
+            (data_frame[sa] == pv).to_numpy()
             for sa, pv in zip(sens_attrs, priv_value)]
 
 

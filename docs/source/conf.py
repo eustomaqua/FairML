@@ -6,6 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+import sphinx_rtd_theme
 project = 'FairML'
 copyright = '2025, Yijun'
 author = 'Yijun Bian'
@@ -25,5 +26,7 @@ exclude_patterns = []
 
 html_theme = "sphinx_rtd_theme"
 extensions = ['recommonmark', 'sphinx_markdown_tables']
+# html_theme = 'bizstyle'
+
 # html_theme = 'alabaster'
 html_static_path = ['_static']
