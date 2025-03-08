@@ -7,6 +7,8 @@ TBA
 
 ### Getting started
 
+https://fairml.readthedocs.io/en/latest/
+
 
 ### Acknowledgements
 
