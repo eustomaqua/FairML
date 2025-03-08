@@ -44,6 +44,9 @@ theme:
     - search.suggest
     - search.highlight
     - search.share
+    - navigation.instant
+    - navigation.instant.prefetch
+    - header.autohide
   # logo: ../docs/logo.svg  # material/library, assets/logo.png
   logo: ../docs/github-brands-solid.svg  # pagelines-brands-solid.svg
   icon:
@@ -68,6 +71,10 @@ plugins:
   - search
   - offline
 
-# nav:
+nav:
+  - Project description: index.md
+  - Getting started: getting-started.md
+  - General APIs: general-api.md
+  - Documentation: ml-document.md
 #   - Document
 #   - About
