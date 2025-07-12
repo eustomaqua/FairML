@@ -1,9 +1,10 @@
 # coding: utf-8
 # import pdb
+# fairml.asst/past/utils
 
 
 def test_saver():
-    from fairml.utils.utils_saver import (
+    from fairml.widget.utils_saver import (
         get_elogger, rm_ehandler, console_out,
         elegant_print)
 
@@ -20,7 +21,7 @@ def test_saver():
 
 
 def test_timer():
-    from fairml.utils.utils_timer import (
+    from fairml.widget.utils_timer import (
         fantasy_durat, elegant_durat, elegant_dated,
         fantasy_durat_major)
     import time
@@ -47,11 +48,13 @@ def test_timer():
 
 
 def test_const():
-    from fairml.utils.utils_const import (
+    from fairml.widget.utils_const import (
         CONST_ZERO, CONST_DIFF, check_zero, check_equal,
         check_signed_zero, unique_column, judge_transform_need,
-        judge_mathcal_Y, np_sum, np_prod, renew_rand_seed,
+        judge_mathcal_Y, np_sum, np_prod,  # renew_rand_seed,
         synthetic_lbl, synthetic_dat, synthetic_set, synthetic_clf)
+    from fairml.widget.utils_const import \
+        random_seed_generator as renew_rand_seed
     import numpy as np
 
     assert check_zero(0) == CONST_ZERO

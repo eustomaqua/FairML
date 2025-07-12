@@ -23,7 +23,8 @@ import pyro
 import pyro.distributions as dist
 from pyro.nn import PyroModule
 
-from fairml.lawschool import (
+# from fairml.lawschool import (
+from experiment.lawschool import (
     CURR_PATH, LawSchoolData, model_Unaware_or_Full,
     main_model_infer_K, main_model_Fair_Add)
 from fairml.utils.utils_saver import elegant_print

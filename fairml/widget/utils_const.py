@@ -148,6 +148,18 @@ def np_sum(x):
     return y
 
 
+def _get_tmp_name_ens(name_ens):
+    tmp = name_ens[: 3]
+    if name_ens == "AdaBoostM1":  # "AoM", "ABM"
+        tmp = tmp[: 1] + name_ens[-2:]
+    return tmp
+
+
+def _get_tmp_document(name_ens, nb_cls):
+    nmens_tmp = _get_tmp_name_ens(name_ens)
+    return nmens_tmp + str(nb_cls)
+
+
 # -----------------------
 # Synthetic data
 #
@@ -202,7 +214,7 @@ def synthetic_clf(y_inst, nb_clf, err=.1, prng=None):
     return yt_clf.tolist()
 
 
-def renew_rand_seed(psed=None):
+def random_seed_generator(psed='fixed_tseed'):  # _tim
     if (psed is not None) or (not isinstance(psed, int)):
         import time
         psed = int(time.time() * GAP_MID % GAP_INF)

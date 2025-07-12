@@ -4,7 +4,7 @@ import os
 import os.path as osp
 # import numpy as np
 import pandas as pd
-from fairml.utils.utils_saver import elegant_print
+from fairml.widget.utils_saver import elegant_print
 
 
 # ===========================
@@ -21,12 +21,14 @@ def local_root_path():
 
 def local_data_path():
     home = local_root_path()
-    path = osp.join(home, 'data')
+    # path = osp.join(home, 'data')
+    path = osp.join(home, 'fairml', 'data')
     return path
 
 
 PACKAGE_DIR = local_root_path()
 RAW_DATA_DIR = local_data_path()
+RAW_EXPT_DIR = os.path.join(PACKAGE_DIR, 'findings')
 
 
 # ===========================

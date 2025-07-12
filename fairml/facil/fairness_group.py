@@ -6,7 +6,7 @@
 
 import numpy as np
 import numba
-from fairml.utils.utils_const import (
+from fairml.widget.utils_const import (
     DTY_INT, judge_transform_need, check_zero)
 
 
