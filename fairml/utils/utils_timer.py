@@ -86,7 +86,7 @@ def fantasy_durat_minor(tim_elapsed, verbose=False):
     # picosecond (ps)
     nano_s = int(tim_cost)
     pico_s = (tim_cost - nano_s) * 1000
-    format_text = "{} {:d}μs {:d} ns {:.2f}ps".format(
+    format_text = "{} {:d}μs {:d}ns {:.2f}ps".format(
         format_text, micros, nano_s, pico_s)
     return format_text
 
