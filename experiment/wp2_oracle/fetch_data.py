@@ -2,6 +2,14 @@
 
 
 from fairml.datasets import DATASETS, DATASET_NAMES, RAW_EXPT_DIR
+from fairml.widget.utils_const import _get_tmp_document
+from fairml.widget.utils_remark import (
+    AVAILABLE_ABBR_CLS, AVAILABLE_NAME_PRUNE, LATEST_NAME_PRUNE)
+
+import pandas as pd
+import numpy as np
+import os
+CURR_EXPT_DIR = os.path.join(RAW_EXPT_DIR, 'wp2_oracle')
 
 
 # ==================================
@@ -122,9 +130,8 @@ class GraphSetup:
         filename = "{}_iter{}_pms.xlsx".format(nmens_tmp, self._nb_iter)
         if trial_type:
             trial_type += "_"
-        # return osp.join(RAW_EXPT_DIR,
-        return os.path.join(RAW_EXPT_DIR,
-                            "{}{}".format(trial_type, filename))
+        return os.path.join(  # osp.join(RAW_EXPT_DIR,
+            CURR_EXPT_DIR, "{}{}".format(trial_type, filename))
 
     def load_raw_dataset(self, filename):
         dframe = {}
@@ -215,3 +222,73 @@ class GraphSetup:
 # ==================================
 # Experiments
 # ==================================
+
+
+def pd_concat_divide_set(i_dframe, tag_col):
+    #                      dat_dframe
+    # aka. def pd_concat_divide_avg(i_dframe, tag_col):
+
+    i_avg = {i: i_dframe[i].mean() for i in tag_col}
+    i_avg = pd.DataFrame(i_avg, index=[0])
+
+    i_std = {i: [i_dframe[i].std(ddof=1)] for i in tag_col}
+    i_var = {i: [i_dframe[i].var(ddof=1)] for i in tag_col}
+    i_std = pd.DataFrame(i_std)
+    i_var = pd.DataFrame(i_var)
+
+    return i_avg, i_std, i_var
+
+
+def pd_concat_divide_sht(sht_dframe, tag_col, nb_set, index):
+    # sht_dframe = [sht_dframe.iloc[i][tag_col] for i in index]
+    sht_dframe = [sht_dframe.loc[i][tag_col] for i in index]
+    # Doesn't matter that much, as it is the sheet
+
+    tmp = list(map(pd_concat_divide_set,
+                   sht_dframe, [tag_col] * nb_set))
+    t_avg, t_std, t_var = zip(*tmp)
+
+    t_avg = pd.concat(t_avg, ignore_index=True)
+    t_std = pd.concat(t_std, ignore_index=True)
+    t_var = pd.concat(t_var, ignore_index=True)
+
+    t_raw = pd.concat(sht_dframe, ignore_index=False)
+    return t_avg, t_std, t_var, t_raw
+
+
+def pd_concat_divide_raw(raw_dframe, tag_col, nb_set, index):
+    keys = AVAILABLE_ABBR_CLS  # list(raw_dframe.keys())
+    sht_dframe = {k: pd_concat_divide_sht(
+        v, tag_col, nb_set, index) for k, v in raw_dframe.items()}
+
+    s_avg = [sht_dframe[i][0] for i in keys]
+    s_std = [sht_dframe[i][1] for i in keys]
+    s_var = [sht_dframe[i][2] for i in keys]
+    s_raw = [sht_dframe[i][3] for i in keys]
+
+    s_avg = pd.concat(s_avg, ignore_index=False)
+    s_std = pd.concat(s_std, ignore_index=False)
+    s_var = pd.concat(s_var, ignore_index=False)
+    s_raw = pd.concat(s_raw, ignore_index=False)
+
+    return s_avg, s_std, s_var, s_raw
+
+
+def pd_concat_sens_raw(raw_dframe, tag_col,
+                       nb_set, index):
+    # keys = AVAILABLE_ABBR_CLS
+    ind_A1 = [np.add(i, 1) for i in index]
+    ind_A2 = [np.add(i, 2) for i in index[1:]]
+    ind_Jt = [np.add(i, 3) for i in index[1:]]
+
+    A1_avg, A1_std, A1_var, A1_raw = pd_concat_divide_raw(
+        raw_dframe, tag_col, nb_set, ind_A1)
+    A1_data = (A1_avg, A1_std, A1_var, A1_raw)
+
+    A2_avg, A2_std, A2_var, A2_raw = pd_concat_divide_raw(
+        raw_dframe, tag_col, nb_set, ind_A2)
+    Jt_avg, Jt_std, Jt_var, Jt_raw = pd_concat_divide_raw(
+        raw_dframe, tag_col, nb_set, ind_Jt)
+    A2_data = (A2_avg, A2_std, A2_var, A2_raw)
+    Jt_data = (Jt_avg, Jt_std, Jt_var, Jt_raw)
+    return A1_data, A2_data, Jt_data

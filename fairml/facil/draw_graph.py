@@ -32,7 +32,6 @@ import pdb
 
 
 # mpl.use('Agg')  # set the 'backend'
-
 plt.rcParams['font.family'] = 'Times New Roman'
 # plt.rc('text', usetex=True)
 # plt.rcParams['font.sans-serif'] = ['SimHei']  # show chinese lbl

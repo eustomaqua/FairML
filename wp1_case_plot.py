@@ -141,4 +141,16 @@ if __name__ == '__main__':
     counterfactual_fairness_case(score, att1, att2, annot, ap)
 
 
-# python wp1_case_plot.py
+# Empirical results in manuscript
+"""
+python wp1_case_plot.py
+python wp1_main_plot.py --draw -exp mCV_expt4 --gather
+python wp1_main_plot.py --draw -exp mCV_expt6 --gather --nb-pru 7
+
+python wp1_main_plot.py -exp mCV_expt3 --gather
+python wp1_main_plot.py -exp mCV_expt11 --gather
+python wp1_main_plot.py -exp mCV_expt8 --gather --tab
+
+python wp1_main_plot.py -exp mCV_expt10 --name-ens Bagging --nb-iter 1
+
+"""
