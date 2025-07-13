@@ -1477,14 +1477,23 @@ class PlotJ_LambdaEffect(GraphSetup):
         multiple_line_chart(X, Ys, annots, annotY, figname=nkw)
 
     def pipeline_prus(self, dframe, kw, nb_set, index,
-                      tag_col=None):
+                      tag_col=None, verbose=False):
         if tag_col is None:
             tag_col = self.prepare_graph()
         for i in range(nb_set):
+            if i > 0 and (not verbose):
+                return  # continue
+
             ind_jt = self.pick_up_set_idx(index, i, 0)
+            # if not verbose:
+            #     ind_jt = ind_jt[: 1]
             for l, ind in enumerate(ind_jt):
+                # if l > 0 and (not verbose):
+                #     continue
+
                 nkw = "_".join([
-                    kw, "itr{}".format(l), "set{}".format(i)])
+                    # kw, "itr{}".format(l), "set{}".format(i)])
+                    "iter{}".format(l), "set{}".format(i), kw])
                 tdf = dframe.loc[ind][tag_col]
 
                 # CROPPED
@@ -1495,14 +1504,18 @@ class PlotJ_LambdaEffect(GraphSetup):
                 # CROPPED
 
     def pipeline_fair(self, dframe, kw, nb_set, index,
-                      tag_col=None):
+                      tag_col=None, verbose=False):
         if tag_col is None:
             tag_col = self.prepare_graph()
         for i in range(nb_set):
+            if i > 0 and (not verbose):
+                return  # continue
+
             ind_jt = self.pick_up_set_idx(index, i, 1)
             for l, ind in enumerate(ind_jt):
                 nkw = "_".join([
-                    kw, "itr{}".format(l), "set{}".format(i)])
+                    # kw, "itr{}".format(l), "set{}".format(i)])
+                    "iter{}".format(l), "set{}".format(i), kw])
                 tdf = dframe.loc[ind][tag_col]
 
                 self.verify_lam_effect_fair(tdf, nkw, tag_col, 1)
@@ -1516,7 +1529,8 @@ class PlotJ_LambdaEffect(GraphSetup):
             ind_jt = self.pick_up_set_idx(index, i, 2)
             for l, ind in enumerate(ind_jt):
                 nkw = "_".join([
-                    kw, "itr{}".format(l), "set{}".format(i)])
+                    # kw, "itr{}".format(l), "set{}".format(i)])
+                    "iter{}".format(l), "set{}".format(i), kw])
                 tdf = dframe.loc[ind][tag_col]
 
                 self.verify_lam_effect_fair(tdf, nkw, tag_col, 1)
@@ -1526,9 +1540,9 @@ class PlotJ_LambdaEffect(GraphSetup):
 
             ind_jt = self.pick_up_set_idx(index, i, 3)
             for l, ind in enumerate(ind_jt):
-                # nkw = "_".join([kw, "set{}".format(i),
-                #                 "iter{}".format(l)])
-                nkw = "_".join([kw, "iter{}".format(l), "set{}".format(i)])
+                nkw = "_".join([
+                    # kw, "iter{}".format(l), "set{}".format(i)])
+                    "iter{}".format(l), "set{}".format(i), kw])
                 tdf = dframe.loc[ind][tag_col]
 
                 self.verify_lam_effect_fair(tdf, nkw, tag_col, 1)

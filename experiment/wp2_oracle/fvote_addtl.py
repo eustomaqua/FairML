@@ -17,6 +17,11 @@ from fairml.facil.draw_chart import (
     multiple_scatter_alternative, analogous_confusion_alternative,
     analogous_confusion_extended)
 
+from fairml.facil.draw_addtl import (
+    _subproc_pl_lin_reg, _subproc_pl_lin_reg_alt,
+    line_reg_with_marginal_distr, scatter_with_marginal_distrib,
+    FairGBM_scatter, FairGBM_tradeoff_v1, FairGBM_tradeoff_v2,
+    FairGBM_tradeoff_v3)
 from experiment.wp2_oracle.fetch_data import GraphSetup
 
 
@@ -206,9 +211,6 @@ class GatherD_Measures(PlotD_Measures):
         # pdb.set_trace()
         return
 
-
-# -------------------------------------
-# To verify
 
 class PlotE_Measures(PlotD_Measures):
     def schedule_mspaint(self, res_data, res_all, figname="",
@@ -624,15 +626,20 @@ class GatherF_Prunings(PlotF_Prunings):
             -1: r"$T_{all}$",  # "Time Cost (sec)",
         }
 
-        self.tabulate_output(new_data, res_all, optional_data, 0, figname, logger=logger)
-        self.tabulate_output(new_data, res_all, optional_data, 3, figname, logger=logger)
-        self.tabulate_output(new_data, res_all, optional_data, 50, figname, logger=logger)
-        self.tabulate_output(new_data, res_all, optional_data, 51, figname, logger=logger)
-        self.tabulate_output(new_data, res_all, optional_data, 52, figname, logger=logger)
-        self.tabulate_output(new_data, res_all, optional_data, 54, figname, logger=logger)
+        self.tabulate_output(new_data, res_all, optional_data, 0,
+                             figname, logger=logger)
+        self.tabulate_output(new_data, res_all, optional_data, 3,
+                             figname, logger=logger)
+        self.tabulate_output(new_data, res_all, optional_data, 50,
+                             figname, logger=logger)
+        self.tabulate_output(new_data, res_all, optional_data, 51,
+                             figname, logger=logger)
+        self.tabulate_output(new_data, res_all, optional_data, 52,
+                             figname, logger=logger)
+        self.tabulate_output(new_data, res_all, optional_data, 54,
+                             figname, logger=logger)
 
-    def tabulate_output(self, new_data, res_all,
-                        optional_data, pt_i,
+    def tabulate_output(self, new_data, res_all, optional_data, pt_i,
                         fgn="", ddof=0, logger=None):
         Ys_avg = np.zeros((9, 7))  # 7*(1+2*4) =63
         Ys_std = np.zeros((9, 7))
@@ -674,8 +681,10 @@ class GatherF_Prunings(PlotF_Prunings):
                     compared = alt_data[j, :]
                     sign_B, G_B = comp_t_sing(compared, 5, rez)
                     mk_mu, mk_s2 = comp_t_prep(proposed, compared)
-                    otmp_1 += " & {}".format(cmp_paired_wtl(G_A, G_B, mk_mu, mk_s2, mode))
-                    otmp_2 += " & {}".format(cmp_paired_avg(G_A, G_B, mode))
+                    otmp_1 += " & {}".format(
+                        cmp_paired_wtl(G_A, G_B, mk_mu, mk_s2, mode))
+                    otmp_2 += " & {}".format(
+                        cmp_paired_avg(G_A, G_B, mode))
                 otmp_1 += " & ---"
                 otmp_2 += " & ---"
                 elegant_print([otmp_1, otmp_2], logger)
@@ -718,13 +727,9 @@ class GatherF_Prunings(PlotF_Prunings):
         elegant_print("\n\n", logger)
 
 
-# -------------------------------------
-# To verify the proposed measure
-
-
 class PlotB_Measures(GraphSetup):
     def __init__(self):
-        pass
+        pass  # To verify the proposed measure
 
     def prepare_graph(self, res_data):
         # res_data.shape (5,12,1|3,8,63)= (#iter, #indv, #sen_att, 1+1+#pru, 63)
@@ -814,6 +819,258 @@ class PlotB_Measures(GraphSetup):
                 Ys_avg, Ys_std, key, '', pru,
                 figname=fgn + mark + "_bag_" + str(val),
                 rotate=20)
+        return
+
+
+"""
+class PlotD_Measures(GraphSetup):
+    def __init__(self):
+        pass
+
+    def prepare_graph(self, res_data):
+        new_data = np.zeros_like(res_data).transpose(1, 2, 3, 0)
+        nb_iter, nb_attr, nb_ens, nb_eval = np.shape(res_data)
+        for i in range(nb_attr):
+            for j in range(nb_ens):
+                for k in range(nb_eval):
+                    new_data[i, j, k] = res_data[:, i, j, k]
+        del nb_iter, nb_attr, nb_ens, nb_eval
+        return new_data
+
+    def schedule_mspaint(self, res_data, res_all, figname=""):
+        new_data = np.array(res_data)
+        new_data = self.prepare_graph(new_data)[:, :, 56:, :]
+
+        data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
+        sensitive_attributes = res_all[1]
+        ensemble_methods = res_all[-1]
+        ensemble_methods = [
+            i.replace('FPR', 'fpr').replace('FNR', 'fnr') 
+            if 'FairGBM' in i else i for i in ensemble_methods]
+        idx = [0, 1, 2, 3, 4, 6]
+        ensemble_methods = [ensemble_methods[i] for i in idx]
+
+        for sa, sens_attr in enumerate(sensitive_attributes):
+            fgn = "{}_{}_".format(figname, sens_attr)
+            curr = new_data[sa][idx]
+            del fgn, curr
+
+        num_s, num_e, num_v, _ = new_data.shape
+        alt_data = np.concatenate([
+            new_data[i] for i in range(num_s)], axis=2)
+        alt_data = np.concatenate([
+            alt_data[i] for i in range(num_e)], axis=1)
+        X, Ys = alt_data[26], alt_data[[50, 51, 52, 54], :]
+        annots = (r"$\Delta$(Accuracy)", "Fairness Measure")
+        annotZs = ('DP', 'EO', 'PQP', 'DR')
+        fgn = figname + "_correlation"
+        multiple_scatter_chart(X, Ys, annots, annotZs, fgn,
+                               ind_hv='v', identity=False)
+
+        Mat = alt_data[[26, 27, 28, 29, 32, 33, 50, 51, 52, 54]]
+        key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
+        key = [r"$\Delta$({})".format(i) for i in key
+               ] + ["DP", "EO", "PQP", "DR"]
+        fgn = figname + "_confusion"
+        # analogous_confusion(Mat, key, fgn, normalize=False)
+
+        idx_A = [0, 1, 2, 3, 5]
+        Mat_A, Mat_B = Mat[idx_A], Mat[6:]
+        key_A, key_B = [key[i] for i in idx_A], key[6:]
+        analogous_confusion_extended(Mat_B, Mat_A, key_B, key_A,
+                                     figname + '_confusion_alt',
+                                     cmap_name='PuBu', rotate=0,
+                                     figsize='M-WS')
+        return
+
+    def plot_multiple_hist_chart(self, curr, ens, mark="acc.norm",
+                                 fgn="", ddof=1):
+        if mark.startswith("acc"):  # without sen/spe
+            idx = [0, 1, 2, 3]      # normal
+            # idx = [13, 14, 15, 16]  # adversarial
+            # idx = [26, 27, 28, 29]  # abs()
+            key = ["Accuracy", "Precision", "Recall", "f1_score"]
+        elif mark.startswith("sen"):
+            idx = [6, 7, 8, 10, 11]
+            # idx = [19, 20, 21, 23, 24]
+            # idx = [32, 33, 34, 36, 37]
+            key = ["Sensitivity", "Specificity", "G_mean", "Matthew", "Cohen"]
+        elif mark == "fair":
+            idx = [50, 51, 52, 54]
+            key = ["DP", "EO", "PQP", "DR"]  # or "FQ (ours)"
+
+        if mark.endswith("norm"):
+            pass
+        elif mark.endswith("advr"):
+            idx = [i + 13 for i in idx]
+        elif mark.endswith("abs_"):
+            idx = [i + 26 for i in idx]
+        mode = "ascend" if mark == "fair" else "descend"
+
+        new_curr = curr[:, idx, :]
+        Ys_avg = new_curr.mean(axis=2).T
+        Ys_std = new_curr.std(axis=2, ddof=ddof).T
+        multiple_hist_chart(Ys_avg, Ys_std, key, '', ens,
+                            figname=fgn + mark, rotate=20)
+        return
+
+
+class GatherD_Measures(PlotD_Measures):
+    def schedule_mspaint(self, res_data, res_all,
+                         optional_data, figname=""):
+        # each res_data.shape (#iter,#attr,#ens,#eval) =(5,1|2,7,113)
+        # each new_data.shape (#attr,#ens,#eval,#iter) =(1|2,7,113,5)
+        new_data = [self.prepare_graph(np.array(
+            res_data[i]))[:, :, 56:, :] for i in optional_data]
+
+        alt_data = np.concatenate(new_data, axis=0)
+        num_s, num_e, num_v, _ = alt_data.shape
+        alt_data = np.concatenate([
+            alt_data[i] for i in range(num_s)], axis=2)
+        alt_data = np.concatenate([
+            alt_data[i] for i in range(num_e)], axis=1)
+
+        X, Ys = alt_data[26], alt_data[[50, 51, 52, 54], :]
+        # annots = (r"$\Delta$(Accuracy)", "Fairness Measure")
+        annots = (r"$\Delta$(Accuracy)", "Fairness measure")
+        annotZs = ('DP', 'EO', 'PQP', 'DR')
+        fgn = figname + "_correlation"
+        multiple_scatter_chart(X, Ys, annots, annotZs, fgn,
+                               ind_hv='v', identity=False)
+
+        Mat = alt_data[[26, 27, 28, 29, 32, 33, 50, 51, 52, 54]]
+        key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
+        key = [r"$\Delta$(%s)" % i for i in key
+               ] + ["DP", "EO", "PQP", "DR"]
+        fgn = figname + "_confusion"
+        # analogous_confusion(Mat, key, fgn, normalize=False)
+
+        Mat_A, Mat_B = Mat[: 6], Mat[6:]
+        key_A, key_B = key[: 6], key[6:]
+        Mat_C = Mat_A[[0, 1, 2, 3, 5]]
+        key_C = [key_A[i] for i in [0, 1, 2, 3, 5]]  # delta(Sen)
+        analogous_confusion_extended(
+            Mat_B, Mat_C, key_B, key_C, figname + '_confusion_alt',
+            cmap_name='PuBu', rotate=0, figsize='M-WS')
+        return
+
+
+class PlotE_Measures(GraphSetup):
+    def prepare_graph(self, res_data):
+        new_data = np.zeros_like(res_data).transpose(1, 2, 3, 0)
+        nb_iter, nb_attr, nb_ens, nb_eval = np.shape(res_data)
+        for i in range(nb_attr):
+            for j in range(nb_ens):
+                for k in range(nb_eval):
+                    new_data[i, j, k] = res_data[:, i, j, k]
+        del nb_iter, nb_attr, nb_ens, nb_eval
+        return new_data
+
+
+class PlotF_Prunings(GraphSetup):
+    def __init__(self):
+        pass
+
+
+# class Renew_PlotF_Prunings(PlotF_Prunings):
+#     def renew_schedule_msgraph(self):
+#         return
+"""
+
+
+class Renew_GatherF_Prunings(GatherF_Prunings):
+    def renew_schedule_msgraph(self, res_data, res_all, optional_data,
+                               figname='', jt=False, logger=None):
+        idx = list(range(56, 112)) + list(range(168, 224)) + list(
+            range(280, 336)) + list(range(336, 339))
+        new_data = {i: self.prepare_graph(np.array(
+            res_data[i]))[:, idx, :] for i in optional_data}
+        elegant_print("renew mCV_expt6\n", logger)
+
+        _, Ys_model, Ys_acc = self.renew_retrieve_dat(
+            new_data, res_all, optional_data, 0)
+        _, _, Ys_f1s = self.renew_retrieve_dat(
+            new_data, res_all, optional_data, 3)
+        _, _, Ys_DP = self.renew_retrieve_dat(
+            new_data, res_all, optional_data, 50)
+        _, _, Ys_EO = self.renew_retrieve_dat(
+            new_data, res_all, optional_data, 51)
+        _, _, Ys_PQP = self.renew_retrieve_dat(
+            new_data, res_all, optional_data, 52)
+        _, _, Ys_DR = self.renew_retrieve_dat(
+            new_data, res_all, optional_data, 54)
+        Ys_annot = ['DP', 'EO', 'PQP', 'DR']
+        self.renew_graph_scatter(Ys_acc, [
+            Ys_DP, Ys_EO, Ys_PQP, Ys_DR], Ys_model, Ys_annot)
+        return
+
+    def renew_retrieve_dat(self, new_data, res_all, optional_data,
+                           pt_i, fgn='', ddof=0, logger=None):
+        Ys_avg, Ys_std = np.zeros((9, 7)), np.zeros((9, 7))
+        Ys_i, reorder = 0, [4, 5, 6, 0, 1, 2, 3]
+        rez = 2 if pt_i in [0, 13, 26] else 4
+        mode = 'ascend' if pt_i >= 39 else 'descend'
+        Ys_entire = np.zeros((9, 7, 5))
+        for i in optional_data:
+            ret_key, ret_r, ret_c, sen_att = self.merge_sub_data(
+                res_all[i], logger=logger)
+            for si, sk in enumerate(sen_att):
+                alt_data = new_data[i][:, ret_c[sk]]
+                alt_data = alt_data[ret_r[sk], :][:, pt_i]
+                alt_data = alt_data.astype(DTY_FLT)[reorder, :]
+                Ys_avg[Ys_i] = alt_data.mean(axis=1)
+                Ys_std[Ys_i] = alt_data.std(axis=1, ddof=ddof)
+                Ys_entire[Ys_i] = alt_data
+                Ys_i += 1
+        Ys_entire_trans = Ys_entire.transpose(1, 0, 2).reshape(
+            -1, 5 * 9)
+        Ys_models = ret_key[sen_att[0]]
+        Ys_models = [Ys_models[i] for i in reorder]
+        return Ys_entire, Ys_models, Ys_entire_trans
+
+    def renew_graph_scatter(self, X, Ys, Ys_model, Ys_annot):
+        label_x = 'Performance (Accuracy)'  # f1_score
+        kw_balance = {'alpha_loc': 'b4', 'alpha_rev': True}
+        n = len(Ys_model)
+        for i in range(4):
+            FairGBM_scatter(
+                X, Ys[i], Ys_model, (
+                    label_x, 'Fairness ({})'.format(Ys_annot[i])),
+                figname='exp6_fairgbm_scat_0acc_bias{}'.format(i))
+            FairGBM_tradeoff_v2(
+                X, Ys[i], Ys_model, (r'$\alpha$', 'error rate'),
+                figname='exp6_fairgbm_bal_0acc_bias{}'.format(i),
+                num_gap=100, **kw_balance)
+            FairGBM_tradeoff_v3(
+                X, Ys[i], Ys_model, ('error rate', Ys_annot[i]),
+                figname='exp6_fairgbm_pct_0acc_bias{}'.format(i),
+                num_gap=100, **kw_balance)
+
+        for i in range(4):
+            new_X = X[:, 5:]      # (#model, #iteration')
+            new_Y = Ys[i][:, 5:]  # (#model, #iteration')
+            new_idx = np.argsort(new_X, axis=1)[:, -1]
+            X_new = np.array([new_X[j][new_idx[j]] for j in range(n)])
+            Y_new = np.array([new_Y[j][new_idx[j]] for j in range(n)])
+            FairGBM_tradeoff_v1(
+                X_new, Y_new, Ys_model, ('error rate', Ys_annot[i]),
+                figname='exp6_fairgbm_sin_0acc_bias{}'.format(i),
+                **kw_balance)  # 95% percentage
+
+            FairGBM_tradeoff_v2(
+                new_X, new_Y, Ys_model, (r'$\alpha$', 'error rate'),
+                figname='exp6_fairgbm_bal_0acc_bias{}'.format(i),
+                num_gap=100, **kw_balance)
+            FairGBM_tradeoff_v3(
+                new_X, new_Y, Ys_model, ('error rate', Ys_annot[i]),
+                figname='exp6_fairgbm_pct_0acc_bias{}'.format(i),
+                num_gap=100, **kw_balance)
+
+            FairGBM_scatter(
+                new_X, new_Y, Ys_model, (
+                    label_x, 'Fairness ({})'.format(Ys_annot[i])),
+                figname='exp6_fairgbm_scat_0acc_bias{}'.format(i))
+        # pdb.set_trace()
         return
 
 

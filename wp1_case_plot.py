@@ -136,9 +136,12 @@ if __name__ == '__main__':
     score = mse
     annot = 'MSE'
     ap = r'$\Delta(MSE)$'  # annot_prime
+    counterfactual_fairness_case(score, att1, att2, annot, ap)
+    '''
     score = rmse
     annot, ap = 'RMSE', r'$\Delta(RMSE)$'
     counterfactual_fairness_case(score, att1, att2, annot, ap)
+    '''
 
 
 # Empirical results in manuscript
@@ -146,11 +149,14 @@ if __name__ == '__main__':
 python wp1_case_plot.py
 python wp1_main_plot.py --draw -exp mCV_expt4 --gather
 python wp1_main_plot.py --draw -exp mCV_expt6 --gather --nb-pru 7
-
 python wp1_main_plot.py -exp mCV_expt3 --gather
 python wp1_main_plot.py -exp mCV_expt11 --gather
+
+python wp1_main_plot.py -exp mCV_expt8 --gather
 python wp1_main_plot.py -exp mCV_expt8 --gather --tab
+python wp1_main_plot.py -exp mCV_expt8 --name-ens Bagging
+python wp1_main_plot.py -exp mCV_expt8 --name-ens AdaBoostM1 --nb-cls 11 --nb-pru 5
+python wp1_main_plot.py -exp mCV_expt8 --name-ens SAMME --nb-cls 11 --nb-pru 5
 
-python wp1_main_plot.py -exp mCV_expt10 --name-ens Bagging --nb-iter 1
-
+python wp1_main_plot.py -exp mCV_expt10 --name-ens Bagging --nb-iter 2 --nb-cls 11
 """
