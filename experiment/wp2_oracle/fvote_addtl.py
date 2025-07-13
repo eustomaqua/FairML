@@ -980,7 +980,8 @@ class PlotF_Prunings(GraphSetup):
 
 class Renew_GatherF_Prunings(GatherF_Prunings):
     def renew_schedule_msgraph(self, res_data, res_all, optional_data,
-                               figname='', jt=False, logger=None):
+                               figname='', jt=False, logger=None,
+                               verbose=False):
         idx = list(range(56, 112)) + list(range(168, 224)) + list(
             range(280, 336)) + list(range(336, 339))
         new_data = {i: self.prepare_graph(np.array(
@@ -1001,7 +1002,8 @@ class Renew_GatherF_Prunings(GatherF_Prunings):
             new_data, res_all, optional_data, 54)
         Ys_annot = ['DP', 'EO', 'PQP', 'DR']
         self.renew_graph_scatter(Ys_acc, [
-            Ys_DP, Ys_EO, Ys_PQP, Ys_DR], Ys_model, Ys_annot)
+            Ys_DP, Ys_EO, Ys_PQP, Ys_DR], Ys_model, Ys_annot,
+            verbose)
         return
 
     def renew_retrieve_dat(self, new_data, res_all, optional_data,
@@ -1023,12 +1025,13 @@ class Renew_GatherF_Prunings(GatherF_Prunings):
                 Ys_entire[Ys_i] = alt_data
                 Ys_i += 1
         Ys_entire_trans = Ys_entire.transpose(1, 0, 2).reshape(
-            -1, 5 * 9)
+            -1, 5 * 9)  # ->(7,9,5) ->(7,45)
         Ys_models = ret_key[sen_att[0]]
         Ys_models = [Ys_models[i] for i in reorder]
         return Ys_entire, Ys_models, Ys_entire_trans
 
-    def renew_graph_scatter(self, X, Ys, Ys_model, Ys_annot):
+    def renew_graph_scatter(self, X, Ys, Ys_model, Ys_annot,
+                            verbose):
         label_x = 'Performance (Accuracy)'  # f1_score
         kw_balance = {'alpha_loc': 'b4', 'alpha_rev': True}
         n = len(Ys_model)
@@ -1037,14 +1040,18 @@ class Renew_GatherF_Prunings(GatherF_Prunings):
                 X, Ys[i], Ys_model, (
                     label_x, 'Fairness ({})'.format(Ys_annot[i])),
                 figname='exp6_fairgbm_scat_0acc_bias{}'.format(i))
-            FairGBM_tradeoff_v2(
-                X, Ys[i], Ys_model, (r'$\alpha$', 'error rate'),
-                figname='exp6_fairgbm_bal_0acc_bias{}'.format(i),
-                num_gap=100, **kw_balance)
             FairGBM_tradeoff_v3(
                 X, Ys[i], Ys_model, ('error rate', Ys_annot[i]),
                 figname='exp6_fairgbm_pct_0acc_bias{}'.format(i),
                 num_gap=100, **kw_balance)
+            if not verbose:
+                continue
+            FairGBM_tradeoff_v2(
+                X, Ys[i], Ys_model, (r'$\alpha$', 'error rate'),
+                figname='exp6_fairgbm_bal_0acc_bias{}'.format(i),
+                num_gap=100, **kw_balance)
+        if not verbose:
+            return
 
         for i in range(4):
             new_X = X[:, 5:]      # (#model, #iteration')
@@ -1052,24 +1059,25 @@ class Renew_GatherF_Prunings(GatherF_Prunings):
             new_idx = np.argsort(new_X, axis=1)[:, -1]
             X_new = np.array([new_X[j][new_idx[j]] for j in range(n)])
             Y_new = np.array([new_Y[j][new_idx[j]] for j in range(n)])
-            FairGBM_tradeoff_v1(
-                X_new, Y_new, Ys_model, ('error rate', Ys_annot[i]),
-                figname='exp6_fairgbm_sin_0acc_bias{}'.format(i),
-                **kw_balance)  # 95% percentage
-
-            FairGBM_tradeoff_v2(
-                new_X, new_Y, Ys_model, (r'$\alpha$', 'error rate'),
-                figname='exp6_fairgbm_bal_0acc_bias{}'.format(i),
-                num_gap=100, **kw_balance)
             FairGBM_tradeoff_v3(
                 new_X, new_Y, Ys_model, ('error rate', Ys_annot[i]),
-                figname='exp6_fairgbm_pct_0acc_bias{}'.format(i),
+                figname='exp6_fairep_pct_0acc_bias{}'.format(i),
                 num_gap=100, **kw_balance)
-
             FairGBM_scatter(
                 new_X, new_Y, Ys_model, (
                     label_x, 'Fairness ({})'.format(Ys_annot[i])),
-                figname='exp6_fairgbm_scat_0acc_bias{}'.format(i))
+                figname='exp6_fairep_scat_0acc_bias{}'.format(i))
+
+            if not verbose:
+                continue
+            FairGBM_tradeoff_v1(
+                X_new, Y_new, Ys_model, ('error rate', Ys_annot[i]),
+                figname='exp6_fairep_sin_0acc_bias{}'.format(i),
+                **kw_balance)  # 95% percentage
+            FairGBM_tradeoff_v2(
+                new_X, new_Y, Ys_model, (r'$\alpha$', 'error rate'),
+                figname='exp6_fairep_bal_0acc_bias{}'.format(i),
+                num_gap=100, **kw_balance)
         # pdb.set_trace()
         return
 

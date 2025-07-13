@@ -552,7 +552,7 @@ class FVre_Drawing(DataSetup):
 
         if self._trial_type.endswith('expt5'):
             self._iterator = PlotE_Measures() if not gather else GatherE_Measures()
-        elif self._trial_type.endswith('expt6'):
+        elif self._trial_type.endswith('expt6'):  # UPDATE
             self._iterator = Renew_PlotF_Prunings(
             ) if not gather else Renew_GatherF_Prunings()
         elif self._trial_type.endswith('expt4'):
@@ -616,6 +616,7 @@ class FVre_Drawing(DataSetup):
                 "fvote", self._figname + ".txt")
             self._iterator.schedule_mspaint(
                 res_data, res_all, self._figname, False, logger)
+            # pdb.set_trace()
         else:
             self._iterator.schedule_mspaint(res_data, res_all,
                                             self._figname)
