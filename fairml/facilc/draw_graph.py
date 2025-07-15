@@ -8,7 +8,7 @@
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib import cm as mpl_cm
-from matplotlib.collections import LineCollection
+# from matplotlib.collections import LineCollection
 import seaborn as sns
 import itertools
 
@@ -20,7 +20,6 @@ from sklearn.metrics import confusion_matrix
 from fairml.widget.utils_saver import elegant_print
 from fairml.facilc.draw_hypos import (  # .draw.utils_hypos
     Friedman_test, Nememyi_posthoc_test)
-import pdb
 
 
 # =====================================
@@ -184,7 +183,7 @@ def scatter_and_corr(X, Y, figname, figsize='M-WS',
 
 def _sns_algo_bootstrap(*args, **kwargs):
     n_boots = 1000
-    units = seed = None
+    seed = None  # units = seed = None
     # args = (X, Y)
     # Default keyword arguments
     func = kwargs.get("func", np.mean)
@@ -453,7 +452,8 @@ def Friedman_chart(index_bar, picked_keys,
     threshold = stats.f.pdf(
         1 - alpha, k - 1, (k - 1) * (N - 1))
 
-    mark, tau_F, tau_chi2 = Friedman_test(index_bar, alpha)
+    # mark, tau_F, tau_chi2 = Friedman_test(index_bar, alpha)
+    _, tau_F, tau_chi2 = Friedman_test(index_bar, alpha)
     CD, q_alpha = Nememyi_posthoc_test(index_bar, alpha)
     elegant_print(["\n%s\n" % figname,
                    "$tau_{chi^2}$ " + str(tau_chi2),
@@ -733,8 +733,8 @@ def stat_chart_stack(index_bar, picked_keys,
 
     cs, cl = _setup_rgb_color(
         pick_leng_set, cmap_name)  # np.shape(index_bar)[0],
-    fig, axs = plt.subplots(figsize=_setup_config['L-NT'])
-    ind = np.arange(1, pick_leng_pru + 1)
+    fig, _ = plt.subplots(figsize=_setup_config['L-NT'])
+    ind = np.arange(1, pick_leng_pru + 1)  # _:axs
     plt.bar(ind, index_bar[0], color=cs[0])
 
     for i in range(1, pick_leng_set):
@@ -912,16 +912,14 @@ def backslash_subchart(val_avg, val_std, pickup_uat,
     gap = 0.  # .03
     fig, axs = plt.subplots(figsize=_setup_config['L-NT'])
 
-    p1 = axs.bar(ind - wid / 2 - gap,
-                 val_avg[0], wid,
-                 yerr=val_std[0],
-                 color=h1_facecolor,
-                 label="Centralised", **_barh_kwargs)
-    p2 = axs.bar(ind + wid / 2 + gap,
-                 val_avg[1], wid,
-                 yerr=val_std[1],
-                 color=h2_facecolor,
-                 label="Distributed", **_barh_kwargs)
+    # p1 = axs.bar(ind - wid / 2 - gap,
+    axs.bar(ind - wid / 2 - gap, val_avg[0], wid,
+            yerr=val_std[0], color=h1_facecolor,
+            label="Centralised", **_barh_kwargs)
+    # p2 = axs.bar(ind + wid / 2 + gap,
+    axs.bar(ind + wid / 2 + gap, val_avg[1], wid,
+            yerr=val_std[1], color=h2_facecolor,
+            label="Distributed", **_barh_kwargs)
     # box off
 
     t = axs.get_ylim()
@@ -1163,7 +1161,7 @@ def line_chart(data,
     axs_thin.set_ylabel("Accuracy (%)")
     plt.legend(loc=PLT_LOCATION, frameon=PLT_FRAMEBOX,
                labelspacing=.05)
-    fig = _setup_figsize(fig_thin, figsize)
+    fig_thin = _setup_figsize(fig_thin, figsize)
     _setup_figshow(fig_thin, figname + "_lam2")
     plt.close(fig_thin)
 
@@ -1235,10 +1233,14 @@ def baseline_subchart(val_avg, val_std, pickup_uat,
     }
 
     fig, axs = plt.subplots(figsize=_setup_config['L-NT'])
-    p1 = axs.bar(ind - wid / 2, val_avg[0], wid, yerr=val_std[0],
-                 color=h1_facecolor, label="Centralised", **kwargs)
-    p2 = axs.bar(ind + wid / 2, val_avg[1], wid, yerr=val_std[1],
-                 color=h2_facecolor, label="Distributed", **kwargs)
+    # p1 = axs.bar(ind - wid / 2, val_avg[0], wid, yerr=val_std[0],
+    #              color=h1_facecolor, label="Centralised", **kwargs)
+    # p2 = axs.bar(ind + wid / 2, val_avg[1], wid, yerr=val_std[1],
+    #              color=h2_facecolor, label="Distributed", **kwargs)
+    axs.bar(ind - wid / 2, val_avg[0], wid, yerr=val_std[0],
+            color=h1_facecolor, label="Centralised", **kwargs)
+    axs.bar(ind + wid / 2, val_avg[1], wid, yerr=val_std[1],
+            color=h2_facecolor, label="Distributed", **kwargs)
 
     if pickup_uat == "ua":
         t = axs.get_ylim()

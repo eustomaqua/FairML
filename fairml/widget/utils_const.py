@@ -186,7 +186,7 @@ def synthetic_dat(nb_lbl, nb_spl, nb_ftr, prng=None):
         y_inst = np.random.randint(nb_lbl, size=nb_spl)
     else:
         X_inst = prng.rand(nb_spl, nb_ftr)
-        y_insp = prng.randint(nb_lbl, size=nb_spl)
+        y_inst = prng.randint(nb_lbl, size=nb_spl)
     return X_inst.tolist(), y_inst.tolist()
 
 

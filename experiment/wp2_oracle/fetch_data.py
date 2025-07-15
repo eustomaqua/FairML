@@ -159,7 +159,7 @@ class GraphSetup:
 
     def load_raw_dataset(self, filename):
         dframe = {}
-        for k, v in enumerate(AVAILABLE_ABBR_CLS):
+        for _, v in enumerate(AVAILABLE_ABBR_CLS):  # _:k
             dframe[v] = pd.read_excel(filename, v)
         self._raw_dframe = dframe
         return dframe
@@ -517,7 +517,8 @@ class EnsembleSetup(IndividualSetup):
         fqtb = self.majority_vote(y, yr, wgt)
 
         tmp_pru = []
-        Acc, (a, p, r, f, _, _, _, _, _, _, _) = \
+        # Acc, (a, p, r, f, _, _, _, _, _, _, _) = \
+        Acc, (_, p, r, f, _, _, _, _, _, _, _) = \
             self.calculate_sub_ensemble_metrics(y, fens, pos)
         tmp_pru.extend([Acc, p, r, f])
 

@@ -96,7 +96,7 @@ def calc_PRF1_multi_lists(y, hx):
 
     for pos in vY:
         TP, FP, FN, TN = calc_confusion(y, hx, pos)
-        P, R, F1 = calc_PR(TP, FP, FN)
+        P, R, _ = calc_PR(TP, FP, FN)  # _:F1
 
         TP_list.append(TP)
         FP_list.append(FP)

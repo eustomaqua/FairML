@@ -16,8 +16,8 @@ import pyro
 import pyro.distributions as dist
 from pyro.nn import PyroModule
 
-from fairml.utils.utils_saver import elegant_print
-from fairml.utils.utils_timer import fantasy_durat
+from fairml.widget.utils_saver import elegant_print
+from fairml.widget.utils_timer import fantasy_durat
 
 
 plt.rcParams['font.family'] = 'Times New Roman'
@@ -38,7 +38,7 @@ assert issubclass(PyroModule[nn.Linear], PyroModule)
 
 class LawSchoolData:
     def load_raw_dataset(self):
-        curr_path = 'data/bar_pass_prediction.csv'
+        curr_path = 'fairml/data/bar_pass_prediction.csv'
         return pd.read_csv(curr_path)  # data_frame
 
     def data_specific_processing(self, data_frame):
@@ -93,8 +93,7 @@ class LawSchoolData:
         unpriv_dict = [data_frame[sa].unique() for sa in sen_att]
 
         disturbed_data = data_frame.copy()
-        num = len(disturbed_data)
-        dim = len(sen_att)
+        dim = len(sen_att)  # num = len(disturbed_data)
         for i, ti in enumerate(data_frame.index):
             prng = np.random.rand(dim)
             prng = prng <= ratio
@@ -407,6 +406,7 @@ def _fair_k_infer_no1(train_set, test_set, CURR_FYA_LOC,
         render_distributions=True, render_params=True,
         filename=CURR_PATH + 'test.pdf')
     # print(model_graph)
+    elegant_print(model_graph, logger)
 
     # Infer K
     if CURR_PATH == 'findings/' and (not CURR_SAVE):

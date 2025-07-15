@@ -19,8 +19,8 @@ from pathos import multiprocessing as pp
 
 from fairml.facils.ensem_voting import weighted_voting
 from fairml.discriminative_risk import (
-    hat_L_fair, tandem_fair, E_rho_L_fair_f, Erho_sup_L_fair,
-    hat_L_loss, tandem_loss, E_rho_L_loss_f, Erho_sup_L_loss,
+    hat_L_fair, E_rho_L_fair_f, Erho_sup_L_fair,
+    hat_L_loss, E_rho_L_loss_f, Erho_sup_L_loss,
     hat_L_objt, tandem_objt, cal_L_obj_v1)
 
 from fairml.widget.utils_const import DTY_BOL

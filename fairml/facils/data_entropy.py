@@ -7,7 +7,6 @@
 
 from copy import deepcopy
 import gc
-import time
 
 import numpy as np
 from pathos import multiprocessing as pp

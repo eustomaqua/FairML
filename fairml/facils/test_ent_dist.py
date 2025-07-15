@@ -2,7 +2,6 @@
 
 
 import numpy as np
-import pdb
 from fairml.widget.utils_const import check_equal, synthetic_dat
 
 nb_inst, nb_feat, nb_lbl = 121, 7, 3
@@ -323,4 +322,6 @@ def test_data_distance():
 
     subr_dist(p, q)
     subr_others(p, q)
+    subr_Wasserstein()
+    subr_Hellinger()
     return

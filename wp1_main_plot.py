@@ -8,13 +8,11 @@ import argparse
 import logging
 import json
 import os
-import pdb
 import sys
 import time
 import numpy as np
 import pandas as pd
 
-from fairml.datasets import RAW_EXPT_DIR
 from fairml.widget.utils_saver import (get_elogger, rm_ehandler,
                                        elegant_print)
 from fairml.widget.utils_timer import elegant_dated, elegant_durat
@@ -267,14 +265,15 @@ class OracleGatheredDrawing(object):
         for name_ens in AVAILABLE_ABBR_ENSEM:
             used_tc = time.time()
 
-            nb_cls, nb_pru = self.get_hyper_params(name_ens)
+            _, nb_pru = self.get_hyper_params(name_ens)  # nb_cls,
             iterator = self.get_iterator(name_ens)
             filename = iterator.get_raw_filename(
                 trial_type=self._trial_type)
             assert os.path.exists(filename), filename
             tmp_df = iterator.load_raw_dataset(filename)
 
-            nb_set, id_set, index = iterator.recap_sub_data(tmp_df)
+            # nb_set, id_set, index = iterator.recap_sub_data(tmp_df)
+            nb_set, _, index = iterator.recap_sub_data(tmp_df)
             tag_col = iterator.prepare_graph()
             # START
 

@@ -2,11 +2,9 @@
 # Author: Yijun
 
 
-from fairml.widget.utils_saver import elegant_print
-
-from fairml.facils.data_entropy import prob, jointProb
+# from fairml.facils.data_entropy import prob, jointProb
 from fairml.facils.data_distance import (
-    _discrete_bar_counts, Wasserstein_dis,
+    Wasserstein_dis,
     KL_divergence, JS_divergence, Bhattacharyya_dist,
     Hellinger_dist_v2, Hellinger_dist_v1, JS_div,
     f_divergence, _discrete_joint_cnts)
@@ -21,19 +19,18 @@ from fairml.facilc.draw_graph import (  # .draw.utils_graph
     _sns_line_err_bars, PLT_AX_STYLE)
 
 
-from copy import deepcopy
 import itertools
-import seaborn as sns
+# import seaborn as sns
 
-import pandas as pd
+# import pandas as pd
 import numpy as np
-from scipy import stats
-from sklearn.metrics import confusion_matrix
+# from scipy import stats
+# from sklearn.metrics import confusion_matrix
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from matplotlib import cm as mpl_cm
-from matplotlib.collections import LineCollection
+# from matplotlib import cm as mpl_cm
+# from matplotlib.collections import LineCollection
 
 mpl.use('Agg')  # set the 'backend'
 # plt.switch_backend('agg')
@@ -520,7 +517,8 @@ def lines_with_std_2d(X, Ys, figname, figsize='L-WS',
     fig, axs = plt.subplots(figsize=_setup_config['L-NT'])
 
     for i, annot in enumerate(annotY):
-        config_ls, config_sd = _line_std_colors(
+        # config_ls, config_sd = _line_std_colors(
+        config_ls, _ = _line_std_colors(
             annot, i + 1, visible=visible, palette=palette)
         axs.plot(X, Ys[i], **config_ls)
 

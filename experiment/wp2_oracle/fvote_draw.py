@@ -2,19 +2,19 @@
 
 
 from fairml.facilc.draw_graph import (
-    line_chart, multiple_line_chart, multiple_hist_chart,
+    multiple_line_chart, multiple_hist_chart,
     Friedman_chart, stat_chart_stack, twinx_hist_chart,
     twinx_bars_chart, histogram_chart, scatter_parl_chart,
     scatter_and_corr, sns_scatter_corr, scatter_id_chart,
     _setup_config, _setup_figsize, _setup_figshow)
 from fairml.facilc.draw_hypos import (
-    Friedman_init, Friedman_test, _avg_and_stdev, _encode_sign,
+    Friedman_init, _avg_and_stdev, _encode_sign,
     comp_t_init, comp_t_prep, comp_t_sing,
     cmp_paired_avg, cmp_paired_wtl)
 
 from experiment.wp2_oracle.fetch_data import (
     GraphSetup, CURR_EXPT_DIR, pd_concat_divide_raw,
-    pd_concat_divide_sht, pd_concat_divide_set, pd_concat_sens_raw)
+    pd_concat_divide_sht, pd_concat_sens_raw)
 from fairml.widget.utils_const import (
     DTY_FLT, unique_column, _get_tmp_name_ens, _get_tmp_document)
 from fairml.widget.utils_remark import (
@@ -22,7 +22,6 @@ from fairml.widget.utils_remark import (
 
 import csv
 import os
-import pdb
 import numpy as np
 import pandas as pd
 
@@ -47,7 +46,8 @@ class PlotC_TheoremsLemma(GraphSetup):
         return csv_row_1[8:]
 
     def schedule_mspaint(self, raw_dframe, partition=False):
-        nb_set, id_set, index = self.recap_sub_data(raw_dframe)
+        # nb_set, id_set, index = self.recap_sub_data(raw_dframe)
+        _, _, index = self.recap_sub_data(raw_dframe)
         tag_col = self.prepare_graph()
         index = np.concatenate(index, axis=0)
         nvt = [v.loc[index][tag_col] for v in raw_dframe.values()]
@@ -423,8 +423,7 @@ class PlotH_ImprovePruning(GraphSetup):
 
         # CROPPED
         self.plot_for_sec33_prus(
-            raw_dframe, partition, tag_col, nb_set, index,
-            verbose)
+            raw_dframe, partition, tag_col, nb_set, index)
         self.plot_for_sec33_fair(
             raw_dframe, partition, tag_col, nb_set, index,)
         self.plot_for_sec34_fair(
@@ -441,18 +440,16 @@ class PlotH_ImprovePruning(GraphSetup):
         # aka. def plot_for_sec33()
         tmp = _get_tmp_name_ens(self._name_ens)
         fn = '_'.join([self._figname, tmp])
-        new_avg, new_std, new_var, new_raw = pd_concat_divide_raw(
-            raw_dframe, tag_col, nb_set, index)
-        self.verify_aggregated_rank(new_avg, fn + "_whole_avg",
-                                    verbose)
+        new_avg, _, new_var, new_raw = pd_concat_divide_raw(
+            raw_dframe, tag_col, nb_set, index)  # _:new_std
+        self.verify_aggregated_rank(new_avg, fn + "_whole_avg")
 
         if not partition:
             return
         for k, v in raw_dframe.items():
             avg, _, _, raw = pd_concat_divide_sht(
                 v, tag_col, nb_set, index)
-            self.verify_aggregated_rank(raw, fn + "_split_raw_" + k,
-                                        verbose)
+            self.verify_aggregated_rank(raw, fn + "_split_raw_" + k)
 
     def verify_Friedman_chart(self, df, kw, rel_id,
                               category=None, ind_ens=False):
@@ -468,7 +465,8 @@ class PlotH_ImprovePruning(GraphSetup):
         if rel_id in [6, 7, 8, 9]:
             mode = 'descend'
 
-        rank, idx_bar = Friedman_init(U, mode=mode)
+        # rank, idx_bar = Friedman_init(U, mode=mode)
+        _, idx_bar = Friedman_init(U, mode=mode)
         figname = '_'.join([kw, 'rel{}'.format(rel_id)])
         if rel_id not in [4, -1, -2, 9, 8, ] + [2, ]:
             Friedman_chart(idx_bar, name_pru, figname + '_fried5',
@@ -496,7 +494,7 @@ class PlotH_ImprovePruning(GraphSetup):
         stat_chart_stack(idx_bar, name_pru, figname + '_stack',
                          **kwargs)
 
-    def verify_aggregated_rank(self, df, kw, verbose):
+    def verify_aggregated_rank(self, df, kw):
         '''
         self.verify_Friedman_chart(df, kw, rel_id=6)
         self.verify_Friedman_chart(df, kw, rel_id=7)
@@ -905,8 +903,9 @@ class PlotHGather_ImprovePruning(PlotH_ImprovePruning):
                          trial_type, figname, logger)
 
     def schedule_mspaint(self, raw_dframe, tag_col):
-        nb_set, id_set, index = self.recap_sub_data(raw_dframe[0])
-        nm_set = ['ricci', 'german', 'adult', 'ppr', 'ppvr']
+        # nb_set, id_set, index = self.recap_sub_data(raw_dframe[0])
+        # nm_set = ['ricci', 'german', 'adult', 'ppr', 'ppvr']
+        nb_set, _, index = self.recap_sub_data(raw_dframe[0])
         '''
         self.plot_for_sec33_prus(raw_dframe, tag_col, nb_set, index)
         self.plot_for_sec33_fair(raw_dframe, tag_col, nb_set, index)

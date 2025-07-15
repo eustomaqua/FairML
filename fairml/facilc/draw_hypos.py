@@ -7,13 +7,13 @@
 
 from copy import deepcopy
 import math
-import pdb
 
 import numpy as np
-from scipy.special import perm, comb  # 计算排列/组合数
+# from scipy.special import perm, comb  # 计算排列/组合数
+from scipy.special import comb
 import scipy.stats as stats
 
-from fairml.widget.utils_const import DTY_PLT, check_zero
+from fairml.widget.utils_const import check_zero  # DTY_PLT
 from fairml.facils.metrics_cont import contingency_tab_multiclass
 # from fairml.metrics.normal_perf import contingency_tab_multiclass
 
@@ -253,7 +253,8 @@ _qchisq_critical_value = {
 def McNemar_test(ha, hb, y, k=2, alpha=.05):
     # H0: the performance of these two classifiers are the same
     # k=2 is because there are two algorithms being compared
-    e00, e10, e01, e11 = contingency_tab_multiclass(ha, hb, y)
+    _, e10, e01, _ = contingency_tab_multiclass(ha, hb, y)
+    # e00, e10, e01, e11 = contingency_tab_multiclass(ha, hb, y)
 
     numerator = abs(e01 - e10) - 1
     numerator = numerator ** 2

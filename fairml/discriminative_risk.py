@@ -5,7 +5,7 @@
 #   Oracle bounds concerning fairness for majority voting
 
 import numpy as np
-import numba
+# import numba
 
 
 # =====================================

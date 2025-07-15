@@ -2,7 +2,7 @@
 
 
 import numpy as np
-import pandas as pd
+# import pandas as pd
 
 from fairml.widget.utils_saver import elegant_print
 from fairml.datasets import process_above, process_below

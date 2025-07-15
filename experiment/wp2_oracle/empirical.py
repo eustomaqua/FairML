@@ -6,10 +6,10 @@
 
 
 import numpy as np
-import pandas as pd
+# import pandas as pd
 import time
 
-from fairml.widget.utils_const import check_zero, unique_column, DTY_FLT
+from fairml.widget.utils_const import check_zero, unique_column
 from fairml.widget.utils_saver import elegant_print
 
 from fairml.discriminative_risk import (
@@ -751,7 +751,7 @@ class PartG_ImprovedPruning(PartD_ImprovedPruning):
         ans_fair.extend(G_mv)
         # return ans_fair  # 3+2 =5
 
-        Acc, (a, p, r, f, _, _, _, _, _, _, _) = \
+        Acc, (_, p, r, f, _, _, _, _, _, _, _) = \
             self.calculate_sub_ensemble_metrics(y, fens, pos_val)
         # return ans_fair + [Acc, a, p, r, f]  # 5+5 =10
         ans_fair.append(E_rho_L_fair_f(yt, yqtb, wgt))

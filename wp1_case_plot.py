@@ -7,10 +7,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import pdb
 
 from fairml.facilc.draw_graph import (  # .graph.utils_param
-    PLT_FRAMEBOX, PLT_LOCATION, DTY_PLT, PLT_AX_STYLE,
+    PLT_LOCATION, DTY_PLT, PLT_AX_STYLE,
     _setup_config, _setup_figsize, _setup_figshow, _barh_kwargs)
 
 
@@ -61,10 +60,11 @@ def _subplot_bar_pl(ax, names, annot, val_1, val_2):
     h1_facecolor = tuple([0, 0.5019, 0.5020])
     h2_facecolor = tuple([i / 255 for i in [64, 224, 208]])
 
-    p1 = ax.bar(ind - wid / 2, val_1, wid, color=h1_facecolor,
-                label=bias_risk[0], **_barh_kwargs)
-    p2 = ax.bar(ind + wid / 2, val_2, wid, color=h2_facecolor,
-                label=bias_risk[1], linestyle='dashed', **_barh_kwargs)
+    # p1, p2 =
+    ax.bar(ind - wid / 2, val_1, wid, color=h1_facecolor,
+           label=bias_risk[0], **_barh_kwargs)
+    ax.bar(ind + wid / 2, val_2, wid, color=h2_facecolor,
+           label=bias_risk[1], linestyle='dashed', **_barh_kwargs)
     ax.legend(loc='lower right', labelspacing=.05)
     ax.set_ylabel(annot)
     ax.set_xticks(ind)

@@ -1,24 +1,22 @@
 # coding: utf-8
 
 import numpy as np
-import pdb
 
-from fairml.widget.utils_const import DTY_FLT, _get_tmp_name_ens
-from fairml.widget.utils_saver import (
-    get_elogger, rm_ehandler, elegant_print)
+from fairml.widget.utils_const import DTY_FLT
+from fairml.widget.utils_saver import elegant_print
 
 from fairml.facilc.draw_hypos import (  # .graph.utils_hypos
-    _encode_sign, Friedman_init, Friedman_test,
+    _encode_sign, Friedman_init,
     cmp_paired_wtl, cmp_paired_avg, comp_t_sing, comp_t_prep)
 from fairml.facilc.draw_graph import (
     Friedman_chart, stat_chart_stack, multiple_hist_chart)
 from fairml.facilc.draw_chart import (
-    multiple_scatter_chart, analogous_confusion, single_hist_chart,
+    multiple_scatter_chart, analogous_confusion,
     multiple_scatter_alternative, analogous_confusion_alternative,
     analogous_confusion_extended)
 
 from fairml.facilc.draw_addtl import (
-    _subproc_pl_lin_reg, _subproc_pl_lin_reg_alt,
+    _subproc_pl_lin_reg_alt,
     line_reg_with_marginal_distr, scatter_with_marginal_distrib,
     FairGBM_scatter, FairGBM_tradeoff_v1, FairGBM_tradeoff_v2,
     FairGBM_tradeoff_v3)
@@ -162,7 +160,7 @@ class PlotD_Measures(PlotA_Measures):
             idx = [i + 13 for i in idx]
         elif mark.endswith("abs_"):
             idx = [i + 26 for i in idx]
-        mode = "ascend" if mark == "fair" else "descend"
+        # mode = "ascend" if mark == "fair" else "descend"
 
         new_curr = curr[:, idx, :]  # .shape (#alg,#eval,#iter)
         Ys_avg = new_curr.mean(axis=2).T  # .shape (#eval,#alg)
@@ -667,7 +665,8 @@ class GatherF_Prunings(PlotF_Prunings):
                 else:
                     elegant_print("\n", logger)
                 # elegant_print(["\n", i], logger)
-                elegant_print("data sens_attr: {} {}".format(i, sk), logger)
+                elegant_print(
+                    "data sens_attr: {} {}".format(i, sk), logger)
                 otmp = "{}\n".format(self._tag[pt_i])
                 for t1, t2 in zip(Ys_avg[Ys_i], Ys_std[Ys_i]):
                     otmp += " & {}".format(_encode_sign(t1, t2, rez))

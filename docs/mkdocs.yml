@@ -38,7 +38,7 @@ theme:
         icon: material/toggle-switch-off
         name: Switch to system preference
   font:
-    text: Roboto  # Georgia, Poppins
+    text: Poppins Medium  # Georgia, Poppins, Roboto, Verdana
     code: Roboto Mono
   features:
     - search.suggest
@@ -49,7 +49,8 @@ theme:
     # - navigation.tabs
     # - header.autohide
   # logo: ../docs/logo.svg  # material/library, assets/logo.png
-  logo: ../docs/github-brands-solid.svg  # pagelines-brands-solid.svg
+  # logo: ../docs/github-brands-solid.svg  # pagelines-brands-solid.svg
+  logo: pagelines-brands-solid.svg
   # icon:
   #   repo: fontawesome/brands/git-alt
   #   # site: fontawesome/brands/github

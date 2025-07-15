@@ -4,25 +4,23 @@
 #   Measuring fairness via data manifolds
 #
 
-import matplotlib as mpl
+# import matplotlib as mpl
 import matplotlib.pyplot as plt
-from matplotlib import cm as mpl_cm
-from matplotlib.collections import LineCollection
+# from matplotlib import cm as mpl_cm
+# from matplotlib.collections import LineCollection
 import seaborn as sns
 
-import itertools
-import pdb
+# import itertools
 import numpy as np
 import pandas as pd
 
 from fairml.facilc.draw_graph import (
-    _style_set_axis, _style_set_fig, _setup_config,
+    _style_set_axis, _setup_config,
     _setup_figsize, _setup_figshow, _setup_locater,
     _set_quantile, _sns_line_err_bars,
     cnames, cname_keys, cmap_names, _setup_rgb_color,
     _backslash_distributed, _barh_patterns,
     _sns_line_fit_regs, _sns_line_err_bars)
-from fairml.widget.utils_const import check_zero
 
 
 # ===============================
@@ -52,6 +50,7 @@ _colr_nms = [
     '#4DBEEE', '#A2142F']  # Matlab 2014, parula
 
 
+'''
 def multiple_line_chart(X, Ys, annots=(
     r"$\lambda$", r"Test Accuracy (%)"),
         annotY=('',), mkrs=None,
@@ -64,6 +63,7 @@ def multiple_line_chart(X, Ys, annots=(
         # mkrs += [for i in _line_marker]
 
     num_bs = Ys.shape[1]
+'''
 
 
 # def multiple_lines_with_errorbar(Ys, picked_keys, annotY='Acc',
@@ -77,7 +77,8 @@ def multiple_lines_with_errorbar(X, Ys, picked_keys=('Baseline #1',),
     # X or picked_keys: (#num,)
     # Ys.shape (#num, #baseline_for_comparison, nb_iter)
 
-    num, pick_baseline, _ = Ys.shape  # pick_baseline,nb_iter
+    # num, pick_baseline, _ = Ys.shape  # pick_baseline,nb_iter
+    _, pick_baseline, _ = Ys.shape
     # fig, ax = plt.subplots(figsize=_setup_config['M-NT'])
     fig = plt.figure(figsize=_setup_config['M-NT'])
     ax = fig.gca()
@@ -109,7 +110,7 @@ def box_plot(Ys, picked_keys, annotY='Acc',
 
     pick_baseline, nb_iter = Ys.shape  # picked_ways/method,
     fig, ax = plt.subplots(figsize=_setup_config['M-NT'])
-    bp = ax.boxplot(Ys.T, patch_artist=patch_artist)
+    ax.boxplot(Ys.T, patch_artist=patch_artist)  # bp=
 
     ind = np.arange(pick_baseline) + 1
     ax.set_xticks(ind)
@@ -221,7 +222,7 @@ def boxplot_k_cv_with_real(X, Ys, z,
     nb_iter, num = Ys.shape
     fig, ax = plt.subplots(figsize=_setup_config['M-NT'])
 
-    bp = ax.boxplot(Ys, positions=X, patch_artist=patch_artist)
+    ax.boxplot(Ys, positions=X, patch_artist=patch_artist)  # bp=
     # ax.set_xticks(X)
     ax.ticklabel_format(style='sci', scilimits=(-1, 2), axis='y')
 
@@ -338,7 +339,8 @@ def multiple_scatter_comparison(X, Yss, zs, picked_keys,
     # zs .shape= (#att_sen, #iter)
     # picked_keys.shape= (#att_sen,) list of names
 
-    nb_att, nb_iter, num = Yss.shape
+    # nb_att, nb_iter, num = Yss.shape
+    nb_att, nb_iter, _ = Yss.shape
     fig, ax = plt.subplots(figsize=_setup_config['M-NT'])
     cs = sns.color_palette(cmap_name)
     cl = len(cs)
@@ -497,8 +499,8 @@ def scatter_with_marginal_distrib(df, col_X, col_Y, tag_Ys,
     # columns, i.e., picked_keys.shape= (#baseline,)
     # num, nb_way = Ys.shape
 
-    dfs_pl, df_all = _marginal_distr_read_in(df, col_X, col_Y, tag_Ys,
-                                             picked_keys)
+    dfs_pl, df_all = _marginal_distr_read_in(
+        df, col_X, col_Y, tag_Ys, picked_keys)
 
     # 3. 设置seaborn颜色格式
     current_palette = sns.color_palette(cmap_name, len(picked_keys))
@@ -510,13 +512,11 @@ def scatter_with_marginal_distrib(df, col_X, col_Y, tag_Ys,
     grid = plt.GridSpec(6, 6, wspace=.05, hspace=.05)
     # columns = picked_keys
 
-    ax1 = _marginal_distrib_step1(
-        grid, df_all, col_X, current_palette)
-    ax2 = _marginal_distrib_step2(
-        grid, df_all, col_Y, current_palette)
-    ax3 = _marginal_distrib_step3(
-        grid, dfs_pl, picked_keys, col_X, col_Y,
-        annotX, annotY, current_palette)
+    # ax1, ax2, ax3 =
+    _marginal_distrib_step1(grid, df_all, col_X, current_palette)
+    _marginal_distrib_step2(grid, df_all, col_Y, current_palette)
+    _marginal_distrib_step3(grid, dfs_pl, picked_keys, col_X, col_Y,
+                            annotX, annotY, current_palette)
 
     # 5. 保存图片
     _setup_figshow(fig, figname=figname)
@@ -724,7 +724,6 @@ def line_reg_with_marginal_distr(df, col_X, col_Y, tag_Ys,
                                  picked_keys,
                                  annotX='acc', annotY='fair',
                                  invt_a=False, snspec='sty0',
-                                 # linreg=False, snspec=True,
                                  distrib=True,
                                  cmap_name='muted',
                                  figsize='M-WS', figname='smd',
@@ -742,15 +741,19 @@ def line_reg_with_marginal_distr(df, col_X, col_Y, tag_Ys,
         col_X, col_Y = col_Y, col_X
         annotX, annotY = annotY, annotX
     if distrib:
-        ax1 = _marginal_distrib_step1(grid, df_all, col_X, mycolor)
-        ax2 = _marginal_distrib_step2(grid, df_all, col_Y, mycolor)
+        # ax1 = _marginal_distrib_step1(grid, df_all, col_X, mycolor)
+        # ax2 = _marginal_distrib_step2(grid, df_all, col_Y, mycolor)
+        _marginal_distrib_step1(grid, df_all, col_X, mycolor)
+        _marginal_distrib_step2(grid, df_all, col_Y, mycolor)
     if snspec == 'sty0':
-        ax3 = _marginal_distrib_step3(grid, dfs_pl, picked_keys,
-                                      col_X, col_Y, annotX, annotY,
-                                      mycolor)  # , distrib=distrib)
+        # ax3 = 
+        _marginal_distrib_step3(grid, dfs_pl, picked_keys,
+                                col_X, col_Y, annotX, annotY,
+                                mycolor)  # , distrib=distrib)
     elif snspec in ['sty1', 'sty2', 'sty3',  # 'sty4', 'sty5',
                     'sty6', 'sty4a', 'sty4b', 'sty5a', 'sty5b']:
-        ax4 = _marginal_distr_step4(
+        # ax4 = 
+        _marginal_distr_step4(
             grid, dfs_pl, picked_keys, col_X, col_Y,
             annotX, annotY, mycolor, snspec,
             identity=identity, distrib=distrib,
@@ -937,7 +940,7 @@ def _uncertainty_plotting(X, Ys, picked_keys, annotY=None, ddof=0,
     #   # epochs = list(range(101))
     clrs = sns.color_palette(cmap_name, len(picked_keys))  # palette=)
 
-    for i, key in enumerate(picked_keys):
+    for i, _ in enumerate(picked_keys):  # _:key
         ax.plot(X, Ys_avg[i],
                 _curr_sty[i], label=picked_keys[i], c=clrs[i], lw=1)
         # ax.plot(X, Ys_avg[i], label=picked_keys[i], c=clrs[i])
@@ -1137,7 +1140,7 @@ def multi_lin_reg_with_distr(Xs, Ys, Zs, annots=('X', 'Y', 'Z'),
 
 def multi_lin_reg_without_distr(X, Ys, Zs, annots=('X', 'Y', 'Z'),
                                 figname='pl_linreg', figsize='M-WS',
-                                snspec='sty4', cmap_names='coolwarm',
+                                snspec='sty4',  # cmap_names='coolwarm',
                                 sci_format_y=False):
     fig = plt.figure(figsize=_setup_config[figsize], dpi=300)
     plt.subplots_adjust(left=.11, bottom=.11, right=.98, top=.995)
@@ -1153,9 +1156,11 @@ def multi_lin_reg_without_distr(X, Ys, Zs, annots=('X', 'Y', 'Z'),
     n_k = len(Ys)  # aka. len(Zs)
     start_i = 2 if n_k == 2 else 1
     for i in range(n_k):
-        _subproc_pl_lin_reg(ax4, X, Ys[i], Zs[i], annotZ, snspec, myclr[i + start_i])
+        _subproc_pl_lin_reg(ax4, X, Ys[i], Zs[i], annotZ,
+                            snspec, myclr[i + start_i])
     for i in range(n_k):
-        _subproc_pl_lin_reg_alt(ax4, X, Ys[i], snspec, myclr[i + start_i])
+        _subproc_pl_lin_reg_alt(
+            ax4, X, Ys[i], snspec, myclr[i + start_i])
     _subproc_pl_identity(ax4, [X, X], annotZ, snspec)
 
     if snspec in ['sty3a', 'sty3b', ]:
@@ -1330,11 +1335,12 @@ def FairGBM_scatter(Xs, Ys, annot, label=('X', 'Y'),
     fig = plt.figure(figsize=_setup_config[figsize], dpi=300)
     plt.subplots_adjust(left=.11, bottom=.11, right=.98, top=.995)
     grid = plt.GridSpec(6, 6, wspace=.05, hspace=.05)
-    ax1 = _marginal_distrib_step1(grid, df_all, 'x', curr_palette)
-    ax2 = _marginal_distrib_step2(grid, df_all, 'y', curr_palette)
-    ax3 = _marginal_distrib_step3(grid, dfs_pl, annot, 'x', 'y',
-                                  label[0], label[1], curr_palette,
-                                  loc='best')
+    # ax1, ax2, ax3 =
+    _marginal_distrib_step1(grid, df_all, 'x', curr_palette)
+    _marginal_distrib_step2(grid, df_all, 'y', curr_palette)
+    _marginal_distrib_step3(grid, dfs_pl, annot, 'x', 'y',
+                            label[0], label[1], curr_palette,
+                            loc='best')
 
     _setup_figshow(fig, figname=figname)
     plt.close()

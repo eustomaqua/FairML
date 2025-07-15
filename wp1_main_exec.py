@@ -8,15 +8,12 @@
 import argparse
 import csv
 import logging
-import numpy as np
 import sys
 import time
 
-from fairml.widget.utils_remark import AVAILABLE_ABBR_ENSEM
-from fairml.widget.utils_wpclf import CONCISE_ALG_NAMES as ALG_NAMES
 from fairml.widget.utils_saver import (
     get_elogger, rm_ehandler, elegant_print)
-from fairml.widget.utils_timer import elegant_durat, elegant_dated
+from fairml.widget.utils_timer import elegant_durat
 from fairml.widget.data_split import (
     sklearn_k_fold_cv, sklearn_stratify, manual_cross_valid,
     situation_split1)
