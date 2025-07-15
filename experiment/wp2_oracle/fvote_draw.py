@@ -436,7 +436,7 @@ class PlotH_ImprovePruning(GraphSetup):
             raw_dframe, partition, tag_col, nb_set, index)
 
     def plot_for_sec33_prus(self, raw_dframe, partition,
-                            tag_col, nb_set, index, verbose):
+                            tag_col, nb_set, index):
         # aka. def plot_for_sec33()
         tmp = _get_tmp_name_ens(self._name_ens)
         fn = '_'.join([self._figname, tmp])

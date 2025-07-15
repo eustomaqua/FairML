@@ -1416,7 +1416,8 @@ def FairGBM_tradeoff_v3(Xs, Ys, annot, label=('X', 'Y'),
         if (alpha_loc == 'b4') and (not alpha_rev):
             tmp = Xs * alpha + (1. - alpha) * Ys
         elif (alpha_loc == 'af') and (not alpha_rev):
-            tmp = Xs * (1. - alpha) + alpha * Ys[i]
+            # tmp = Xs * (1. - alpha) + alpha * Ys[i]
+            tmp = Xs * (1. - alpha) + alpha * Ys
         elif (alpha_loc == 'b4') and alpha_rev:
             tmp = (1. - Xs) * alpha + (1. - alpha) * Ys
         elif (alpha_loc == 'af') and alpha_rev:
