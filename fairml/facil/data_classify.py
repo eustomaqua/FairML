@@ -7,26 +7,19 @@
 #
 
 
-# import copy.deepcopy as deepcopy
 from copy import deepcopy
 import gc
 import time
-
 import numpy as np
 # from pathos import multiprocessing as pp
-# from pympler.asizeof import asizeof
-from prgm.nucleus.pkgs_asizeof import asizeof
-# # from degree_pkgs.asizeof import asizeof
 
-from prgm.nucleus.utils_const import check_zero, judge_transform_need
-from prgm.nucleus.utils_const import GAP_INF, GAP_MID, DTY_FLT, DTY_INT
-from prgm.nucleus.utils_remark import NAME_INDIVIDUALS as INDIVIDUALS
 
-# from core.ensem_voting import get_accuracy_of_multiclass  # ification
-# from code.nucleus.utils_const import renew_random_seed_generator
-from prgm.nucleus.utils_saver import (
-    # renew_fixed_tseed, renew_random_seed)
-    renew_random_seed_generator)
+from fairml.widget.pkgs_pympler import asizeof
+from fairml.widget.utils_const import (
+    check_zero, judge_transform_need, GAP_INF, GAP_MID,
+    DTY_FLT, DTY_INT, random_seed_generator)
+from fairml.widget.utils_remark import NAME_INDIVIDUALS as INDIVIDUALS
+
 gc.enable()
 
 
@@ -79,7 +72,8 @@ def _BaggingSelectTraining(X_trn, y_trn):
     dY = len(vY)
     stack_X, stack_y = [], []  # temporal
 
-    rndsed, prng = renew_random_seed_generator()
+    # rndsed, prng = renew_random_seed_generator()
+    rndsed, prng = random_seed_generator()
     # rndsed = renew_fixed_tseed()
     # prng = renew_random_seed(rndsed)
 
@@ -403,7 +397,7 @@ def EnsembleAlgorithm(name_ens, name_cls, nb_cls, X_trn, y_trn):
         raise ValueError("Error occurred in `data_classify.py`."  # proper
                          "Please select an appropriate ensemble method.")
     # coef, clfs:   shape = (1, nb_cls)
-    # return deepcopy(coef), deepcopy(clfs), deepcopy(indices)  # coef.copy()
+    # return deepcopy(  # coef.copy()
     return coef, clfs, indices
 
 
@@ -511,8 +505,7 @@ def original_ensemble_from_train_set(name_ens, name_cls, nb_cls,
     y_cast = [] if not X_val else [
         t.predict(X_val).tolist() for t in clfs]
 
-    # return deepcopy(y_insp), deepcopy(y_cast), deepcopy(y_pred), \
-    #     deepcopy(coef), deepcopy(clfs), deepcopy(idx)
+    # return deepcopy(
     return y_insp, y_cast, y_pred, coef, clfs, idx
 
 

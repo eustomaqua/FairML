@@ -14,7 +14,7 @@ from scipy.special import perm, comb  # 计算排列/组合数
 import scipy.stats as stats
 
 from fairml.widget.utils_const import DTY_PLT, check_zero
-from fairml.widget.metrics_perf import contingency_tab_multiclass
+from fairml.facil.metrics_cont import contingency_tab_multiclass
 # from fairml.metrics.normal_perf import contingency_tab_multiclass
 
 

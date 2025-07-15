@@ -1,4 +1,8 @@
 # coding: utf-8
+#
+# TARGET:
+#   Oracle bounds regarding fairness for majority vote
+#
 
 import argparse
 import logging
@@ -691,7 +695,7 @@ class FVre_Drawing(DataSetup):
 # ----------------------------------
 
 
-def parameters():  # default
+def default_parameters():  # default
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-exp", "--expt-id", type=str, default="mCV_expt2",
@@ -736,7 +740,7 @@ def parameters():  # default
     return parser
 
 
-parser = parameters()
+parser = default_parameters()
 args = parser.parse_args()
 
 trial_type = args.expt_id
