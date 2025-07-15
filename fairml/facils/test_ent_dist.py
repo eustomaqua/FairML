@@ -11,7 +11,7 @@ X_trn, y_trn = synthetic_dat(nb_lbl, nb_inst, nb_feat)
 
 
 def test_ent_convert():
-    from fairml.facil.data_entropy import binsMDL, prob, jointProb
+    from fairml.facils.data_entropy import binsMDL, prob, jointProb
     data = binsMDL(X_trn, nb_bin=nb_bin)
     assert len(np.unique(data)) == nb_bin
     assert np.shape(data) == np.shape(X_trn)
@@ -60,7 +60,7 @@ def test_data_entropy():
     # from fairml.widget.data_entropy import H, H1, H2
     # from fairml.widget.data_entropy import I, MI, VI
     # from fairml.widget.data_entropy import DIST, DIV1, DIV2
-    from fairml.facil.data_entropy import (
+    from fairml.facils.data_entropy import (
         H, H1, H2, I, MI, VI, DIST, DIV1, DIV2)
 
     nb_spl, nb_lbl = 223, 4
@@ -121,7 +121,7 @@ def test_data_entropy():
 
 
 def test_distributed():
-    from fairml.facil.data_entropy import (
+    from fairml.facils.data_entropy import (
         _dist_sum, _arg_max_p, Greedy, _choose_proper_platform,
         _find_idx_in_sub, _randomly_partition, DDisMI)
     nb_spl, nb_lbl = 121, 5
@@ -191,7 +191,7 @@ def test_distributed():
 
 
 def test_data_distance():
-    from fairml.facil.data_distance import (
+    from fairml.facils.data_distance import (
         KL_divergence, JS_divergence, f_divergence,
         Hellinger_dist_v1, Hellinger_dist_v2, Wasserstein_dis,
         Wasserstein_distance, Bhattacharyya_dist)
@@ -232,7 +232,7 @@ def test_data_distance():
         assert check_equal(ans_1, res_1)
 
     def subr_others(p, q):
-        from fairml.facil.data_distance import (
+        from fairml.facils.data_distance import (
             JS_div, _f_div, _BC_dis,
             _discrete_bar_counts, _discrete_joint_cnts)
         _mx = 5  # _max, indexes

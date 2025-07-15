@@ -13,6 +13,10 @@ from fairml.widget.utils_const import (
 # =====================================
 # Oracle bounds for fairness
 
+
+# -------------------------------------
+# Contingency table
+#
 '''
 marginalised groups
 |      | h(xneg,gzero)=1 | h(xneg,gzero)=0 |
@@ -25,7 +29,15 @@ privileged group
 
 instance (xneg,xpos) --> (xneg,xqtb)
         xpos might be `gzero` or `gones`
+
+C_{ij}
+|     | hx=0 | hx=1 | ... | hx=? |
+| y=0 | C_00 | C_01 | ... | C_0* |
+| y=1 | C_10 | C_11 |     | C_1* |
+| ... | ...  | ...  |     | ...  |
+| y=? | C_*0 | C_*1 | ... | C_*? |
 '''
+# y, hx: list of scalars (as elements)
 
 
 def marginalised_contingency(y, hx, vY, dY):
@@ -35,8 +47,7 @@ def marginalised_contingency(y, hx, vY, dY):
         for j in range(dY):
             tmp = np.logical_and(
                 np.equal(y, vY[i]), np.equal(hx, vY[j]))
-            Cij[i, j] = np.sum(tmp).tolist()
-            # Cij[i, j] = int(np.sum(tmp))
+            Cij[i, j] = np.sum(tmp).tolist()  # int()
     return Cij  # np.ndarray
 
 
@@ -55,11 +66,41 @@ def marginalised_confusion(Cij, loc=1):
     return Cm  # np.ndarray
 
 
+'''
+def marginalised_split_up(y, hx, priv=1, sen=list()):
+    gones_y_ = [i for i, j in zip(y, sen) if j == priv]
+    gzero_y_ = [i for i, j in zip(y, sen) if j != priv]
+    gones_hx = [i for i, j in zip(hx, sen) if j == priv]
+    gzero_hx = [i for i, j in zip(hx, sen) if j != priv]
+    return gones_y_, gzero_y_, gones_hx, gzero_hx
+
+
+def marginalised_matrixes(y, hx, pos=1, priv=1, sens=list()):
+    """ y, hx: list, shape=(N,), true label and prediction
+    pos : which label is viewed as positive, might be multi-class.
+    sens: which group these instances are from, including one priv-
+          ileged group and one/multiple marginalised group.
+          or list of boolean (as elements)
+    priv: which one indicates the privileged group.
+    """
+    vY, _ = judge_transform_need(y + hx)
+    dY = len(vY)
+
+    gones_y_, gzero_y_, gones_hx, gzero_hx \
+        = marginalised_split_up(y, hx, priv, sens)
+    g1_Cij = marginalised_contingency(gones_y_, gones_hx, vY, dY)
+    g0_Cij = marginalised_contingency(gzero_y_, gzero_hx, vY, dY)
+
+    loca = vY.index(pos)  # [[TP,FN],[FP,TN]]
+    gones_Cm = marginalised_confusion(g1_Cij, loca)
+    gzero_Cm = marginalised_confusion(g0_Cij, loca)
+    return g1_Cij, g0_Cij, gones_Cm, gzero_Cm  # np.ndarray
+'''
+
+
 def marginalised_pd_mat(y, hx, pos=1, idx_priv=list()):
     # y : not pd.DataFrame, is pd.core.series.Series
     # hx: not pd.DataFrame, is np.ndarray
-    # tmp = y.to_numpy().tolist() + hx.tolist()
-
     if isinstance(y, list) or isinstance(hx, list):
         y, hx = np.array(y), np.array(hx)
 
@@ -87,7 +128,6 @@ def marginalised_pd_mat(y, hx, pos=1, idx_priv=list()):
 
 # =====================================
 # Group fairness measures
-
 ''' Cm
 |        | hx= pos | hx= neg |
 | y= pos |    TP   |    FN   |

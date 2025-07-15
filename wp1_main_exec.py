@@ -28,7 +28,9 @@ from fairml.preprocessing import (
 from experiment.wp2_oracle.fetch_data import ExperimentSetup
 from experiment.wp2_oracle.empirical import (
     PartC_TheoremsLemma, PartK_PACGeneralisation,
-    PartH_ImprovedPruning)
+    PartH_ImprovedPruning, PartJ_LambdaEffect)
+from experiment.wp2_oracle.empirical import (
+    PartD_ImprovedPruning, PartF_ImprovedFairness)  # legacy
 
 AVAILABLE_FAIR_DATASET = [
     'ricci', 'german', 'adult', 'ppr', 'ppvr']
@@ -54,11 +56,14 @@ class OracleEmpirical(ExperimentSetup):
         self._delta = 1. - delta
 
         if trial_type.endswith('expt1'):
-            self._iterator = PartA_TheoremsLemma(name_ens, abbr_cls, nb_cls)
+            self._iterator = PartA_TheoremsLemma(
+                name_ens, abbr_cls, nb_cls)
         elif trial_type.endswith('expt2'):
-            self._iterator = PartB_TheoremsLemma(name_ens, abbr_cls, nb_cls)
+            self._iterator = PartB_TheoremsLemma(
+                name_ens, abbr_cls, nb_cls)
         elif trial_type.endswith('expt3'):
-            self._iterator = PartC_TheoremsLemma(name_ens, abbr_cls, nb_cls)
+            self._iterator = PartC_TheoremsLemma(
+                name_ens, abbr_cls, nb_cls)
 
         elif trial_type.endswith('expt11'):
             self._iterator = PartK_PACGeneralisation(
@@ -567,11 +572,12 @@ del trial_type, data_type, args, parser
 """
 python wp1_main_exec.py --logged -exp mCV_expt3 --name-ens Bagging --abbr-cls DT --nb-cls 11 -dat ricci
 python wp1_main_exec.py --logged -exp mCV_expt11 --name-ens Bagging --abbr-cls DT --nb-cls 11 --nb-pru 5 --delta 1e-6 -dat ricci
-
-
 python wp1_main_exec.py --logged -exp mCV_expt8 --name-ens Bagging --abbr-cls DT --nb-cls 11 --nb-pru 5 -dat ricci
+python wp1_main_exec.py --logged -exp mCV_expt10 --name-ens Bagging --abbr-cls DT --nb-cls 11 --nb-pru 5 --nb-lam 9 --nb-iter 2 -dat ricci
 
-python oracle_exec.py -expt KFS_expt10 --nb-iter 2 --logged --name-ens Bagging --abbr-cls DT --nb-cls 11 --nb-pru 5 --nb-lam 9 -data ricci
-
-
+# legacy
+python wp1_main_exec.py --logged -exp mCV_expt4 --name-ens Bagging --abbr-cls DT --nb-cls 21 --nb-pru 11 -dat *
+python wp1_main_exec.py --logged -exp mCV_expt6 --name-ens Bagging --abbr-cls DT --nb-cls 21 --nb-pru 7 -dat *
+python wp1_main_exec.py --logged -exp mCV_expt4 --name-ens Bagging --abbr-cls DT --nb-cls 7 --nb-pru 3 --nb-iter 2 -dat ricci
+python wp1_main_exec.py --logged -exp mCV_expt6 --name-ens Bagging --abbr-cls DT --nb-cls 7 --nb-pru 3 --nb-iter 2 -dat ricci
 """

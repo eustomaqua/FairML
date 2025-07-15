@@ -9,10 +9,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pdb
 
-from fairml.facil.draw_graph import (  # .graph.utils_param
+from fairml.facilc.draw_graph import (  # .graph.utils_param
     PLT_FRAMEBOX, PLT_LOCATION, DTY_PLT, PLT_AX_STYLE,
-    _setup_config, _setup_figsize, _setup_figshow,
-    _barh_kwargs)
+    _setup_config, _setup_figsize, _setup_figshow, _barh_kwargs)
 
 
 # -----------------------
@@ -151,12 +150,10 @@ python wp1_main_plot.py --draw -exp mCV_expt4 --gather
 python wp1_main_plot.py --draw -exp mCV_expt6 --gather --nb-pru 7
 python wp1_main_plot.py -exp mCV_expt3 --gather
 python wp1_main_plot.py -exp mCV_expt11 --gather
-
 python wp1_main_plot.py -exp mCV_expt8 --gather
 python wp1_main_plot.py -exp mCV_expt8 --gather --tab
 python wp1_main_plot.py -exp mCV_expt8 --name-ens Bagging
 python wp1_main_plot.py -exp mCV_expt8 --name-ens AdaBoostM1 --nb-cls 11 --nb-pru 5
 python wp1_main_plot.py -exp mCV_expt8 --name-ens SAMME --nb-cls 11 --nb-pru 5
-
 python wp1_main_plot.py -exp mCV_expt10 --name-ens Bagging --nb-iter 2 --nb-cls 11
 """

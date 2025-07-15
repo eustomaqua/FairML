@@ -17,14 +17,14 @@
 from copy import deepcopy
 import gc
 import time
-
 import numpy as np
-from fairml.widget.pkgs_pympler import asizeof
 
+from fairml.widget.pkgs_pympler import asizeof
 from fairml.widget.utils_const import (
     check_zero, DTY_FLT, DTY_INT, DTY_BOL)
-from fairml.widget.ensem_voting import plurality_voting
-from fairml.facil.data_entropy import I as EntropyI
+
+from fairml.facils.ensem_voting import plurality_voting
+from fairml.facils.data_entropy import I as EntropyI
 gc.enable()
 
 

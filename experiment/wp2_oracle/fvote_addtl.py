@@ -7,17 +7,17 @@ from fairml.widget.utils_const import DTY_FLT, _get_tmp_name_ens
 from fairml.widget.utils_saver import (
     get_elogger, rm_ehandler, elegant_print)
 
-from fairml.facil.draw_hypos import (  # .graph.utils_hypos
+from fairml.facilc.draw_hypos import (  # .graph.utils_hypos
     _encode_sign, Friedman_init, Friedman_test,
     cmp_paired_wtl, cmp_paired_avg, comp_t_sing, comp_t_prep)
-from fairml.facil.draw_graph import (
+from fairml.facilc.draw_graph import (
     Friedman_chart, stat_chart_stack, multiple_hist_chart)
-from fairml.facil.draw_chart import (
+from fairml.facilc.draw_chart import (
     multiple_scatter_chart, analogous_confusion, single_hist_chart,
     multiple_scatter_alternative, analogous_confusion_alternative,
     analogous_confusion_extended)
 
-from fairml.facil.draw_addtl import (
+from fairml.facilc.draw_addtl import (
     _subproc_pl_lin_reg, _subproc_pl_lin_reg_alt,
     line_reg_with_marginal_distr, scatter_with_marginal_distrib,
     FairGBM_scatter, FairGBM_tradeoff_v1, FairGBM_tradeoff_v2,

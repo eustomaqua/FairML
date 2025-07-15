@@ -15,7 +15,7 @@ import pdb
 import numpy as np
 import pandas as pd
 
-from fairml.facil.draw_graph import (
+from fairml.facilc.draw_graph import (
     _style_set_axis, _style_set_fig, _setup_config,
     _setup_figsize, _setup_figshow, _setup_locater,
     _set_quantile, _sns_line_err_bars,

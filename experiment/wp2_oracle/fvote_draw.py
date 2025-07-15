@@ -1,13 +1,13 @@
 # coding: utf-8
 
 
-from fairml.facil.draw_graph import (
+from fairml.facilc.draw_graph import (
     line_chart, multiple_line_chart, multiple_hist_chart,
     Friedman_chart, stat_chart_stack, twinx_hist_chart,
     twinx_bars_chart, histogram_chart, scatter_parl_chart,
     scatter_and_corr, sns_scatter_corr, scatter_id_chart,
     _setup_config, _setup_figsize, _setup_figshow)
-from fairml.facil.draw_hypos import (
+from fairml.facilc.draw_hypos import (
     Friedman_init, Friedman_test, _avg_and_stdev, _encode_sign,
     comp_t_init, comp_t_prep, comp_t_sing,
     cmp_paired_avg, cmp_paired_wtl)

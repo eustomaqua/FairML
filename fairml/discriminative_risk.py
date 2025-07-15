@@ -10,6 +10,7 @@ import numba
 
 # =====================================
 # Oracle bounds for fairness
+# =====================================
 
 
 def ell_fair_x(fxp, fxq):
@@ -263,6 +264,75 @@ def ED_Erho_I_loss(yt, y, wgt):
 # -------------------------------------
 # Theorem 3.5.
 # -------------------------------------
+
+
+# =====================================
+# Preliminaries
+# =====================================
+# original instance : (xneg, xpos, y )
+# slightly disturbed: (xneg, xqtb, y')
+#
+# X, X': list, shape (nb_inst, nb_feat)
+# y, y': list, shape (nb_inst,)
+# sensitive attributes: list, (nb_feat,)
+#       \in {0,1}^nb_feat
+#       represent: if it is a sensitive attribute
+#
+
+
+def disturb_slightly(X, sen=None, ratio=.4):
+    if (not sen) or (not isinstance(sen, list)):
+        return X
+    dim = np.shape(X)
+    X = np.array(X)
+
+    for i in range(dim[0]):
+        Ti = X[i]
+        Tq = 1 - Ti
+        # T = [q if j else k for k, q, j in zip(Ti, Tq, sens)]
+        Tk = np.random.rand(dim[1])
+        Tk = np.logical_and(Tk, sen)
+        T = [q if k else j for j, q, k in zip(Ti, Tq, Tk)]
+        X[i] = T
+
+    return X.tolist()
+
+
+def disturb_predicts(X, sen, clf, ratio=.4):
+    Xp = disturb_slightly(X, sen, ratio)
+    yt = clf.predict(X).tolist()
+    yp = clf.predict(Xp).tolist()
+    return yt, yp
+
+
+# -------------------------------------
+# Ensemble methods / Weighted vote
+#
+# weights of individual classifiers / coefficients
+#   $\rho = [w_1,w_2,...,w_m]^\mathsf{T}$
+#
+# \begin{equation}
+#   MV_\rho(bmx) =
+#     \argmax_{y\in\mathcal{y}}
+#       \sum_{j=1}^m w_j \mathbb{I}(f_j(x) = y)
+# \end{equation}
+#
+# NB. Ties are resolved arbitrarily.
+#
+
+
+def weighted_vote_subscript_rho(y, yt, weight):
+    # yt: list, shape (nb_cls, nb_inst)
+    # y : list, shape (nb_inst,)
+    # weight: list, shape (nb_cls,)
+    vY = np.unique(np.concatenate([[y], yt]))
+
+    coef = np.array([weight]).T
+    weig = [np.sum(  # weighted
+        coef * np.equal(yt, i), axis=0) for i in vY]
+    loca = np.array(weig).argmax(axis=0)  # location
+
+    return [vY[i] for i in loca]  # i.e., fens
 
 
 # =====================================

@@ -17,17 +17,16 @@ from copy import deepcopy
 import gc
 import sys
 import time
-
 import numpy as np
-from fairml.widget.pkgs_pympler import asizeof
 
+from fairml.widget.pkgs_pympler import asizeof
 from fairml.widget.utils_const import (
     check_zero, DTY_FLT, DTY_INT, DTY_BOL, judge_transform_need,
     random_seed_generator)
 from fairml.widget.utils_remark import AVAILABLE_NAME_PRUNE
 
-from fairml.widget.ensem_voting import plurality_voting
-from fairml.facil.ensem_diversity import (
+from fairml.facils.ensem_voting import plurality_voting
+from fairml.facils.ensem_diversity import (
     kappa_statistic_multiclass, Kappa_Statistic_multi)
 gc.enable()
 
@@ -637,7 +636,7 @@ def _GMM_Kappa_sum(p, S, y):
 
 def GMM_Algorithm(y, yt, nb_cls, nb_pru):
     P = np.zeros(nb_cls, dtype=DTY_BOL)
-    rndsed, prng = renew_random_seed_generator()
+    rndsed, prng = random_seed_generator()
 
     idx = prng.randint(nb_cls)
     P[idx] = True
@@ -697,7 +696,7 @@ def _LocalSearch_kappa_sum(S, y):
 
 
 def _LCS_sub_get_index(nb_cls, nb_pru, row, col):
-    rndsed, prng = renew_random_seed_generator()
+    rndsed, prng = random_seed_generator()
 
     idx2 = np.arange(nb_cls).tolist()
     prng.shuffle(idx2)
@@ -884,7 +883,7 @@ def _DREP_fxH(yt):
     del yt
 
     fens = np.sign(fens)
-    rndsed, prng = renew_random_seed_generator()
+    rndsed, prng = random_seed_generator()
 
     tie = [np.sum(fens == i) for i in [0, 1, -1]]
     if tie[1] > tie[2]:

@@ -4,16 +4,16 @@
 
 from fairml.widget.utils_saver import elegant_print
 
-from fairml.facil.data_entropy import prob, jointProb
-from fairml.facil.data_distance import (
+from fairml.facils.data_entropy import prob, jointProb
+from fairml.facils.data_distance import (
     _discrete_bar_counts, Wasserstein_dis,
     KL_divergence, JS_divergence, Bhattacharyya_dist,
     Hellinger_dist_v2, Hellinger_dist_v1, JS_div,
     f_divergence, _discrete_joint_cnts)
 
-from fairml.facil.draw_hypos import (  # .draw.utils_hypos
+from fairml.facilc.draw_hypos import (  # .draw.utils_hypos
     Friedman_test, Nememyi_posthoc_test)
-from fairml.facil.draw_graph import (  # .draw.utils_graph
+from fairml.facilc.draw_graph import (  # .draw.utils_graph
     PLT_FRAMEBOX, PLT_LOCATION, DTY_PLT,
     _setup_config, _barh_kwargs, _barh_fcolor,
     _setup_figsize, _setup_figshow,

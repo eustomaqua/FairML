@@ -20,7 +20,7 @@ wgh = [.2, .3, .1, .4]
 
 
 def test_ensem_voting():
-    from fairml.widget.ensem_voting import (
+    from fairml.facils.ensem_voting import (
         plurality_voting, majority_voting, weighted_voting,
         tie_with_weight_plurality)
 

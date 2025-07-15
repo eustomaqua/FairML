@@ -24,14 +24,14 @@ import pyro.distributions as dist
 from pyro.nn import PyroModule
 
 # from fairml.lawschool import (
-from experiment.lawschool import (
+from experiment.wp2_oracle.lawschool import (
     CURR_PATH, LawSchoolData, model_Unaware_or_Full,
     main_model_infer_K, main_model_Fair_Add)
-from fairml.utils.utils_saver import elegant_print
-from fairml.metrics.group_fair import (
+from fairml.widget.utils_saver import elegant_print
+from fairml.facils.fairness_group import (
     unpriv_group_one, unpriv_group_two, unpriv_group_thr,
-    marginalised_pd_mat)
-from fairml.metrics.discriminative_risk import (
+    marginalised_pd_mat)  # .metrics.group_fair
+from fairml.discriminative_risk import (
     hat_L_fair, hat_L_loss, E_rho_L_fair_f, E_rho_L_loss_f)
 
 

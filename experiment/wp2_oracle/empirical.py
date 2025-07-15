@@ -10,14 +10,22 @@ import pandas as pd
 import time
 
 from fairml.widget.utils_const import check_zero, unique_column, DTY_FLT
+from fairml.widget.utils_saver import elegant_print
+
 from fairml.discriminative_risk import (
     ell_fair_x, hat_L_fair, tandem_fair, E_rho_L_fair_f,
     ell_loss_x, hat_L_loss, tandem_loss, E_rho_L_loss_f,
-    Erho_sup_L_fair, hat_L_objt, cal_L_obj_v1, cal_L_obj_v2)
+    Erho_sup_L_fair, Erho_sup_L_loss, ED_Erho_I_fair,
+    hat_L_objt, cal_L_obj_v1, cal_L_obj_v2)
 from fairml.dr_pareto_optimal import (
-    Pareto_Optimal_EPAF_Pruning, Centralised_EPAF_Pruning, Distributed_EPAF_Pruning)
-from fairml.dr_pareto_optimal import _bi_objectives as _POAF_calc_eval
+    Pareto_Optimal_EPAF_Pruning, Centralised_EPAF_Pruning,
+    Distributed_EPAF_Pruning, POAF_PEP, _POAF_calc_eval)
+from fairml.dr_pareto_optimal import _bi_objectives  # as _POAF_calc_eval
+
 from experiment.wp2_oracle.fetch_data import EnsembleSetup
+from fairml.facils.fairness_group import (
+    unpriv_group_one, unpriv_group_two, unpriv_group_thr,
+    marginalised_pd_mat, unpriv_unaware, unpriv_manual)
 
 
 # =====================================
@@ -1125,5 +1133,728 @@ class PartH_ImprovedPruning(PartG_ImprovedPruning):
 
 # -------------------------------------
 
+
+# Effect of $\lambda$ value
+# -------------------------------------
+
+
+class PartI_LambdaEffect(EnsembleSetup):
+    def __init__(self, name_ens, abbr_cls, nb_cls, nb_pru):
+        super().__init__(name_ens, abbr_cls, nb_cls, nb_pru)
+
+    @property
+    def abbr_cls(self):
+        return self._abbr_cls
+
+    def calc_reduced_fair_mvrho(self, y, yt, yqtb, fens, fqtb,
+                                wgt, lam=.5, pos_val=1):
+        ans_fair = [hat_L_loss(fens, y),
+                    hat_L_fair(fens, fqtb)]
+        G_mv = (E_rho_L_loss_f(yt, y, wgt),
+                Erho_sup_L_fair(yt, yqtb, wgt))
+        ans_fair.append(_POAF_calc_eval(G_mv, lam))
+        ans_fair.extend(G_mv)  # 2+1+2 =5
+        ans_fair.append(E_rho_L_fair_f(yt, yqtb, wgt))
+        # for above, less is better
+        # for below, more is better
+        Acc, (a, p, r, f, _, _, _, _, _, _, _) = \
+            self.calculate_sub_ensemble_metrics(y, fens, pos_val)
+        del G_mv, a
+        return ans_fair + [Acc, p, r, f]  # 6+4 =10
+
+    def calc_reduced_fair_gather(self, y, fens, pos_val=1,
+                                 idx_priv=tuple()):
+        g1_Cij, g0_Cij, gones_Cm, gzero_Cm = \
+            marginalised_pd_mat(y, fens, pos_val, idx_priv)
+        cmp_fair = []
+        cmp_fair.extend(unpriv_unaware(gones_Cm, gzero_Cm))
+        cmp_fair.extend(unpriv_group_one(gones_Cm, gzero_Cm))
+        cmp_fair.extend(unpriv_group_two(gones_Cm, gzero_Cm))
+        cmp_fair.extend(unpriv_group_thr(gones_Cm, gzero_Cm))
+        cmp_fair.extend(unpriv_manual(gones_Cm, gzero_Cm))
+        # for above, more is better
+        # 用这几个数值对比作图，看在敏感属性上会有多大区别
+        del g1_Cij, g0_Cij, gones_Cm, gzero_Cm
+        return cmp_fair  # 5*2 =10
+
+    def calc_simplified_fair_quality(self, y, ys, yr, fens, fqtb,
+                                     tag, jt, wgt, lam=.5, pos_val=1):
+        # abbreviated, reduced results to output
+        """
+           y     :  list,         shape= (nb_y,)
+          ys,  yr:  list of list, shape= (nb_cls, nb_y)
+         wgt     :  list,         shape= (nb_cls,)
+        fens,fqtb:  list,         shape= (nb_y,)
+
+                  lam :  scalar
+        positive_label:  scalar
+           ptb_priv[i]:  np.ndarray of boolean, shape= (nb_y,)
+        """
+        # aka. def calc_reduced_fair_rho
+
+        tmp = self.calc_reduced_fair_mvrho(
+            y, ys, yr, fens, fqtb, wgt, lam, pos_val)
+        y = np.array(y)
+        ys, yr = np.array(ys), np.array(yr)
+        fens, fqtb = np.array(fens), np.array(fqtb)
+
+        ans_A1 = self.calc_reduced_fair_gather(y, fens, pos_val, tag[0])
+        if not jt:
+            ans_A2 = [''] * 10
+            ans_Jt = [''] * 10
+            return tmp, ans_A1, ans_A2, ans_Jt
+        ans_A2 = self.calc_reduced_fair_gather(y, fens, pos_val, tag[1])
+        ans_Jt = self.calc_reduced_fair_gather(y, fens, pos_val, jt[0])
+
+        # aka. def calc_reduced_fair_gather
+        del y, ys, yr, fens, fqtb
+        return tmp, ans_A1, ans_A2, ans_Jt
+
+    def calc_abbreviated_pru_sub_qlt(self,
+                                     y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+                                     y_tst, y_pred, yq_pred, tag_tst, jt_tst,
+                                     positive_label, H, lam):
+        ys_insp = np.array(y_insp)[H].tolist()
+        ys_pred = np.array(y_pred)[H].tolist()
+        yr_insp = np.array(yq_insp)[H].tolist()
+        yr_pred = np.array(yq_pred)[H].tolist()
+        coef = np.array(self._weight)[H].tolist()
+
+        fens_trn = self.majority_vote(y_trn, ys_insp, coef)
+        fens_tst = self.majority_vote(y_tst, ys_pred, coef)
+        fqtb_trn = self.majority_vote(y_trn, yr_insp, coef)
+        fqtb_tst = self.majority_vote(y_tst, yr_pred, coef)
+
+        (tmp_trn, trn_A1, trn_A2,
+         trn_Jt) = self.calc_simplified_fair_quality(
+            y_trn, ys_insp, yr_insp, fens_trn, fqtb_trn, tag_trn,
+            jt_trn, coef, lam, positive_label)
+        (tmp_tst, tst_A1, tst_A2,
+         tst_Jt) = self.calc_simplified_fair_quality(
+            y_tst, ys_pred, yr_pred, fens_tst, fqtb_tst, tag_tst,
+            jt_tst, coef, lam, positive_label)
+        del ys_insp, yr_insp, fens_trn, fqtb_trn
+        del ys_pred, yr_pred, fens_tst, fqtb_tst
+        del coef
+
+        ans_A1 = trn_A1 + tst_A1
+        ans_A2 = trn_A2 + tst_A2
+        ans_Jt = trn_Jt + tst_Jt
+        ans_pru = tmp_trn + tmp_tst  # 10*2 =20
+        del trn_A1, trn_A2, trn_Jt, tmp_trn
+        del tst_A1, tst_A2, tst_Jt, tmp_tst
+        return ans_pru, ans_A1, ans_A2, ans_Jt
+
+    def prepare_trial(self):
+        length = 24 + 24 * 5
+        csv_row_1 = unique_column(8 + 26 + length)
+
+        csv_row_2c_a = ['lam', 'sens', 'Ensem', ''] + [
+            'Ensem:trn'] + [''] * 9 + ['Ensem:tst'] + [''] * 9
+        csv_row_2c_b = []
+        for name_pru in ['EPAF-C', 'EPAF-D.2', 'EPAF-D.3',
+                         'POEPAF.1', 'POPEP']:
+            csv_row_2c_b.extend(
+                [name_pru, '', '', '']
+                + ['{} :trn'.format(name_pru)] + [''] * 9
+                + ['{} :tst'.format(name_pru)] + [''] * 9)
+        csv_row_2c = csv_row_2c_a + csv_row_2c_b
+        del csv_row_2c_a, csv_row_2c_b  # 24+24*5
+
+        csv_row_3c_a = ['', '', 'ut.calc', 'us'] + [
+            'La(MV)', 'Lf(MV)', 'Lo(MV)', 'E[La(f)]', 'E[Lf(f,fp)]',
+            'E[Lf(f)]', 'Acc', 'P', 'R', 'F1'] * 2
+        csv_row_3c_b = ['ut', 'ut.calc', 'us', 'seq'] + [
+            'G1', 'G2', 'L(MV)', '', '', '', 'Acc',
+            'P', 'R', 'F1'] * 2
+        csv_row_3c = csv_row_3c_a + csv_row_3c_b * 5
+        del csv_row_3c_a, csv_row_3c_b  # 24+24*5
+
+        return csv_row_1, csv_row_2c, csv_row_3c
+
+    def schedule_content(self,
+                         y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+                         y_tst, y_pred, yq_pred, tag_tst, jt_tst,
+                         fens_trn, fqtb_trn, fens_tst, fqtb_tst,
+                         positive_label, nb_lam=11, logger=None):
+        y_insp = [j.tolist() for j in y_insp]
+        y_pred = [j.tolist() for j in y_pred]
+        yq_insp = [j.tolist() for j in yq_insp]
+        yq_pred = [j.tolist() for j in yq_pred]
+        lam_set = np.linspace(0, 1, nb_lam).tolist()
+        elegant_print("\tEffect $\lambda$", logger)
+
+        ans_ens, ans_A1, ans_A2, ans_Jt = [], [], [], []
+        for lam in lam_set:
+            (tmp_ens, tmp_A1, tmp_A2,
+             tmp_Jt) = self.schedule_subroutine(
+                y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+                y_tst, y_pred, yq_pred, tag_tst, jt_tst,
+                fens_trn, fqtb_trn, fens_tst, fqtb_tst,
+                positive_label, lam)
+            elegant_print("\t\tlam = {}".format(lam), logger)
+            ans_ens.append(tmp_ens)
+            ans_A1.append(tmp_A1)
+            ans_A2.append(tmp_A2)
+            ans_Jt.append(tmp_Jt)
+        return ans_ens, ans_A1, ans_A2, ans_Jt
+
+    def schedule_subroutine(self,
+                            y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+                            y_tst, y_pred, yq_pred, tag_tst, jt_tst,
+                            fens_trn, fqtb_trn, fens_tst, fqtb_tst,
+                            positive_label, lam):
+        since = time.time()
+        (tmp_trn, trn_A1, trn_A2,
+         trn_Jt) = self.calc_simplified_fair_quality(
+            y_trn, y_insp, yq_insp, fens_trn, fqtb_trn, tag_trn,
+            jt_trn, self._weight, lam, positive_label)
+        (tmp_tst, tst_A1, tst_A2,
+         tst_Jt) = self.calc_simplified_fair_quality(
+            y_tst, y_pred, yq_pred, fens_tst, fqtb_tst, tag_tst,
+            jt_tst, self._weight, lam, positive_label)
+        ans_ens = [lam, '', (time.time() - since) / 60, len(self._weight)]
+        ans_ens.extend(tmp_trn + tmp_tst)  # 4+10*2 =24
+
+        ens_A1 = [lam, 'A1', '', ''] + trn_A1 + tst_A1
+        ens_A2 = [lam, 'A2', '', ''] + trn_A2 + tst_A2
+        ens_Jt = [lam, 'Jt', '', ''] + trn_Jt + tst_Jt
+        del trn_A1, trn_A2, trn_Jt, tmp_trn
+        del tst_A1, tst_A2, tst_Jt, tmp_tst
+
+        # Proposed
+        tmp_pru, tmp_A1, tmp_A2, tmp_Jt = self.propose_prune_val(
+            y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+            y_tst, y_pred, yq_pred, tag_tst, jt_tst,
+            "EPAF-C", positive_label, lam=lam)
+        ans_ens.extend(tmp_pru)  # +24
+        ens_A1.extend(tmp_A1)
+        ens_A2.extend(tmp_A2)
+        ens_Jt.extend(tmp_Jt)
+
+        tmp_pru, tmp_A1, tmp_A2, tmp_Jt = self.propose_prune_val(
+            y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+            y_tst, y_pred, yq_pred, tag_tst, jt_tst,
+            "EPAF-D", positive_label, lam=lam, n_m=2)
+        ans_ens.extend(tmp_pru)  # +24
+        ens_A1.extend(tmp_A1)
+        ens_A2.extend(tmp_A2)
+        ens_Jt.extend(tmp_Jt)
+
+        tmp_pru, tmp_A1, tmp_A2, tmp_Jt = self.propose_prune_val(
+            y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+            y_tst, y_pred, yq_pred, tag_tst, jt_tst,
+            "EPAF-D", positive_label, lam=lam, n_m=3)
+        ans_ens.extend(tmp_pru)  # +24
+        ens_A1.extend(tmp_A1)
+        ens_A2.extend(tmp_A2)
+        ens_Jt.extend(tmp_Jt)
+
+        tmp_pru, tmp_A1, tmp_A2, tmp_Jt = self.propose_prune_val(
+            y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+            y_tst, y_pred, yq_pred, tag_tst, jt_tst,
+            "POEPAF", positive_label, lam=lam, dist=1)
+        ans_ens.extend(tmp_pru)  # +24
+        ens_A1.extend(tmp_A1)
+        ens_A2.extend(tmp_A2)
+        ens_Jt.extend(tmp_Jt)
+
+        tmp_pru, tmp_A1, tmp_A2, tmp_Jt = self.propose_prune_val(
+            y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+            y_tst, y_pred, yq_pred, tag_tst, jt_tst,
+            "POPEP", positive_label, lam=lam)
+        ans_ens.extend(tmp_pru)  # +24
+        ens_A1.extend(tmp_A1)
+        ens_A2.extend(tmp_A2)
+        ens_Jt.extend(tmp_Jt)
+
+        del tmp_pru, tmp_A1, tmp_A2, tmp_Jt
+        return ans_ens, ens_A1, ens_A2, ens_Jt  # each 24+24*5
+
+    def propose_prune_val(self,
+                          y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+                          y_tst, y_pred, yq_pred, tag_tst, jt_tst,
+                          name_pru, positive_label, lam, dist=1, n_m=2):
+        since = time.time()
+        H = self.pruning_proposed(
+            y_trn, y_insp, yq_insp, name_pru, lam, dist, n_m)
+        tim_elapsed = time.time() - since
+        since = time.time()
+        (ans_pru, ans_A1, ans_A2,
+         ans_Jt) = self.calc_abbreviated_pru_sub_qlt(
+            y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+            y_tst, y_pred, yq_pred, tag_tst, jt_tst,
+            positive_label, H, lam)
+        tmp_pru = [tim_elapsed / 60, (time.time() - since) / 60,
+                   len(H), H]
+
+        tmp_pru.extend(ans_pru)  # 4+20 =24
+        ans_A1 = [''] * 4 + ans_A1
+        ans_A2 = [''] * 4 + ans_A2
+        ans_Jt = [''] * 4 + ans_Jt
+        del since, tim_elapsed, ans_pru
+        return tmp_pru, ans_A1, ans_A2, ans_Jt
+
+
+class PartJ_LambdaEffect(PartI_LambdaEffect):
+    def __init__(self, name_ens, abbr_cls, nb_cls, nb_pru):
+        super().__init__(name_ens, abbr_cls, nb_cls, nb_pru)
+
+    def prepare_trial(self):
+        csv_row_1 = unique_column(8 + 2 + (24 + 24 * 4))
+
+        csv_row_2c_a = ['lam', 'sens', 'Ensem', ''] + [
+            'Ensem:trn'] + [''] * 9 + ['Ensem:tst'] + [''] * 9
+        csv_row_2c_b = []
+        for name_pru in [  # 'EPAF-D.3',
+                'EPAF-C', 'EPAF-D.2', 'POEPAF.1', 'POPEP']:
+            csv_row_2c_b.extend(
+                [name_pru, '', '', '']
+                + ['{} :trn'.format(name_pru)] + [''] * 9
+                + ['{} :tst'.format(name_pru)] + [''] * 9)
+        csv_row_2c = csv_row_2c_a + csv_row_2c_b
+        del csv_row_2c_a, csv_row_2c_b  # 24+24*4
+
+        csv_row_3c_a = ['', '', 'ut.calc', 'us'] + [
+            'La(MV)', 'Lf(MV)', 'Lo(MV)', 'E[La(f)]', 'E[Lf(f,fp)]',
+            'E[Lf(f)]', 'Acc', 'P', 'R', 'F1'] * 2
+        csv_row_3c_b = ['ut', 'ut.calc', 'us', 'seq'] + [
+            'G1', 'G2', 'L(MV)', '', '', '', 'Acc', 'P', 'R',
+            'F1'] * 2
+        csv_row_3c = csv_row_3c_a + csv_row_3c_b * 4
+        del csv_row_3c_a, csv_row_3c_b  # 24+24*5
+
+        return csv_row_1, csv_row_2c, csv_row_3c
+
+    def schedule_subroutine(self,
+                            y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+                            y_tst, y_pred, yq_pred, tag_tst, jt_tst,
+                            fens_trn, fqtb_trn, fens_tst, fqtb_tst,
+                            positive_label, lam):
+        since = time.time()
+        (tmp_trn, trn_A1, trn_A2,
+         trn_Jt) = self.calc_simplified_fair_quality(
+            y_trn, y_insp, yq_insp, fens_trn, fqtb_trn, tag_trn,
+            jt_trn, self._weight, lam, positive_label)
+        (tmp_tst, tst_A1, tst_A2,
+         tst_Jt) = self.calc_simplified_fair_quality(
+            y_tst, y_pred, yq_pred, fens_tst, fqtb_tst, tag_tst,
+            jt_tst, self._weight, lam, positive_label)
+        ans_ens = [lam, '', (time.time() - since) / 60, len(self._weight)]
+        ans_ens.extend(tmp_trn + tmp_tst)  # 4+10*2 =24
+
+        ens_A1 = [lam, 'A1', '', ''] + trn_A1 + tst_A1
+        ens_A2 = [lam, 'A2', '', ''] + trn_A2 + tst_A2
+        ens_Jt = [lam, 'Jt', '', ''] + trn_Jt + tst_Jt
+        del trn_A1, trn_A2, trn_Jt, tmp_trn
+        del tst_A1, tst_A2, tst_Jt, tmp_tst
+
+        # Proposed
+        tmp_pru, tmp_A1, tmp_A2, tmp_Jt = self.propose_prune_val(
+            y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+            y_tst, y_pred, yq_pred, tag_tst, jt_tst,
+            "EPAF-C", positive_label, lam=lam)
+        ans_ens.extend(tmp_pru)  # +24
+        ens_A1.extend(tmp_A1)
+        ens_A2.extend(tmp_A2)
+        ens_Jt.extend(tmp_Jt)
+
+        tmp_pru, tmp_A1, tmp_A2, tmp_Jt = self.propose_prune_val(
+            y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+            y_tst, y_pred, yq_pred, tag_tst, jt_tst,
+            "EPAF-D", positive_label, lam=lam, n_m=2)
+        ans_ens.extend(tmp_pru)  # +24
+        ens_A1.extend(tmp_A1)
+        ens_A2.extend(tmp_A2)
+        ens_Jt.extend(tmp_Jt)
+
+        tmp_pru, tmp_A1, tmp_A2, tmp_Jt = self.propose_prune_val(
+            y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+            y_tst, y_pred, yq_pred, tag_tst, jt_tst,
+            "POEPAF", positive_label, lam=lam, dist=1)
+        ans_ens.extend(tmp_pru)  # +24
+        ens_A1.extend(tmp_A1)
+        ens_A2.extend(tmp_A2)
+        ens_Jt.extend(tmp_Jt)
+
+        tmp_pru, tmp_A1, tmp_A2, tmp_Jt = self.propose_prune_val(
+            y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+            y_tst, y_pred, yq_pred, tag_tst, jt_tst,
+            "POPEP", positive_label, lam=lam)
+        ans_ens.extend(tmp_pru)  # +24
+        ens_A1.extend(tmp_A1)
+        ens_A2.extend(tmp_A2)
+        ens_Jt.extend(tmp_Jt)
+
+        del tmp_pru, tmp_A1, tmp_A2, tmp_Jt
+        return ans_ens, ens_A1, ens_A2, ens_Jt  # each 24+24*5
+
+
+# -------------------------------------
+# legacy
+
+# class PartB_Ensembles(EnsembleSetup):
+# class PartC_ImprovedFairness(EnsembleSetup):
+# class PartD_ImprovedFairness(EnsembleSetup):
+
+
+class PartE_ImprovedFairness(EnsembleSetup):
+    def __init__(self, name_ens, abbr_cls, nb_cls,
+                 nb_pru=None, lam=.5):
+        super().__init__(name_ens, abbr_cls, nb_cls)
+        # To demonstrate my pruning could improve fairness
+        # In last experiment I have demonstrated that it could
+        # improve accuracy as well
+        if nb_pru is None:
+            nb_pru = nb_cls
+        self._nb_pru = nb_pru
+        self._lam = lam
+
+    @property
+    def lam(self):
+        return self._lam
+
+    @property
+    def nb_pru(self):
+        return self._nb_pru
+
+    def propose_prune_val(self,
+                          y_trn, y_insp, yq_insp,
+                          name_pru, dist=1, n_m=2):
+        since = time.time()
+
+        if name_pru == 'POEPAF':
+            H = Pareto_Optimal_EPAF_Pruning(
+                y_trn, y_insp, yq_insp, self._weight, self._nb_pru,
+                self._lam, dist)
+        elif name_pru == 'EPAF-C':
+            H = Centralised_EPAF_Pruning(
+                y_trn, y_insp, yq_insp, self._weight, self._nb_pru,
+                self._lam)
+        elif name_pru == 'EPAF-D':
+            H = Distributed_EPAF_Pruning(
+                y_trn, y_insp, yq_insp, self._weight, self._nb_pru,
+                self._lam, n_m)
+        elif name_pru == "POPEP":
+            H = POAF_PEP(y_trn, y_insp, yq_insp, self._weight,
+                         self._lam, self._nb_pru)
+        else:
+            raise ValueError("Wrong parameter `{}`".format(name_pru))
+
+        time_elapsed = time.time() - since
+        return H, time_elapsed / 60
+
+    def prepare_trial(self):
+        csv_row_1 = unique_column((8 + 26) + (6 + 33 * 3 * 2 * 5))
+
+        csv_row_2c_a = ['Time Cost (min)'] + [''] * 5
+        csv_row_2c_ca = (['Ensem trn:A1'] + [''] * 32 +
+                         ['Ensem trn:A2'] + [''] * 32 +
+                         ['Ensem trn:jt'] + [''] * 32)  # 33*3 =99
+        csv_row_2c_cb = (['Ensem tst:A1'] + [''] * 32 +
+                         ['Ensem tst:A2'] + [''] * 32 +
+                         ['Ensem tst:jt'] + [''] * 32)  # 33*3 =99
+        csv_row_2c_cc = (['EPAF-C .trn'] + [''] * 98 +
+                         ['EPAF-C .tst'] + [''] * 98 +
+                         ['EPAF-D:2 .trn'] + [''] * 98 +
+                         ['EPAF-D:2 .tst'] + [''] * 98 +
+                         ['EPAF-D:3 .trn'] + [''] * 98 +
+                         ['EPAF-D:3 .tst'] + [''] * 98 +
+                         ['POEPAF .trn'] + [''] * 98 +
+                         ['POEPAF .tst'] + [''] * 98)  # 99*2*4
+        csv_row_2c_c = csv_row_2c_ca + csv_row_2c_cb + csv_row_2c_cc
+        del csv_row_2c_ca, csv_row_2c_cb, csv_row_2c_cc  # 99*2*5
+        csv_row_2c = csv_row_2c_a + csv_row_2c_c  # 6+99*10
+        del csv_row_2c_a, csv_row_2c_c
+
+        csv_row_3c_a = ['EPAF-C', 'EPAF-D:2', 'EPAF-D:3', 'POEPAF:1'
+                        ] + ['ut.pru', 'ut.calc']
+        csv_row_3c_ba = ['unpriv'] + [''] * 7 + ['manual', ''] + [
+            'L_fair(MV)', 'L_loss(MV)', 'L(MV)']  # 8+2+3 =13
+        csv_row_3c_bb = ['bar|unpriv'] + [''] * 7 + ['bar|manual', ''] + [
+            'Erho[Lfair(f)]', 'Erho[Lloss(f)]', 'Erho[L(f)]']  # same 13
+        csv_row_3c_bc = ['Erho^2[Lfair(f,fp)]', 'Erho^2[Lloss(f,fp)]',
+                         'cal_L_obj_v1', 'cal_L_obj_v2',
+                         'ED_Erho[ell_fair(f)]', 'ED_Erho[ell_loss(f)]',
+                         '_bi_objectives(.,.)']  # 4+3 =7
+        csv_row_3c_b = csv_row_3c_ba + csv_row_3c_bb + csv_row_3c_bc
+        del csv_row_3c_ba, csv_row_3c_bb, csv_row_3c_bc  # 13*2+7 =33
+        csv_row_3c_da = ['unpriv'] + [''] * 7 + ['manual', ''] + [
+            'Lf(MV)', 'La(MV)', 'Lo(MV)']  # 10+3 =13
+        csv_row_3c_db = ['bar()'] + [''] * 9 + ['E[Lf]', 'E[La]', 'E[Lo]']
+        csv_row_3c_dc = ['E[# Lf]', 'E[# La]', 'Lo(MV)', 'Lo(MV)',
+                         'ED[Ef^2]', 'ED[Ea^2]', '@G(lam)']  # 7
+        csv_row_3c_d = csv_row_3c_da + csv_row_3c_db + csv_row_3c_dc
+        del csv_row_3c_da, csv_row_3c_db, csv_row_3c_dc  # 13*2+7 =33
+        csv_row_3c = (csv_row_3c_a + csv_row_3c_b * 3 * 2 +
+                      csv_row_3c_d * 3 * 2 * 4)  # 6+99*2+99*2*4
+        del csv_row_3c_a, csv_row_3c_b, csv_row_3c_d
+
+        return csv_row_1, csv_row_2c, csv_row_3c
+
+    def schedule_content(self,
+                         y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+                         y_tst, y_pred, yq_pred, tag_tst, jt_tst,
+                         fens_trn, fqtb_trn, fens_tst, fqtb_tst,
+                         positive_label):
+        """
+          y_trn /tst  : list,               shape= (nb_y,)
+          y_insp/pred : list of np.ndarray, shape= (nb_cls, nb_y)
+         yq_insp/pred : list of np.ndarray, shape= (nb_cls, nb_y)
+         tag_trn/tst  : list of np.ndarray, shape= (1/2, nb_y)
+          jt_trn/tst  : list of np.ndarray, shape= (0/1, nb_y)
+        fens_trn/tst  : list,               shape= (nb_y,)
+        fqtb_trn/tst  : list,               shape= (nb_y,)
+        positive_label: scalar
+        """
+        since = time.time()
+        H1, ut1 = self.propose_prune_val(y_trn, y_insp, yq_insp,
+                                         'EPAF-C')
+        H2, ut2 = self.propose_prune_val(y_trn, y_insp, yq_insp,
+                                         'EPAF-D', n_m=2)
+        H3, ut3 = self.propose_prune_val(y_trn, y_insp, yq_insp,
+                                         'EPAF-D', n_m=3)
+        H4, ut4 = self.propose_prune_val(y_trn, y_insp, yq_insp,
+                                         'POEPAF', dist=1)
+        time_elapsed = time.time() - since
+        since = time.time()
+
+        y_trn, y_tst = np.array(y_trn), np.array(y_tst)
+        fens_trn, fqtb_trn = np.array(fens_trn), np.array(fqtb_trn)
+        fens_tst, fqtb_tst = np.array(fens_tst), np.array(fqtb_tst)
+        y_insp, yq_insp = np.array(y_insp), np.array(yq_insp)
+        y_pred, yq_pred = np.array(y_pred), np.array(yq_pred)
+
+        ans = []
+        for H in [None, H1, H2, H3, H4]:
+            tmp_trn = self.calc_fair_measure_routine(
+                y_trn, y_insp, yq_insp, fens_trn, fqtb_trn, tag_trn,
+                jt_trn, positive_label, H)
+            tmp_tst = self.calc_fair_measure_routine(
+                y_tst, y_pred, yq_pred, fens_tst, fqtb_tst, tag_tst,
+                jt_tst, positive_label, H)
+            ans.extend(tmp_trn + tmp_tst)  # 99+99
+
+        tmp = [ut1, ut2, ut3, ut4, time_elapsed / 60]
+        time_elapsed = time.time() - since
+        tmp.append(time_elapsed / 60)
+        return tmp + ans  # 6+99*2*5
+
+    def calc_fair_measure_routine(self, y, yt, yqtb, fens, fqtb,
+                                  tag, jt, positive_label, H=None):
+        """
+        y   : list,               shape= (nb_y,)
+        yt  : list of np.ndarray, shape= (nb_cls, nb_y)
+        yqtb: list of np.ndarray, shape= (nb_cls, nb_y)
+        fens: list,               shape= (nb_y,)
+        fqtb: list,               shape= (nb_y,)
+
+        tag : list,  at most 2 ndarray, shape= (1,nb_y) or (2,nb_y)
+        jt  : list, empty or 1 ndarray, shape= (0,)     or (1,nb_y)
+        wgt : list,               shape= (nb_cls)
+        """
+        # y, fens, fqtb = np.array(y), np.array(fens), np.array(fqtb)
+        if H is None:
+            wgt = self._weight
+        else:
+            yt, yqtb = yt[H], yqtb[H]
+            wgt = np.array(self._weight)[H].tolist()
+        # TODO: something wrong here, didn't update fens/fqtb
+
+        ans = []
+        tmp = self.calc_fair_measure_gather(
+            y, yt, yqtb, fens, fqtb, wgt, positive_label, tag[0])
+        ans.extend(tmp)  # 33
+        if not jt:
+            ans.extend([''] * 33 * 2)
+            return ans
+
+        tmp = self.calc_fair_measure_gather(
+            y, yt, yqtb, fens, fqtb, wgt, positive_label, tag[1])
+        ans.extend(tmp)  # 33
+        tmp = self.calc_fair_measure_gather(
+            y, yt, yqtb, fens, fqtb, wgt, positive_label, jt[0])
+        ans.extend(tmp)  # 33
+        return ans  # 33*3 =99
+
+    def calc_fair_measure_by_group(self, y, hx, hx_qtb,
+                                   pos_val, idx_priv):
+        """
+        y :             np.ndarray, shape=(nb_y,)
+        hx:             np.ndarray, shape=(nb_y,)
+                        could be an individual or ensemble classifier
+        positive_label: scalar
+        ptb_priv[i]   : np.ndarray of boolean, shape=(nb_y,)
+        lam           : scalar
+        """
+        g1_Cij, g0_Cij, gones_Cm, gzero_Cm = \
+            marginalised_pd_mat(y, hx, pos_val, idx_priv)
+        cmp_fair = []
+        cmp_fair.extend(unpriv_unaware(gones_Cm, gzero_Cm))
+        cmp_fair.extend(unpriv_group_one(gones_Cm, gzero_Cm))
+        cmp_fair.extend(unpriv_group_two(gones_Cm, gzero_Cm))
+        cmp_fair.extend(unpriv_group_thr(gones_Cm, gzero_Cm))
+        cmp_fair.extend(unpriv_manual(gones_Cm, gzero_Cm))
+        # above: more is better
+
+        # below: less is better
+        ans_fair = []
+        ans_fair.append(hat_L_fair(hx, hx_qtb))  # 1-tmp \in [0,1]
+        ans_fair.append(hat_L_loss(hx, y))       # 1-acc \in [0,1]
+        ans_fair.append(hat_L_objt(hx, hx_qtb, y, self._lam))
+
+        return cmp_fair + ans_fair  # 5*2+3 =13
+
+    def calc_fair_measure_gather(self, y, yt, yqtb, fens, fqtb,
+                                 wgt, pos_val, idx_priv):
+        """
+        y         : np.ndarray, shape= (nb_y,)
+        yt  , yqtb: np.ndarray, shape= (nb_cls, nb_y)
+        fens, fqtb: np.ndarray, shape= (nb_y,)
+              wgt : list,       shape= (nb_cls,)
+
+        元素乘法：np.multiply(a,b)
+        矩阵乘法：np.dot(a,b) 或 np.matmul(a,b)
+        """
+        nb_cls = len(wgt)  # wgt = self._weight
+
+        tmp_fair = [self.calc_fair_measure_by_group(
+            y, hx, hq, pos_val, idx_priv) for hx, hq in zip(yt, yqtb)]
+        tmp_fair = list(zip(*tmp_fair))
+        tmp_fair = [np.dot(i, wgt).tolist() for i in tmp_fair]
+
+        ens_fair = self.calc_fair_measure_by_group(
+            y, fens, fqtb, pos_val, idx_priv)
+
+        extra = []  # tandem_e,extra_f_ = []  # extra/ens
+        extra.append(Erho_sup_L_fair(yt, yqtb, wgt, nb_cls))
+        extra.append(Erho_sup_L_loss(yt, y, wgt, nb_cls))
+        extra.extend([cal_L_obj_v1(yt, yqtb, y, wgt, self._lam),
+                      cal_L_obj_v2(yt, yqtb, y, wgt, self._lam)])
+        # tmp_G           aka. E_rho_L_fair_f, E_rho_L_loss_f
+        tmp_G = (ED_Erho_I_fair(yt, yqtb, wgt),
+                 ED_Erho_I_fair(yt, y, wgt))
+        extra.extend(tmp_G)
+        extra.append(_bi_objectives(tmp_G, self._lam))
+
+        # ens_fair[-3:-1] aka. L_fair_MV_rho , L_loss_MV_rho
+        # tmp_fair[-3:-1] aka. E_rho_L_fair_f, E_rho_L_loss_f
+        return ens_fair + tmp_fair + extra  # 13*2+(4+3) =33
+
+
+class PartF_ImprovedFairness(PartE_ImprovedFairness):
+    def __init__(self, name_ens, abbr_cls, nb_cls,
+                 nb_pru=None, lam=.5):
+        # basically same as `PartE_ImprovedFairness`, just with
+        # different presentation format.
+        super().__init__(name_ens, abbr_cls, nb_cls, nb_pru, lam)
+
+    def prepare_trial(self):
+        csv_row_1 = unique_column((8 + 26) + (7 + 33 * 2 * 5))
+
+        csv_row_2c_a = ['Time Cost (min)'] + [''] * 5 + ['Group:Attr']
+        csv_row_2c_c = (['Ensem :trn'] + [''] * 32 +
+                        ['Ensem :tst'] + [''] * 32 +
+                        ['EPAF-C .trn'] + [''] * 32 +
+                        ['EPAF-C .tst'] + [''] * 32 +
+                        ['EPAF-D:2 .trn'] + [''] * 32 +
+                        ['EPAF-D:2 .tst'] + [''] * 32 +
+                        ['EPAF-D:3 .trn'] + [''] * 32 +
+                        ['EPAF-D:3 .tst'] + [''] * 32 +
+                        ['POEPAF .trn'] + [''] * 32 +
+                        ['POEPAF .tst'] + [''] * 32)
+        csv_row_2c = csv_row_2c_a + csv_row_2c_c  # 7+33*2*5
+        del csv_row_2c_a, csv_row_2c_c
+
+        csv_row_3c_a = ['EPAF-C', 'EPAF-D:2', 'EPAF-D:3', 'POEPAF'
+                        ] + ['ut.pru', 'ut.calc'] + ['']  # 7
+        csv_row_3c_ba = ['unpriv'] + [''] * 7 + ['manual', ''] + [
+            'L_fair(MV)', 'L_loss(MV)', 'L(MV)']  # 8+2+3 =13
+        csv_row_3c_bb = ['bar|unpriv'] + [''] * 7 + ['bar|manual', ''] + [
+            'Erho[Lfair(f)]', 'Erho[Lloss(f)]', 'Erho[L(f)]']  # same 13
+        csv_row_3c_bc = ['Erho^2[Lfair(f,fp)]', 'Erho^2[Lloss(f,fp)]',
+                         'cal_L_obj_v1', 'cal_L_obj_v2',
+                         'ED_Erho[ell_fair(f)]', 'ED_Erho[ell_loss(f)]',
+                         '_bi_objectives(.,.)']  # 4+3 =7
+        csv_row_3c_b = csv_row_3c_ba + csv_row_3c_bb + csv_row_3c_bc
+        del csv_row_3c_ba, csv_row_3c_bb, csv_row_3c_bc  # 13*2+7 =33
+        csv_row_3c_da = ['unpriv'] + [''] * 7 + ['manual', ''] + [
+            'Lf(MV)', 'La(MV)', 'Lo(MV)']  # 10+3 =13
+        csv_row_3c_db = ['bar()'] + [''] * 9 + ['E[Lf]', 'E[La]', 'E[Lo]']
+        csv_row_3c_dc = ['E[# Lf]', 'E[# La]', 'Lo(MV)', 'Lo(MV)',
+                         'ED[Ef^2]', 'ED[Ea^2]', '@G(lam)']  # 7
+        csv_row_3c_d = csv_row_3c_da + csv_row_3c_db + csv_row_3c_dc
+        del csv_row_3c_da, csv_row_3c_db, csv_row_3c_dc  # 13*2+7 =33
+        csv_row_3c = (csv_row_3c_a + csv_row_3c_b * 2 +
+                      csv_row_3c_d * 2 * 4)  # 7+33*2+33*2*4
+        del csv_row_3c_a, csv_row_3c_b, csv_row_3c_d
+
+        return csv_row_1, csv_row_2c, csv_row_3c
+
+    def schedule_content(self,
+                         y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+                         y_tst, y_pred, yq_pred, tag_tst, jt_tst,
+                         fens_trn, fqtb_trn, fens_tst, fqtb_tst,
+                         positive_label):
+        since = time.time()
+        H1, ut1 = self.propose_prune_val(y_trn, y_insp, yq_insp,
+                                         'EPAF-C')
+        H2, ut2 = self.propose_prune_val(y_trn, y_insp, yq_insp,
+                                         'EPAF-D', n_m=2)
+        H3, ut3 = self.propose_prune_val(y_trn, y_insp, yq_insp,
+                                         'EPAF-D', n_m=3)
+        H4, ut4 = self.propose_prune_val(y_trn, y_insp, yq_insp,
+                                         'POEPAF', dist=1)
+        time_elapsed = time.time() - since
+        since = time.time()
+
+        y_trn, y_tst = np.array(y_trn), np.array(y_tst)
+        fens_trn, fqtb_trn = np.array(fens_trn), np.array(fqtb_trn)
+        fens_tst, fqtb_tst = np.array(fens_tst), np.array(fqtb_tst)
+        y_insp, yq_insp = np.array(y_insp), np.array(yq_insp)
+        y_pred, yq_pred = np.array(y_pred), np.array(yq_pred)
+
+        attr_A1, attr_A2, attr_Jt = ['A1'], ['A2'], ['Jt']
+        for H in [None, H1, H2, H3, H4]:
+
+            trn_A1, trn_A2, trn_Jt = self.calc_fair_measure_routine(
+                y_trn, y_insp, yq_insp, fens_trn, fqtb_trn, tag_trn, jt_trn,
+                positive_label, H)
+            tst_A1, tst_A2, tst_Jt = self.calc_fair_measure_routine(
+                y_tst, y_pred, yq_pred, fens_tst, fqtb_tst, tag_tst, jt_tst,
+                positive_label, H)
+
+            attr_A1.extend(trn_A1 + tst_A1)  # +33*2
+            attr_A2.extend(trn_A2 + tst_A2)  # +33*2
+            attr_Jt.extend(trn_Jt + tst_Jt)  # +33*2
+
+        tmp = [ut1, ut2, ut3, ut4, time_elapsed / 60]
+        time_elapsed = time.time() - since
+        tmp.append(time_elapsed / 60)  # list, size=6
+        return tmp, attr_A1, attr_A2, attr_Jt  # list,1+33*2*5
+
+    def calc_fair_measure_routine(self, y, yt, yqtb, fens, fqtb,
+                                  tag, jt, positive_label, H=None):
+        if H is None:
+            wgt = self._weight
+        else:
+            yt, yqtb = yt[H], yqtb[H]
+            wgt = np.array(self._weight)[H].tolist()
+
+        ans_A1 = self.calc_fair_measure_gather(
+            y, yt, yqtb, fens, fqtb, wgt, positive_label, tag[0])
+        if not jt:
+            ans_A2 = [''] * 33
+            ans_Jt = [''] * 33
+            return ans_A1, ans_A2, ans_Jt
+
+        ans_A2 = self.calc_fair_measure_gather(
+            y, yt, yqtb, fens, fqtb, wgt, positive_label, tag[1])
+        ans_Jt = self.calc_fair_measure_gather(
+            y, yt, yqtb, fens, fqtb, wgt, positive_label, jt[0])
+        return ans_A1, ans_A2, ans_Jt  # list, (33,)
+
+
+# -------------------------------------
 
 # -------------------------------------

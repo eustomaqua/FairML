@@ -10,11 +10,24 @@ from fairml.widget.utils_remark import (
 from fairml.widget.utils_const import _get_tmp_name_ens
 from fairml.widget.utils_wpclf import INDIVIDUALS
 from fairml.datasets import DATASETS, DATASET_NAMES, preprocess
-from fairml.preprocessing import adversarial
-from fairml.facil.data_classify import EnsembleAlgorithm
-from fairml.facil.metrics_cont import (
+from fairml.preprocessing import (
+    adversarial, transform_X_and_y, transform_unpriv_tag)
+from fairml.facils.data_classify import EnsembleAlgorithm
+from fairml.facils.metrics_cont import (
     calc_accuracy, calc_Acc, calc_PR, calc_F1, calc_4Rate,
     calc_confusion)
+
+from fairml.facils.fairness_group import marginalised_pd_mat
+from fairml.facilc.ensem_pruning import \
+    contrastive_pruning_methods as exist_pruning_basics
+from fairml.facilc.ensem_prulatest import \
+    contrastive_pruning_lately as exist_pruning_latest
+from fairml.discriminative_risk import (
+    hat_L_fair, E_rho_L_fair_f, Erho_sup_L_fair,
+    hat_L_loss, E_rho_L_loss_f)
+from fairml.dr_pareto_optimal import (
+    Pareto_Optimal_EPAF_Pruning, _bi_objectives, POAF_PEP,
+    Centralised_EPAF_Pruning, Distributed_EPAF_Pruning)
 # Experiments
 
 import pandas as pd

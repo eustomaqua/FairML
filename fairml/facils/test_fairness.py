@@ -14,7 +14,7 @@ ht_non = synthetic_clf(y_non, nb_clf, err=.4)
 
 def test_group_fair():
     # from fairml.metrics.group_fair import (
-    from fairml.facil.fairness_group import (
+    from fairml.facils.fairness_group import (
         marginalised_contingency, marginalised_confusion,
         unpriv_group_one, unpriv_group_two, unpriv_group_thr,
         marginalised_pd_mat, unpriv_unaware, unpriv_manual)

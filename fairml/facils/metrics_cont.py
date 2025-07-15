@@ -145,6 +145,8 @@ def calc_PRF1_multi_micro(TP_list, FP_list, FN_list, beta=1):
 # =====================================
 # Contingency table
 # =====================================
+
+
 # contingency_table
 # -------------------------------------
 # input: lists, not np.ndarray
