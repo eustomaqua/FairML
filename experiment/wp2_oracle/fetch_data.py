@@ -2,12 +2,13 @@
 
 
 from fairml.datasets import DATASETS, DATASET_NAMES, RAW_EXPT_DIR
-from fairml.widget.utils_const import _get_tmp_document
+from fairml.widget.utils_saver import elegant_print
 from fairml.widget.utils_remark import (
     AVAILABLE_ABBR_CLS, AVAILABLE_NAME_PRUNE, LATEST_NAME_PRUNE)
 
 # Experiments
-from fairml.widget.utils_const import _get_tmp_name_ens
+from fairml.widget.utils_const import (
+    _get_tmp_document, _get_tmp_name_ens)
 from fairml.widget.utils_wpclf import INDIVIDUALS
 from fairml.datasets import DATASETS, DATASET_NAMES, preprocess
 from fairml.preprocessing import (

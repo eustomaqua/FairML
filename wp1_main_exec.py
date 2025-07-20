@@ -487,8 +487,8 @@ def default_parameters():
         '--nb-cls', type=int, default=21, help='Size of ensemble')
     parser.add_argument(
         '--nb-pru', type=int, default=11, help='Size of pruned sub-')
-    parser.add_argument(
-        '-it', '--nb-iter', type=int, default=5, help='Cross validation')
+    parser.add_argument('-nk', '--nb-iter', type=int, default=5,
+                        help='Cross validation')  # '-it'
 
     parser.add_argument(
         '--ratio', type=float, default=.4,
@@ -570,11 +570,11 @@ del trial_type, data_type, args, parser
 python wp1_main_exec.py --logged -exp mCV_expt3 --name-ens Bagging --abbr-cls DT --nb-cls 11 -dat ricci
 python wp1_main_exec.py --logged -exp mCV_expt11 --name-ens Bagging --abbr-cls DT --nb-cls 11 --nb-pru 5 --delta 1e-6 -dat ricci
 python wp1_main_exec.py --logged -exp mCV_expt8 --name-ens Bagging --abbr-cls DT --nb-cls 11 --nb-pru 5 -dat ricci
-python wp1_main_exec.py --logged -exp mCV_expt10 --name-ens Bagging --abbr-cls DT --nb-cls 11 --nb-pru 5 --nb-lam 9 --nb-iter 2 -dat ricci
+python wp1_main_exec.py --logged -exp mCV_expt10 --name-ens Bagging --abbr-cls DT --nb-cls 11 --nb-pru 5 --nb-lam 9 -nk 2 -dat ricci
 
 # legacy
 python wp1_main_exec.py --logged -exp mCV_expt4 --name-ens Bagging --abbr-cls DT --nb-cls 21 --nb-pru 11 -dat *
 python wp1_main_exec.py --logged -exp mCV_expt6 --name-ens Bagging --abbr-cls DT --nb-cls 21 --nb-pru 7 -dat *
-python wp1_main_exec.py --logged -exp mCV_expt4 --name-ens Bagging --abbr-cls DT --nb-cls 7 --nb-pru 3 --nb-iter 2 -dat ricci
-python wp1_main_exec.py --logged -exp mCV_expt6 --name-ens Bagging --abbr-cls DT --nb-cls 7 --nb-pru 3 --nb-iter 2 -dat ricci
+python wp1_main_exec.py --logged -exp mCV_expt4 --name-ens Bagging --abbr-cls DT --nb-cls 7 --nb-pru 3 -nk 2 -dat ricci
+python wp1_main_exec.py --logged -exp mCV_expt6 --name-ens Bagging --abbr-cls DT --nb-cls 7 --nb-pru 3 -nk 2 -dat ricci
 """

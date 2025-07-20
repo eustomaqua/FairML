@@ -16,8 +16,13 @@
 
 # From here on, we can start our program
 
-# chmod +x wp2_oracle.sh
 # source activate ensem
+# chmod +x wp2_oracle.sh
+# nohup ./?.sh
+# ps aux | grep python | grep qgl539
+# ps -ef | grep python | grep qgl539
+# kill -9 *
+#
 
 
 python wp1_main_exec.py --logged -exp mCV_expt3 --name-ens Bagging --abbr-cls DT --nb-cls 11 -dat ricci

@@ -815,25 +815,17 @@ del case, kwargs, args, parser
 # Empirical results in manuscript
 #   see `wp1_case_plot.py`
 
-
-# Empirical results not in use
 """
-python wp1_main_plot.py --draw -exp mCV_expt4 -dat german
-python wp1_main_plot.py --draw -exp mCV_expt4 -dat adult
-python wp1_main_plot.py --draw -exp mCV_expt4 -dat ppr
-python wp1_main_plot.py --draw -exp mCV_expt4 -dat ppvr
+python wp1_case_plot.py
 
-python wp1_main_plot.py --draw -exp mCV_expt6 --nb-pru 7 -dat *ricci
-python wp1_main_plot.py --draw -exp mCV_expt4 -dat **german
-python wp1_main_plot.py --draw -exp mCV_expt5 --gather
-python wp1_main_plot.py --draw -exp mCV_expt5 -dat german
-
-python wp1_main_plot.py -exp mCV_expt11 --nb-cls 11 --name-ens *
-python wp1_main_plot.py -exp mCV_expt3 --nb-cls 21 --name-ens Bagging
-python wp1_main_plot.py -exp mCV_expt3 --nb-cls 11 --name-ens AdaBoostM1
-python wp1_main_plot.py -exp mCV_expt3 --nb-cls 11 --name-ens SAMME
-python wp1_main_plot.py -exp mCV_expt10 --name-ens Bagging --nb-iter 1
-
-python wp1_main_plot.py --draw -exp mCV_expt1 -dat **
-python wp1_main_plot.py --draw -exp mCV_expt2 -dat ** --ratio .5
+python wp1_main_plot.py --draw -exp mCV_expt4 --gather
+python wp1_main_plot.py --draw -exp mCV_expt6 --gather --nb-pru 7
+python wp1_main_plot.py -exp mCV_expt3 --gather
+python wp1_main_plot.py -exp mCV_expt11 --gather
+python wp1_main_plot.py -exp mCV_expt8 --gather
+python wp1_main_plot.py -exp mCV_expt8 --gather --tab
+python wp1_main_plot.py -exp mCV_expt8 --name-ens Bagging
+python wp1_main_plot.py -exp mCV_expt8 --name-ens AdaBoostM1 --nb-cls 11 --nb-pru 5
+python wp1_main_plot.py -exp mCV_expt8 --name-ens SAMME --nb-cls 11 --nb-pru 5
+python wp1_main_plot.py -exp mCV_expt10 --name-ens Bagging --nb-iter 2 --nb-cls 11
 """

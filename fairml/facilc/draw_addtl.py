@@ -644,8 +644,8 @@ def _marginal_distr_step4(grid, dfs_pl, columns, col_X, col_Y,
             tY = df[col_Y].values.astype(DTY_FLT)
             R = np.corrcoef(tX, tY)[1, 0]
             key = 'Correlation = %.4f' % R
-            regr = np.polyfit(tX, tY, deg=1)
-            estimated = np.polyval(regr, tX)
+            # regr = np.polyfit(tX, tY, deg=1)
+            # estimated = np.polyval(regr, tX)
             ax4.scatter(tX, tY,
                         label='{:4s} {}'.format(columns[i], key),
                         s=_curr_sz[i] / 4, marker=_curr_mk[i],
