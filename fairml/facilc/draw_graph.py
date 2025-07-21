@@ -158,7 +158,7 @@ def scatter_and_corr(X, Y, figname, figsize='M-WS',
     R = np.corrcoef(X, Y)[1, 0]
     key = "Correlation = %.4f" % R
     fig = plt.figure(figsize=_setup_config['L-NT'])
-    fp1 = plt.scatter(X, Y, label=key)
+    plt.scatter(X, Y, label=key)          # fp1 =
     plt.xlabel(annots[0])
     plt.ylabel(annots[1])
 
@@ -167,7 +167,7 @@ def scatter_and_corr(X, Y, figname, figsize='M-WS',
     # slope, intercept = regr
     # return R, slope, intercept
     estimated = np.polyval(regr, X)
-    fp2 = plt.plot(X, estimated, "k-", lw=1.5)
+    plt.plot(X, estimated, "k-", lw=1.5)  # fp2 =
 
     plt.legend(loc=PLT_LOCATION, frameon=PLT_FRAMEBOX)
     fig = _setup_figsize(fig, figsize)
@@ -183,9 +183,9 @@ def scatter_and_corr(X, Y, figname, figsize='M-WS',
 
 def _sns_algo_bootstrap(*args, **kwargs):
     n_boots = 1000
-    seed = None  # units = seed = None
-    # args = (X, Y)
-    # Default keyword arguments
+    # seed = None  # units = seed = None
+    # # args = (X, Y)
+    # # Default keyword arguments
     func = kwargs.get("func", np.mean)
     n, boot_dist = len(args[0]), []
 
@@ -1177,7 +1177,7 @@ def line_chart(data,
     plt.ylabel("Accuracy (%)")
     plt.legend(loc=PLT_LOCATION, frameon=True,
                labelspacing=.05)
-    fig = _setup_figsize(fig_lam2, figsize)
+    fig_lam2 = _setup_figsize(fig_lam2, figsize)
     _setup_figshow(fig_lam2, figname + "_thin")
     plt.close(fig_lam2)
     return

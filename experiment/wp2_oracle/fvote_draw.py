@@ -3,13 +3,13 @@
 
 from fairml.facilc.draw_graph import (
     multiple_line_chart, multiple_hist_chart,
-    Friedman_chart, stat_chart_stack, twinx_hist_chart,
-    twinx_bars_chart, histogram_chart, scatter_parl_chart,
-    scatter_and_corr, sns_scatter_corr, scatter_id_chart,
+    Friedman_chart, stat_chart_stack,  # twinx_hist_chart,
+    histogram_chart, scatter_parl_chart,  # twinx_bars_chart,
+    scatter_id_chart,  # scatter_and_corr,sns_scatter_corr,
     _setup_config, _setup_figsize, _setup_figshow)
 from fairml.facilc.draw_hypos import (
-    Friedman_init, _avg_and_stdev, _encode_sign,
-    comp_t_init, comp_t_prep, comp_t_sing,
+    Friedman_init, _encode_sign,  # _avg_and_stdev,
+    comp_t_prep, comp_t_sing,  # comp_t_init,
     cmp_paired_avg, cmp_paired_wtl)
 
 from experiment.wp2_oracle.fetch_data import (
@@ -707,7 +707,7 @@ class PlotH_ImprovePruning(GraphSetup):
             _, _, tag_trn, tag_tst = self.pick_up_pru(
                 tag_trn, tag_tst, category='fairnes', ind_ens=True)
             # tdf = dframe.iloc[ind][tag_tst]
-            tdf = dframe.loc[ind](tagt)
+            tdf = dframe.loc[ind](tag_tst)  # tagt)
             Ys_avg[:, (k + 4)] = tdf.mean(axis=0).values.astype(DTY_FLT)
             Ys_std[:, (k + 4)] = tdf.std(ddof=1).values.astype(DTY_FLT)
 

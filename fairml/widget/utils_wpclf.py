@@ -137,60 +137,6 @@ from sklearn.neural_network import MLPClassifier
 # Generic.py
 # -------------------------------------
 
-'''
-class GenericAlgorithm:
-  def __init__(self):
-    pass
-
-  @property
-  def classifier(self):
-    return self._classifier
-
-  @classifier.setter
-  def classifier(self, value):
-    self._classifier = value
-
-  @property
-  def alg_clf_name(self):
-    return self._alg_clf_name
-
-  @alg_clf_name.setter
-  def alg_clf_name(self, value):
-    self._alg_clf_name = value
-
-  def get_param_info(self):
-    return {}
-
-  def get_default_params(self):
-    return {}
-
-  def get_supported_data_types(self):
-    # raise NotImplementedError(
-    #   "get_supported_data_types() in Algorithm is not implemented")
-    return set(["numerical", "numerical-binsensitive"])
-
-  def running(self, df_trn, df_tst,
-              label, pos_val, sens_attrs, priv_vals,
-              single_sensitive, params):
-    # remove sensitive attributes from the training set
-    trn_df_nosensitive = df_trn.drop(columns=sens_attrs)
-    tst_df_nosensitive = df_tst.drop(columns=sens_attrs)
-
-    # create and train the classifier
-    clf = self.classifier
-    y_trn = trn_df_nosensitive[label]
-    X_trn = trn_df_nosensitive.drop(columns=label)
-    clf.fit(X_trn, y_trn)
-
-    # get the predictions on the test set
-    y_tst = tst_df_nosensitive[label]
-    X_tst = tst_df_nosensitive.drop(label, axis=1)
-
-    tst_pred = clf.predict(X_tst)
-    trn_pred = clf.predict(X_trn)
-    return y_trn, y_tst, trn_pred, tst_pred, []
-'''
-
 
 # -------------------------------------
 # DecisionTree.py
@@ -198,66 +144,6 @@ class GenericAlgorithm:
 # LogisticRegression.py
 # SVM.py
 # -------------------------------------
-
-
-'''
-class DecisionTreeALG(GenericAlgorithm):
-  def __init__(self):
-    super().__init__()
-    self.classifier = DecisionTreeClassifier()
-    self.alg_clf_name = "DecisionTree"
-
-
-class GaussianNBALG(GenericAlgorithm):
-  def __init__(self):
-    super().__init__()
-    self.classifier = GaussianNB()
-    self.alg_clf_name = "GaussianNB"
-
-
-class LogicRegreALG(GenericAlgorithm):
-  def __init__(self):
-    super().__init__()
-    self.classifier = LogisticRegression()
-    self.alg_clf_name = "LR"
-
-
-class SvmALG(GenericAlgorithm):
-  def __init__(self):
-    super().__init__()
-    self.classifier = SVC()
-    self.alg_clf_name = "SVM"
-
-
-class LsvmALG(GenericAlgorithm):
-  def __init__(self):
-    super().__init__()
-    self.classifier = LinearSVC()
-    self.alg_clf_name = "LinearSVM"
-
-
-class KnnALG(GenericAlgorithm):
-  def __init__(self, name='kNNu'):
-    super().__init__()
-    wt = 'uniform' if name.endswith('u') else 'distance'
-    self.classifier = KNeighborsClassifier(weights=wt)
-    self.alg_clf_name = name
-
-
-class LmodelALG(GenericAlgorithm):
-  def __init__(self, name='LM1'):
-    super().__init__()
-    pt = 'l1' if name.endswith('1') else 'l2'
-    self.classifier = SGDClassifier(penalty=pt)
-    self.alg_clf_name = name
-
-
-class MlpNetALG(GenericAlgorithm):
-  def __init__(self):
-    super().__init__()
-    self.classifier = MLPClassifier()
-    self.alg_clf_name = "NN"
-'''
 
 
 # -------------------------------------
@@ -289,13 +175,6 @@ class EnsemAlgorithm(GenericAlgorithm):
     trn_pred = ens.predict(X_trn)
 
     return
-
-
-class RandForestENS(EnsemAlgorithm):
-  def __init__(self, nb_cls):
-    super().__init__(nb_cls)
-    self.classifier = RandomForestClassifier(n_estimators=nb_cls)
-    self.alg_clf_name = 'RF_ens'
 '''
 
 

@@ -464,7 +464,7 @@ def _fair_k_infer_no3q(train_set, test_set, train_adv, test_adv,
         since = time.time()
         model_Infer_K(data_train_tensor, "adv_trn")
         model_Infer_K(data_test_tensor, "adv_tst")
-        tim_lapsed = time.time() - since
+        tim_elapsed = time.time() - since
         elegant_print("Infer K adversarially consumed: {}".format(
             fantasy_durat(tim_elapsed, abbreviation=True)), logger)
 

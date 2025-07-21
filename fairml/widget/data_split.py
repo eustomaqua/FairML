@@ -207,7 +207,7 @@ def situation_split1(y, pr_trn, pr_tst=None):
     for j in tY:
         np.random.shuffle(j)
     if pr_tst is not None:
-        pr_val = 1. - pr_trn - pr_tst
+        # pr_val = 1. - pr_trn - pr_tst
         sY = [[int(np.max([np.round(j * i), 1])) for i in (
             pr_trn, pr_trn + pr_tst)] for j in lY]
     else:

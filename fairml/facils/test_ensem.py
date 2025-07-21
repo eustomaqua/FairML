@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import numpy as np
-import pdb
+# import pdb
 from fairml.widget.utils_const import synthetic_dat, synthetic_clf
 
 nb_inst, nb_cls, nb_lbl = 121, 4, 3

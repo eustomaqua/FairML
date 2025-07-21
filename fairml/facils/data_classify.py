@@ -136,7 +136,8 @@ def BaggingEnsembleAlgorithm(X_trn, y_trn, name_cls, nb_cls):
 def _resample(X, y, w):
     # assert len(y) == len(w)
     cw = np.cumsum(w).tolist()
-    rndsed, prng = renew_random_seed_generator()
+    # rndsed, prng = renew_random_seed_generator()
+    rndsed, prng = random_seed_generator()
     # rndsed = renew_fixed_tseed()
     # prng = renew_random_seed(rndsed)
 

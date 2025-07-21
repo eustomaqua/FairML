@@ -23,9 +23,20 @@ from fairml.dr_pareto_optimal import (
 from fairml.dr_pareto_optimal import _bi_objectives  # as _POAF_calc_eval
 
 from experiment.wp2_oracle.fetch_data import EnsembleSetup
-from fairml.facils.fairness_group import (
-    unpriv_group_one, unpriv_group_two, unpriv_group_thr,
-    marginalised_pd_mat, unpriv_unaware, unpriv_manual)
+# from fairml.facils.fairness_group import (
+#     unpriv_group_one, unpriv_group_two, unpriv_group_thr,
+#     marginalised_pd_mat, unpriv_unaware, unpriv_manual)
+from fairml.facilc.metric_fair import marginalised_pd_mat
+from fairml.facilc.metric_fair import prev_unpriv_grp_one \
+    as unpriv_group_one
+from fairml.facilc.metric_fair import prev_unpriv_grp_two \
+    as unpriv_group_two
+from fairml.facilc.metric_fair import prev_unpriv_grp_thr \
+    as unpriv_group_thr
+from fairml.facilc.metric_fair import prev_unpriv_unaware \
+    as unpriv_unaware
+from fairml.facilc.metric_fair import prev_unpriv_manual \
+    as unpriv_manual
 
 
 # =====================================

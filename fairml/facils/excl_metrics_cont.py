@@ -6,84 +6,6 @@ from fairml.widget.utils_const import (
     judge_transform_need, check_zero, DTY_INT)
 
 
-# =====================================
-# Metrics
-# =====================================
-
-
-# -------------------------------------
-# TP, FP, FN, TN
-# -------------------------------------
-'''
-|                      | predicted label positive  |  negative |
-|true label is positive| true positive (TP)|false negative (FN)|
-|true label is negative|false positive (FP)| true negative (TN)|
-'''
-# y, hx: list of scalars (as elements)
-
-
-def calc_confusion(y, hx, pos=1):
-    TP = np.logical_and(np.equal(y, pos), np.equal(hx, pos))
-    FP = np.logical_and(np.not_equal(y, pos), np.equal(hx, pos))
-    FN = np.logical_and(np.equal(y, pos), np.not_equal(hx, pos))
-    TN = np.logical_and(np.not_equal(y, pos), np.not_equal(hx, pos))
-    TP = np.sum(TP).tolist()  # TP = float(np.sum(TP))
-    FP = np.sum(FP).tolist()  # FP = float(np.sum(FP))
-    FN = np.sum(FN).tolist()  # FN = float(np.sum(FN))
-    TN = np.sum(TN).tolist()  # TN = float(np.sum(TN))
-    return TP, FP, FN, TN
-
-
-def calc_accuracy(y, hx):
-    n = len(y)
-    t = np.sum(np.equal(y, hx)).tolist()
-    # n = float(len(y))
-    # t = float(np.sum(np.equal(y, hx)))
-    return t / n  # == (TP+TN)/N
-
-
-@numba.jit(nopython=True)
-def calc_Acc(TP, FP, FN, TN):
-    N = TP + FP + FN + TN
-    accuracy_ = (TP + TN) / N
-    return accuracy_, N
-
-
-def calc_PR(TP, FP, FN):
-    # precision = TP / (TP + FP)  # 查准率,精确率
-    # recall = TP / (TP + FN)     # 查全率,召回率
-    precision = TP / check_zero(TP + FP)
-    recall = TP / check_zero(TP + FN)
-    F1 = 2 * TP / check_zero(2 * TP + FP + FN)
-    return precision, recall, F1
-
-
-def calc_4Rate(TP, FP, FN, TN):
-    '''
-    TPR = TP / (TP + FN)  # 真正率,召回率,命中率 hit rate
-    FPR = FP / (TN + FP)  # 假正率=1-特异度,误报/虚警/误检率 false alarm
-    FNR = FN / (TP + FN)  # 漏报率 miss rate，也称为漏警率、漏检率
-    TNR = TN / (TN + FP)  # 特异度 specificity
-    # expect FPR,FNR smaller, TNR larger
-    '''
-    TPR = TP / check_zero(TP + FN)
-    FPR = FP / check_zero(TN + FP)
-    FNR = FN / check_zero(TP + FN)
-    TNR = TN / check_zero(TN + FP)
-    return TPR, FPR, FNR, TNR
-
-
-def calc_F1(P, R, beta=1):
-    if beta == 1:
-        F1 = 2 * P * R / check_zero(P + R)
-        return F1
-
-    beta2 = beta ** 2
-    denom = check_zero(beta2 * P + R)
-    fbeta = (1 + beta2) * P * R / denom
-    return fbeta
-
-
 def calc_PRF1_multi_lists(y, hx):
     vY, _ = judge_transform_need(y + hx)
     # dY = len(vY)
@@ -182,32 +104,6 @@ def contingency_tab_binary(ha, hb):
 
 
 '''
-contingency_table_binary
-    |         | hj = +1 | hj = -1 |
-    | hi = +1 |    a    |    b    |
-    | hi = -1 |    c    |    d    |
-
-contingency_table_multiclass
-    |         | hb == y | hb != y |
-    | ha == y |    a    |    b    |
-    | ha != y |    c    |    d    |
-'''
-
-
-def contingency_tab_multiclass(ha, hb, y):
-    # Do NOT use this function to calcuate!
-    a = np.sum(np.logical_and(
-        np.equal(ha, y), np.equal(hb, y)))
-    c = np.sum(np.logical_and(
-        np.not_equal(ha, y), np.equal(hb, y)))
-    b = np.sum(np.logical_and(
-        np.equal(ha, y), np.not_equal(hb, y)))
-    d = np.sum(np.logical_and(
-        np.not_equal(ha, y), np.not_equal(hb, y)))
-    return int(a), int(b), int(c), int(d)
-
-
-'''
 contingency_table_{?}
     |              | hb!=y, hb=-1 | hb==y, hb=1 |
     | ha!=y, ha=-1 |   d          |   c         |
@@ -221,6 +117,7 @@ contingency_table_multi
 '''
 
 
+"""
 def contingency_tab_multi(hi, hj, y=list()):
     tem = np.concatenate([hi, hj, y]).tolist()
     vY, dY = judge_transform_need(tem)
@@ -235,6 +132,7 @@ def contingency_tab_multi(hi, hj, y=list()):
         for j in range(dY):
             Cij[i, j] = np.sum((ha == vY[i]) & (hb == vY[j]))
     return Cij.copy()  # np.ndarray
+"""
 
 
 # =====================================

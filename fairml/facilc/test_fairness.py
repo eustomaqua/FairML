@@ -4,7 +4,7 @@
 from fairml.widget.utils_const import (
     synthetic_clf, synthetic_set, judge_transform_need)
 import numpy as np
-import pdb
+# import pdb
 nb_spl, nb_lbl, nb_clf = 371, 3, 2  # nb_clf=7
 y_bin, _, _ = synthetic_set(2, nb_spl, nb_clf)
 y_non, _, _ = synthetic_set(nb_lbl, nb_spl, nb_clf)
@@ -14,10 +14,22 @@ ht_non = synthetic_clf(y_non, nb_clf, err=.4)
 
 def test_group_fair():
     # from fairml.metrics.group_fair import (
+    '''
     from fairml.facils.fairness_group import (
         marginalised_contingency, marginalised_confusion,
         unpriv_group_one, unpriv_group_two, unpriv_group_thr,
         marginalised_pd_mat, unpriv_unaware, unpriv_manual)
+    '''
+
+    from fairml.facilc.metric_fair import (
+        marginalised_contingency, marginalised_confusion,
+        prev_unpriv_grp_one, prev_unpriv_grp_two, prev_unpriv_grp_thr,
+        marginalised_pd_mat, prev_unpriv_manual, prev_unpriv_unaware)
+    unpriv_group_one = prev_unpriv_grp_one
+    unpriv_group_two = prev_unpriv_grp_two
+    unpriv_group_thr = prev_unpriv_grp_thr
+    unpriv_unaware = prev_unpriv_unaware
+    unpriv_manual = prev_unpriv_manual
 
     def subroutine(y, pos, priv):
         vY, dY = judge_transform_need(y)  # + hx)

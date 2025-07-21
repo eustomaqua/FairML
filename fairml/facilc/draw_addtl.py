@@ -20,7 +20,8 @@ from fairml.facilc.draw_graph import (
     _set_quantile, _sns_line_err_bars,
     cnames, cname_keys, cmap_names, _setup_rgb_color,
     _backslash_distributed, _barh_patterns,
-    _sns_line_fit_regs, _sns_line_err_bars)
+    _sns_line_fit_regs, _sns_line_err_bars, PLT_LOCATION)
+from fairml.widget.utils_const import DTY_FLT
 
 
 # ===============================
@@ -184,11 +185,11 @@ def scatter_k_cv_with_real(X, Ys, z,  # y/z: real values
     if not tidy_cv:
         tX = np.array([X] * nb_iter)
         tYs = Ys.reshape(-1)
-        tz = np.array([z] * num).T
+        # tz = np.array([z] * num).T
     else:
         tX = np.array([X] * nb_iter).T
         tYs = Ys.T.reshape(-1)
-        tz = np.array([z] * num)
+        # tz = np.array([z] * num)
     kws['linestyle'] = '--'
     _sns_line_err_bars(ax, kws, tX.reshape(-1), tYs)
     kws.pop('linestyle')
@@ -239,7 +240,7 @@ def boxplot_k_cv_with_real(X, Ys, z,
 
     kws['color'] = '#F65F47'
     tX = np.array([X] * nb_iter).reshape(-1)
-    tz = np.array([z] * num).T.reshape(-1)
+    # tz = np.array([z] * num).T.reshape(-1)
     kws['linestyle'] = '--'
     _sns_line_err_bars(ax, kws, tX, Ys.reshape(-1))
     kws.pop('linestyle')
@@ -302,8 +303,7 @@ def approximated_dist_comparison(
     fig, ax = plt.subplots(figsize=_setup_config['M-NT'])
 
     # cs, cl = _setup_rgb_color(nb_iter, cmap_name)
-    cs = sns.color_palette(cmap_name)
-    cl = len(cs)
+    cs = sns.color_palette(cmap_name)  # cl = len(cs)
     kws = {'color': 'navy', 'lw': 1}
     if isinstance(X, list):
         tX = X * nb_iter
@@ -554,8 +554,8 @@ def _marginal_distr_step4(grid, dfs_pl, columns, col_X, col_Y,
             tY = df[col_Y].values.astype(DTY_FLT)
             R = np.corrcoef(tX, tY)[1, 0]
             key = 'Correlation = %.4f' % R
-            regr = np.polyfit(tX, tY, deg=1)
-            estimated = np.polyval(regr, tX)
+            # regr = np.polyfit(tX, tY, deg=1)
+            # estimated = np.polyval(regr, tX)
 
             ax4.scatter(x=df[col_X], y=df[col_Y], s=_curr_sz[i],
                         alpha=1,  # edgecolors=_curr_mc[i],
@@ -769,7 +769,7 @@ def single_line_reg_with_distr(X, Y, annots=('X', 'Y', 'Z'),
                                linreg=False, distrib=False,
                                snspec='sty2', cmap_name='coolwarm',
                                sci_format_y=False):
-    mycolor = sns.color_palette(cmap_name)
+    # mycolor = sns.color_palette(cmap_name)
 
     fig = plt.figure(figsize=_setup_config[figsize], dpi=300)
     plt.subplots_adjust(left=.11, bottom=.11, right=.98, top=.995)
@@ -828,7 +828,8 @@ def single_line_reg_with_distr(X, Y, annots=('X', 'Y', 'Z'),
                          'lw': .1},  # , 'color': 'blue'},
             line_kws={'lw': 1})
         if snspec == 'sty5':
-            plt.plot(Z, Z, 'k--', lw=1, label='{:4s}{}'.format('', annotZ))
+            plt.plot(Z, Z, 'k--', lw=1,
+                     label='{:4s}{}'.format('', annotZ))
             plt.plot(X, estimated, '-', lw=1, color='navy')
         ax4.legend(
             prop=legend_font, labelspacing=.35, handleheight=1.2,
@@ -842,13 +843,14 @@ def single_line_reg_with_distr(X, Y, annots=('X', 'Y', 'Z'),
                         linewidths=.5, label=key)  # s='.',
             plt.plot(X, estimated, 'k-', lw=1)
         elif snspec == 'sty3a':
-            ax4.scatter(x=X, y=Y, alpha=1, edgecolors='w', linewidths=.4)
+            ax4.scatter(x=X, y=Y, alpha=1, edgecolors='w',
+                        linewidths=.4)
             plt.plot(X, estimated, '-', lw=1, label=key, color='navy')
             plt.plot(Z, Z, 'k--', lw=1, label=annotZ)
             # plt.plot(X, estimated, '-', lw=1, label=key, color='navy')
         elif snspec == 'sty3b':
-            ax4.scatter(x=X, y=Y, alpha=1, edgecolors='w', linewidths=.4,
-                        label=key)
+            ax4.scatter(x=X, y=Y, alpha=1, edgecolors='w',
+                        linewidths=.4, label=key)
             plt.plot(X, estimated, '-', lw=1, color='navy')
             plt.plot(Z, Z, 'k--', lw=1, label=annotZ)
         elif snspec == 'sty4':
@@ -856,7 +858,8 @@ def single_line_reg_with_distr(X, Y, annots=('X', 'Y', 'Z'),
                         linewidths=.2, s=27)
             plt.plot(Z, Z, 'k--', lw=1, label=annotZ)
         elif snspec == 'sty6':
-            ax4.scatter(x=X, y=Y, alpha=1, edgecolors='w', linewidths=.4)
+            ax4.scatter(x=X, y=Y, alpha=1, edgecolors='w',
+                        linewidths=.4)
             tx_min, tx_max = ax4.get_xlim()
             annotZ = r'$\hat{\mathbf{D}}_{\cdot}=\mathbf{D}_{\cdot}$'
             if len(annots) > 2:
@@ -1475,7 +1478,8 @@ def FairGBM_tradeoff_v2(Xs, Ys, annot, label=('X', 'Y'),
         if (alpha_loc == 'b4') and (not alpha_rev):
             tmp = Xs * alpha + (1. - alpha) * Ys
         elif (alpha_loc == 'af') and (not alpha_rev):
-            tmp = Xs * (1. - alpha) + alpha * Ys[i]
+            # tmp = Xs * (1. - alpha) + alpha * Ys[i]
+            tmp = Xs * (1. - alpha) + alpha * Ys
         elif (alpha_loc == 'b4') and alpha_rev:
             tmp = (1. - Xs) * alpha + (1. - alpha) * Ys
         elif (alpha_loc == 'af') and alpha_rev:

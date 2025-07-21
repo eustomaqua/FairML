@@ -1,24 +1,25 @@
 # coding: utf-8
 
 
-from fairml.datasets import DATASETS, DATASET_NAMES, RAW_EXPT_DIR
 from fairml.widget.utils_saver import elegant_print
 from fairml.widget.utils_remark import (
     AVAILABLE_ABBR_CLS, AVAILABLE_NAME_PRUNE, LATEST_NAME_PRUNE)
 
 # Experiments
 from fairml.widget.utils_const import (
-    _get_tmp_document, _get_tmp_name_ens)
+    _get_tmp_document, _get_tmp_name_ens, check_zero)
 from fairml.widget.utils_wpclf import INDIVIDUALS
-from fairml.datasets import DATASETS, DATASET_NAMES, preprocess
+from fairml.datasets import (
+    DATASETS, DATASET_NAMES, RAW_EXPT_DIR, preprocess)
 from fairml.preprocessing import (
     adversarial, transform_X_and_y, transform_unpriv_tag)
 from fairml.facils.data_classify import EnsembleAlgorithm
-from fairml.facils.metrics_cont import (
-    calc_accuracy, calc_Acc, calc_PR, calc_F1, calc_4Rate,
-    calc_confusion)
+# from fairml.facils.metrics_cont import (
+#     calc_accuracy, calc_Acc, calc_PR, calc_F1, calc_4Rate,
+#     calc_confusion)
 
-from fairml.facils.fairness_group import marginalised_pd_mat
+from fairml.facilc.metric_fair import marginalised_pd_mat
+# from fairml.facils.fairness_group import marginalised_pd_mat
 from fairml.facilc.ensem_pruning import \
     contrastive_pruning_methods as exist_pruning_basics
 from fairml.facilc.ensem_prulatest import \
@@ -29,13 +30,108 @@ from fairml.discriminative_risk import (
 from fairml.dr_pareto_optimal import (
     Pareto_Optimal_EPAF_Pruning, _bi_objectives, POAF_PEP,
     Centralised_EPAF_Pruning, Distributed_EPAF_Pruning)
+
+from fairml.facilc.metric_fair import prev_unpriv_grp_one \
+    as unpriv_group_one
+from fairml.facilc.metric_fair import prev_unpriv_grp_two \
+    as unpriv_group_two
+from fairml.facilc.metric_fair import prev_unpriv_grp_thr \
+    as unpriv_group_thr
+from fairml.facilc.metric_fair import prev_unpriv_unaware \
+    as unpriv_unaware
+from fairml.facilc.metric_fair import prev_unpriv_manual \
+    as unpriv_manual
+from fairml.widget.data_split import (
+    sklearn_k_fold_cv, sklearn_stratify, manual_cross_valid)
 # Experiments
 
 import pandas as pd
 import numpy as np
+import numba
+import csv
+import logging
 import os
 import sys
+import time
 CURR_EXPT_DIR = os.path.join(RAW_EXPT_DIR, 'wp2_oracle')
+
+
+# =====================================
+# Metrics
+# =====================================
+
+
+# -------------------------------------
+# TP, FP, FN, TN
+# -------------------------------------
+'''
+|                      | predicted label positive  |  negative |
+|true label is positive| true positive (TP)|false negative (FN)|
+|true label is negative|false positive (FP)| true negative (TN)|
+'''
+# y, hx: list of scalars (as elements)
+
+
+def calc_confusion(y, hx, pos=1):
+    TP = np.logical_and(np.equal(y, pos), np.equal(hx, pos))
+    FP = np.logical_and(np.not_equal(y, pos), np.equal(hx, pos))
+    FN = np.logical_and(np.equal(y, pos), np.not_equal(hx, pos))
+    TN = np.logical_and(np.not_equal(y, pos), np.not_equal(hx, pos))
+    TP = np.sum(TP).tolist()  # TP = float(np.sum(TP))
+    FP = np.sum(FP).tolist()  # FP = float(np.sum(FP))
+    FN = np.sum(FN).tolist()  # FN = float(np.sum(FN))
+    TN = np.sum(TN).tolist()  # TN = float(np.sum(TN))
+    return TP, FP, FN, TN
+
+
+def calc_accuracy(y, hx):
+    n = len(y)
+    t = np.sum(np.equal(y, hx)).tolist()
+    # n = float(len(y))
+    # t = float(np.sum(np.equal(y, hx)))
+    return t / n  # == (TP+TN)/N
+
+
+@numba.jit(nopython=True)
+def calc_Acc(TP, FP, FN, TN):
+    N = TP + FP + FN + TN
+    accuracy_ = (TP + TN) / N
+    return accuracy_, N
+
+
+def calc_PR(TP, FP, FN):
+    # precision = TP / (TP + FP)  # 查准率,精确率
+    # recall = TP / (TP + FN)     # 查全率,召回率
+    precision = TP / check_zero(TP + FP)
+    recall = TP / check_zero(TP + FN)
+    F1 = 2 * TP / check_zero(2 * TP + FP + FN)
+    return precision, recall, F1
+
+
+def calc_4Rate(TP, FP, FN, TN):
+    '''
+    TPR = TP / (TP + FN)  # 真正率,召回率,命中率 hit rate
+    FPR = FP / (TN + FP)  # 假正率=1-特异度,误报/虚警/误检率 false alarm
+    FNR = FN / (TP + FN)  # 漏报率 miss rate，也称为漏警率、漏检率
+    TNR = TN / (TN + FP)  # 特异度 specificity
+    # expect FPR,FNR smaller, TNR larger
+    '''
+    TPR = TP / check_zero(TP + FN)
+    FPR = FP / check_zero(TN + FP)
+    FNR = FN / check_zero(TP + FN)
+    TNR = TN / check_zero(TN + FP)
+    return TPR, FPR, FNR, TNR
+
+
+def calc_F1(P, R, beta=1):
+    if beta == 1:
+        F1 = 2 * P * R / check_zero(P + R)
+        return F1
+
+    beta2 = beta ** 2
+    denom = check_zero(beta2 * P + R)
+    fbeta = (1 + beta2) * P * R / denom
+    return fbeta
 
 
 # ==================================

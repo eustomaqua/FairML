@@ -14,7 +14,7 @@ from scipy.special import comb
 import scipy.stats as stats
 
 from fairml.widget.utils_const import check_zero  # DTY_PLT
-from fairml.facils.metrics_cont import contingency_tab_multiclass
+# from fairml.facils.metrics_cont import contingency_tab_multiclass
 # from fairml.metrics.normal_perf import contingency_tab_multiclass
 
 
@@ -250,6 +250,49 @@ _qchisq_critical_value = {
 }  # [alpha][freedom]
 
 
+'''
+contingency_table_binary
+    |         | hj = +1 | hj = -1 |
+    | hi = +1 |    a    |    b    |
+    | hi = -1 |    c    |    d    |
+
+contingency_table_multiclass
+    |         | hb == y | hb != y |
+    | ha == y |    a    |    b    |
+    | ha != y |    c    |    d    |
+'''
+'''
+Kuncheva2003measures
+|              |hk correct (1)|hk wrong (0)|
+|hi correct (1)|   N^{11}     |   N^{10}   |
+|hi  wrong  (0)|   N^{01}     |   N^{00}   |
+Total, N= N^{00}+N^{01}+N^{10}+N^{11}
+
+i.e.,
+|          |hk correct|hk wrong|
+|hi correct|   tp     |   fn   | or | a | b |
+|hi  wrong |   fp     |   tn   |    | c | d |
+
+McNemar test
+|             |Alg B correct|Alg B  wrong |
+|Alg A correct|    e_{00}   |    e_{10}   |
+|Alg A  wrong |    e_{01}   |    e_{11}   |
+'''
+
+
+def contingency_tab_multiclass(ha, hb, y):
+    # Do NOT use this function to calcuate!
+    a = np.sum(np.logical_and(
+        np.equal(ha, y), np.equal(hb, y)))          # e_{00}, N^{11}
+    c = np.sum(np.logical_and(
+        np.not_equal(ha, y), np.equal(hb, y)))      # e_{01}, N^{01}
+    b = np.sum(np.logical_and(
+        np.equal(ha, y), np.not_equal(hb, y)))      # e_{10}, N^{10}
+    d = np.sum(np.logical_and(
+        np.not_equal(ha, y), np.not_equal(hb, y)))  # e_{11}, N^{11}
+    return int(a), int(b), int(c), int(d)
+
+
 def McNemar_test(ha, hb, y, k=2, alpha=.05):
     # H0: the performance of these two classifiers are the same
     # k=2 is because there are two algorithms being compared
@@ -335,7 +378,7 @@ _qf_critical_value = {
         7: [5.987, 3.885, 3.160, 2.776, 2.534, 2.364, 2.237, 2.138, 2.059,
             1.993, 1.937, 1.889, 1.848, 1.811, 1.779, 1.750, 1.724],
         8: [5.591, 3.739, 3.072, 2.714, 2.485, 2.324, 2.203, 2.109, 2.032],
-        9: [5.318, 3.634, 3.009, 2.668, 2.449, 2.295, 2.178, 2.087, 2.013],
+        # 9: [5.318, 3.634, 3.009, 2.668, 2.449, 2.295, 2.178, 2.087, 2.013],
         10: [5.117, 3.555, 2.960, 2.634, 2.422, 2.272, 2.159, 2.070, 1.998],
         15: [4.600, 3.340, 2.827, 2.537, 2.346, 2.209, 2.104, 2.022, 1.955],
         20: [4.381, 3.245, 2.766, 2.492, 2.310, 2.179, 2.079, 2.000, 1.935],
@@ -368,7 +411,7 @@ _qf_critical_value = {
         7: [3.776, 2.807, 2.416, 2.195, 2.049, 1.945, 1.865, 1.802, 1.750,
             1.707, 1.670, 1.639, 1.611, 1.586, 1.564, 1.545, 1.527],
         8: [3.589, 2.726, 2.365, 2.157, 2.019, 1.919, 1.843, 1.782, 1.733],
-        9: [3.458, 2.668, 2.327, 2.129, 1.997, 1.901, 1.827, 1.768, 1.720],
+        # 9: [3.458, 2.668, 2.327, 2.129, 1.997, 1.901, 1.827, 1.768, 1.720],
         10: [3.360, 2.624, 2.299, 2.108, 1.980, 1.886, 1.814, 1.757, 1.710],
         15: [3.102, 2.503, 2.219, 2.048, 1.931, 1.845, 1.779, 1.726, 1.682],
         20: [2.990, 2.448, 2.182, 2.020, 1.909, 1.826, 1.762, 1.711, 1.668],

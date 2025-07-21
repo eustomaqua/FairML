@@ -16,8 +16,8 @@ from fairml.facilc.draw_chart import (
     analogous_confusion_extended)
 
 from fairml.facilc.draw_addtl import (
-    _subproc_pl_lin_reg_alt,
-    line_reg_with_marginal_distr, scatter_with_marginal_distrib,
+    # _subproc_pl_lin_reg_alt,
+    # line_reg_with_marginal_distr, scatter_with_marginal_distrib,
     FairGBM_scatter, FairGBM_tradeoff_v1, FairGBM_tradeoff_v2,
     FairGBM_tradeoff_v3)
 from experiment.wp2_oracle.fetch_data import GraphSetup
@@ -77,7 +77,7 @@ class PlotA_Measures(GraphSetup):
             # key = ["unaware", "DP", "EO", "PQP", "Manual", "DR"]
             idx = [24, 25, 26, 28]
             key = ["DP", "EO", "PQP", "DR"]  # or "FQ (ours)"
-        mode = 'ascend' if mark == "fair" else "descend"
+        # mode = 'ascend' if mark == "fair" else "descend"
 
         new_curr = curr[:, idx, :]  # .shape (#alg,#eval,#iter)
         Ys_avg = new_curr.mean(axis=2).T  # .shape (#eval,#alg)
@@ -791,7 +791,7 @@ class PlotB_Measures(GraphSetup):
         elif mark == "fair":
             idx = [24, 25, 26, 28]
             key = ["DP", "EO", "PQP", "DR"]
-        mode = "ascend" if mark == "fair" else "descend"
+        # mode = "ascend" if mark == "fair" else "descend"
 
         # new_curr = curr[:, :, idx]  # shape (8, 60, ?)
         # new_curr = curr[:, :, :, idx]# shape (#bag=12,#pru=8,5,#eval)
@@ -1010,7 +1010,7 @@ class Renew_GatherF_Prunings(GatherF_Prunings):
         Ys_avg, Ys_std = np.zeros((9, 7)), np.zeros((9, 7))
         Ys_i, reorder = 0, [4, 5, 6, 0, 1, 2, 3]
         rez = 2 if pt_i in [0, 13, 26] else 4
-        mode = 'ascend' if pt_i >= 39 else 'descend'
+        # mode = 'ascend' if pt_i >= 39 else 'descend'
         Ys_entire = np.zeros((9, 7, 5))
         for i in optional_data:
             ret_key, ret_r, ret_c, sen_att = self.merge_sub_data(

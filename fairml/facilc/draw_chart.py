@@ -5,28 +5,26 @@
 # from fairml.facils.data_entropy import prob, jointProb
 from fairml.facils.data_distance import (
     Wasserstein_dis,
-    KL_divergence, JS_divergence, Bhattacharyya_dist,
-    Hellinger_dist_v2, Hellinger_dist_v1, JS_div,
-    f_divergence, _discrete_joint_cnts)
+    KL_divergence, Bhattacharyya_dist,  # JS_divergence,
+    Hellinger_dist_v2, JS_div,      # Hellinger_dist_v1,
+    _discrete_joint_cnts)           # f_divergence,
 
-from fairml.facilc.draw_hypos import (  # .draw.utils_hypos
-    Friedman_test, Nememyi_posthoc_test)
+# from fairml.facilc.draw_hypos import (  # .draw.utils_hypos
+#     Friedman_test, Nememyi_posthoc_test)
 from fairml.facilc.draw_graph import (  # .draw.utils_graph
-    PLT_FRAMEBOX, PLT_LOCATION, DTY_PLT,
+    PLT_FRAMEBOX, PLT_LOCATION, DTY_PLT, PLT_AX_STYLE,
     _setup_config, _barh_kwargs, _barh_fcolor,
-    _setup_figsize, _setup_figshow,
-    _setup_locater, _style_set_fig, _style_set_axis,
-    _sns_line_err_bars, PLT_AX_STYLE)
+    _setup_figsize, _setup_figshow, _sns_line_err_bars,
+    _setup_locater, _style_set_fig, _style_set_axis)
 
 
 import itertools
-# import seaborn as sns
-
 # import pandas as pd
 import numpy as np
 # from scipy import stats
 # from sklearn.metrics import confusion_matrix
 
+# import seaborn as sns
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 # from matplotlib import cm as mpl_cm
@@ -203,7 +201,7 @@ def analogous_confusion(Mat, label_vals, figname,
     plt.yticks(tick_marks, label_vals)
     if normalize:
         cm = cm / cm.sum(axis=1)[:, np.newaxis]
-    thresh = cm.max() / 1.5 if normalize else cm.max() / 2
+    # thresh = cm.max() / 1.5 if normalize else cm.max() / 2
     for i, j in itertools.product(range(num_z),
                                   range(num_z)):
         plt.text(j, i, "{:.3f}".format(cm[i, j]),

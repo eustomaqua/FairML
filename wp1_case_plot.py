@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from fairml.facilc.draw_graph import (  # .graph.utils_param
-    PLT_LOCATION, DTY_PLT, PLT_AX_STYLE,
+    DTY_PLT,  # PLT_LOCATION, PLT_AX_STYLE,
     _setup_config, _setup_figsize, _setup_figshow, _barh_kwargs)
 
 
@@ -86,24 +86,26 @@ def _subplot_scatter_pl(ax, ap, names, score, att, comparison=True):
     colors = sns.color_palette(palette='muted', n_colors=5)
 
     if not comparison:
-        p0 = ax.bar(ind - wid / 2, delta_score, wid,
-                    color=colors[0], label=ap,  # alpha=.5,
-                    linestyle='dashed', **_barh_kwargs)
-        p4 = ax.bar(ind + wid / 2, val_alt, wid,
-                    color=colors[4], label='DR', **_barh_kwargs)
+        # p0, p4 =
+        ax.bar(ind - wid / 2, delta_score, wid,
+               color=colors[0], label=ap,  # alpha=.5,
+               linestyle='dashed', **_barh_kwargs)
+        ax.bar(ind + wid / 2, val_alt, wid,
+               color=colors[4], label='DR', **_barh_kwargs)
     else:
         wid = .8 / num
-        p0 = ax.bar(ind - 2 * wid, delta_score, wid,
-                    color=colors[0], label=ap,  # alpha=.5,
-                    linestyle='dashed', **_barh_kwargs)
-        p1 = ax.bar(ind - wid, values[0], wid,
-                    color=colors[1], label='DP', **_barh_kwargs)
-        p2 = ax.bar(ind, values[1], wid,
-                    color=colors[2], label='EO', **_barh_kwargs)
-        p3 = ax.bar(ind + wid, values[2], wid,
-                    color=colors[3], label='PQP', **_barh_kwargs)
-        p4 = ax.bar(ind + 2 * wid, val_alt, wid,
-                    color=colors[4], label='DR', **_barh_kwargs)
+        # p0, p1, p2, p3, p4 =
+        ax.bar(ind - 2 * wid, delta_score, wid,
+               color=colors[0], label=ap,  # alpha=.5,
+               linestyle='dashed', **_barh_kwargs)
+        ax.bar(ind - wid, values[0], wid,
+               color=colors[1], label='DP', **_barh_kwargs)
+        ax.bar(ind, values[1], wid,
+               color=colors[2], label='EO', **_barh_kwargs)
+        ax.bar(ind + wid, values[2], wid,
+               color=colors[3], label='PQP', **_barh_kwargs)
+        ax.bar(ind + 2 * wid, val_alt, wid,
+               color=colors[4], label='DR', **_barh_kwargs)
 
     ax.legend(loc='best', labelspacing=.05, frameon=False)
     # ax.set_ylabel('Fairness')
