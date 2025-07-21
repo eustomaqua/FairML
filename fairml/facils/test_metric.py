@@ -91,9 +91,12 @@ def test_performance():
     assert check_equal(res, metrics.f1_score(z_trn, z_hat))
 
     res = calc_f_beta(p, r, beta=1)
-    assert res == metrics.fbeta_score(z_trn, z_hat, beta=1)
+    assert check_equal(
+        res, metrics.fbeta_score(z_trn, z_hat, beta=1))
     res = calc_f_beta(p, r, beta=2)
-    assert res == metrics.fbeta_score(z_trn, z_hat, beta=2)
+    assert check_equal(
+        res, metrics.fbeta_score(z_trn, z_hat, beta=2))
+    # assert res == metrics.fbeta_score(z_trn, z_hat, beta=2)
     # pdb.set_trace()
     return
 

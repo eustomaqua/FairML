@@ -22,7 +22,8 @@ from fairml.dr_pareto_optimal import (
     Distributed_EPAF_Pruning, POAF_PEP, _POAF_calc_eval)
 from fairml.dr_pareto_optimal import _bi_objectives  # as _POAF_calc_eval
 
-from experiment.wp2_oracle.fetch_data import EnsembleSetup
+from experiment.wp2_oracle.fetch_expt import EnsembleSetup
+# from experiment.wp2_oracle.fetch_data import EnsembleSetup
 # from fairml.facils.fairness_group import (
 #     unpriv_group_one, unpriv_group_two, unpriv_group_thr,
 #     marginalised_pd_mat, unpriv_unaware, unpriv_manual)

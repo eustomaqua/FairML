@@ -903,9 +903,8 @@ class PlotHGather_ImprovePruning(PlotH_ImprovePruning):
                          trial_type, figname, logger)
 
     def schedule_mspaint(self, raw_dframe, tag_col):
-        # nb_set, id_set, index = self.recap_sub_data(raw_dframe[0])
-        # nm_set = ['ricci', 'german', 'adult', 'ppr', 'ppvr']
-        nb_set, _, index = self.recap_sub_data(raw_dframe[0])
+        nb_set, id_set, index = self.recap_sub_data(raw_dframe[0])
+        nm_set = ['ricci', 'german', 'adult', 'ppr', 'ppvr']
         '''
         self.plot_for_sec33_prus(raw_dframe, tag_col, nb_set, index)
         self.plot_for_sec33_fair(raw_dframe, tag_col, nb_set, index)

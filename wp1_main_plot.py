@@ -21,16 +21,18 @@ from fairml.widget.utils_const import (_get_tmp_document,
 from fairml.widget.utils_remark import AVAILABLE_ABBR_ENSEM
 
 from experiment.wp2_oracle.fetch_data import DataSetup, CURR_EXPT_DIR
-from experiment.wp2_oracle.fvote_addtl import (
-    PlotD_Measures, GatherD_Measures, GatherF_Prunings,
-    PlotF_Prunings, GatherE_Measures, PlotE_Measures,
-    PlotA_Measures, PlotB_Measures, Renew_GatherF_Prunings)
+# from experiment.wp2_oracle.fvote_addtl import (
+#     PlotD_Measures, GatherD_Measures, GatherF_Prunings,
+#     PlotF_Prunings, GatherE_Measures, PlotE_Measures,
+#     PlotA_Measures, PlotB_Measures, Renew_GatherF_Prunings)
 from experiment.wp2_oracle.fvote_draw import (
     PlotJ_LambdaEffect, PlotJGather_LambdaEffect,
     PlotH_ImprovePruning, PlotHGather_ImprovePruning,
     TableHGather_ImprovePruning, PlotC_TheoremsLemma,
     PlotK_PACGeneralisation)
 from experiment.wp2_oracle.fvote_draw import PlotD_ImprovePruning  # legacy
+from experiment.wp2_oracle.fvote_addtl import FairVoteDrawing
+from experiment.wp2_oracle.rev_fig_repr import FVre_Drawing
 
 
 # ----------------------------------
@@ -136,9 +138,8 @@ class OracleDrawing(object):
             self._iterator.schedule_mspaint(raw_dframe, self._pn)
 
         tim_elapsed = time.time() - since
-        elegant_print(
-            "\tDrawing: time cost {:.6f} minutes".format(
-                tim_elapsed / 60), logger)
+        elegant_print("\tDrawing: time cost {:.6f} minutes".format(
+            tim_elapsed / 60), logger)
         return
 
 
@@ -266,15 +267,14 @@ class OracleGatheredDrawing(object):
         for name_ens in AVAILABLE_ABBR_ENSEM:
             used_tc = time.time()
 
-            # nb_cls, nb_pru = self.get_hyper_params(name_ens)
+            nb_cls, nb_pru = self.get_hyper_params(name_ens)
             iterator = self.get_iterator(name_ens)
             filename = iterator.get_raw_filename(
                 trial_type=self._trial_type)
             assert os.path.exists(filename), filename
             tmp_df = iterator.load_raw_dataset(filename)
 
-            # nb_set, id_set, index = iterator.recap_sub_data(tmp_df)
-            nb_set, _, index = iterator.recap_sub_data(tmp_df)
+            nb_set, id_set, index = iterator.recap_sub_data(tmp_df)
             tag_col = iterator.prepare_graph()
             # START
 
@@ -378,315 +378,6 @@ class OracleGatheredDrawing(object):
 
         elif self._trial_type.endswith('expt6'):
             pass
-        return
-
-
-class FairVoteDrawing(DataSetup):
-    def __init__(self, trial_type, nb_cls, nb_pru,
-                 nb_iter=5, ratio=.5, lam=.5, data_type='ricci',
-                 name_ens="AdaBoostM1", abbr_cls="DT",
-                 gather=False, screen=True, logged=False):
-        super().__init__(data_type)
-        self._trial_type = trial_type
-
-        self._nb_cls = nb_cls
-        self._nb_pru = nb_pru
-        self._nb_iter = nb_iter
-        self._ratio = ratio
-        self._lam = lam
-
-        self._log_document = "_".join([
-            trial_type, "{}vs{}".format(nb_cls, nb_pru),
-            "iter{}".format(nb_iter), self._log_document,
-            "ratio{}".format(int(ratio * 100)), "pms"])
-
-        self._name_ens = name_ens
-        self._abbr_cls = abbr_cls
-        if trial_type.endswith('expt3'):
-            nmens_tmp = _get_tmp_name_ens(name_ens)
-            self._log_document = self._log_document.replace(
-                data_type, '')
-            self._log_document += "_{}_{}_{}".format(
-                nmens_tmp, abbr_cls, data_type)
-        if trial_type.endswith('expt6'):
-            self._log_document += "_lam{}".format(int(lam * 100))
-
-        self._screen = screen
-        self._logged = logged
-
-        if self._trial_type.endswith('expt1'):
-            self._iterator = PlotA_Measures()
-
-        elif self._trial_type.endswith('expt4') and (not gather):
-            self._iterator = PlotD_Measures()
-        elif self._trial_type.endswith('expt5') and (not gather):
-            self._iterator = PlotE_Measures()
-        elif self._trial_type.endswith('expt6') and (not gather):
-            self._iterator = PlotF_Prunings()
-
-        elif self._trial_type.endswith('expt4') and gather:
-            self._iterator = GatherD_Measures()
-        elif self._trial_type.endswith('expt6') and gather:
-            self._iterator = GatherF_Prunings()
-        elif self._trial_type.endswith('expt5') and gather:
-            self._iterator = GatherE_Measures()
-
-        elif self._trial_type.endswith('expt2'):
-            self._iterator = PlotB_Measures()
-        self._figname = "{}_{}".format(trial_type, data_type)
-        if gather:
-            self._figname = "{}_entire".format(trial_type)
-
-    def trial_one_process(self):
-        since = time.time()
-        # START
-
-        json_rf = open(os.path.join(
-            CURR_EXPT_DIR, self._log_document + ".json"), 'r')
-        # json_rf = open(self._log_document + ".json", 'r')
-        content = json_rf.read()
-        json_reader = json.loads(content)
-        res_all = json_reader['res_all']
-        res_data = json_reader['res_data']
-
-        if self._trial_type.endswith('expt5'):
-            self._iterator.schedule_mspaint(
-                res_data, res_all, self._figname, jt=True)
-        elif self._trial_type.endswith('expt6'):
-            if os.path.exists(self._figname + ".txt"):
-                os.remove(self._figname + ".txt")
-            logger, formatter, fileHandler = get_elogger(
-                "fvote", self._figname + ".txt")
-            self._iterator.schedule_mspaint(
-                res_data, res_all, self._figname, False, logger)
-        else:
-            self._iterator.schedule_mspaint(res_data, res_all,
-                                            self._figname)
-        json_rf.close()  # file to read
-        del json_rf, content, json_reader
-        del res_all, res_data
-        if self._trial_type.endswith('expt6'):
-            rm_ehandler(logger, formatter, fileHandler)
-
-        # END
-        tim_elapsed = time.time() - since
-        return
-
-    def trial_gather_process(self):
-        since = time.time()
-        # START
-
-        # optional_data = ["ricci", "german", "adult", "ppc", "ppvc"]
-        optional_data = ["ricci", "german", "adult", "ppr", "ppvr"]
-        res_all, res_data = {}, {}
-        for data_type in optional_data:
-            log_document = "_".join([
-                self._trial_type,
-                "{}vs{}".format(self._nb_cls, self._nb_pru),
-                "iter{}".format(self._nb_iter),
-                data_type,
-                "ratio{}".format(int(self._ratio * 100)),
-                "pms"])
-            if self._trial_type.endswith('expt6'):
-                log_document += "_lam{}".format(int(self._lam * 100))
-
-            json_rf = open(os.path.join(
-                CURR_EXPT_DIR, log_document + ".json"), 'r')
-            # json_rf = open(log_document + ".json", 'r')
-            content = json_rf.read()
-            json_reader = json.loads(content)
-            res_all[data_type] = json_reader['res_all']
-            res_data[data_type] = json_reader['res_data']
-            json_rf.close()
-            del json_rf, content, json_reader
-
-        if self._trial_type.endswith('expt5'):
-            self._iterator.schedule_mspaint(
-                res_data, res_all, optional_data,
-                self._figname, jt=True)
-        elif self._trial_type.endswith('expt6'):
-            if os.path.exists(self._figname + ".txt"):
-                os.remove(self._figname + ".txt")
-            logger, formatter, fileHandler = get_elogger(
-                "fvote", self._figname + ".txt")
-            self._iterator.schedule_mspaint(
-                res_data, res_all, optional_data,
-                self._figname, jt=False, logger=logger)
-        else:
-            self._iterator.schedule_mspaint(
-                res_data, res_all, optional_data, self._figname)
-        del res_data, res_all, optional_data
-        if self._trial_type.endswith('expt6'):
-            rm_ehandler(logger, formatter, fileHandler)
-
-        # END
-        tim_elapsed = time.time() - since
-        return
-
-
-class FVre_Drawing(DataSetup):
-    def __init__(self, trial_type, nb_cls, nb_pru=None,
-                 nb_iter=5, ratio=.5, lam=.5,
-                 data_type='ricci', name_ens="AdaBoostM1",
-                 abbr_cls="DT", partition=False, nb_lam=9,
-                 gather=False, screen=True, logged=False):
-        super().__init__(data_type)
-        self._trial_type = trial_type
-        self._nb_cls = nb_cls
-        self._nb_pru = nb_pru
-        self._nb_iter = nb_iter
-        self._ratio = ratio
-        self._lam = lam
-        self._name_ens = name_ens
-        self._abbr_cls = abbr_cls
-        self._screen = screen
-        self._logged = logged
-        self._pn = partition
-
-        self._log_document = "_".join([
-            trial_type, "{}vs{}".format(nb_cls, nb_pru),
-            "iter{}".format(nb_iter), self._log_document,
-            "ratio{}".format(int(ratio * 100)), "pms"])
-        if trial_type.endswith('expt6'):
-            self._log_document += "_lam{}".format(int(lam * 100))
-        if trial_type[-5:] in ('expt3'):
-            nmens_tmp = _get_tmp_document(name_ens, nb_cls)
-            self._log_document = "_".join([
-                trial_type, nmens_tmp, "paint"])
-
-        if self._trial_type.endswith('expt5'):
-            self._iterator = PlotE_Measures() if not gather else GatherE_Measures()
-        elif self._trial_type.endswith('expt6'):  # UPDATE
-            self._iterator = Renew_PlotF_Prunings(
-            ) if not gather else Renew_GatherF_Prunings()
-        elif self._trial_type.endswith('expt4'):
-            self._iterator = PlotD_Measures() if not gather else GatherD_Measures()
-        elif trial_type.endswith('expt3'):
-            self._iterator = PlotC_TheoremsLemma(
-                name_ens, nb_cls,
-                nb_iter=nb_iter, trial_type=trial_type)
-        self._figname = "{}_{}".format(trial_type, data_type)
-        if gather:
-            self._figname = "{}_entire".format(trial_type)
-
-    def trial_one_process(self, prefix):
-        since = time.time()
-        # START
-        if self._trial_type[-5:] in ('expt6', 'expt4'):
-            self.trial_one_proc_json(prefix=prefix)
-        elif self._trial_type[-5:] in ('expt3',):
-            self.trial_one_proc_csvr(prefix=prefix)
-        # END
-        tim_elapsed = time.time() - since
-        elegant_print("\tDrawing: time cost {:.6f} minutes".format(
-            tim_elapsed / 60), None)  # logger)
-        return
-
-    def trial_one_proc_csvr(self, prefix=''):
-        trial_type = self._iterator.trial_type
-        filename = self._iterator.get_raw_filename(trial_type)
-        filename = filename.split('/')[-1]
-        if prefix:
-            filename = os.path.join(prefix, filename)
-        # assert os.path.exists(filename), filename
-        raw_dframe = self._iterator.load_raw_dataset(filename)
-        if self._trial_type.endswith('expt10'):
-            self._iterator.schedule_mspaint(raw_dframe, None)
-        else:
-            self._iterator.schedule_mspaint(raw_dframe, self._pn)
-        return
-
-    def trial_one_proc_json(self, prefix=''):
-        # START
-        if not prefix:
-            json_rf = open(self._log_document + ".json", 'r')
-        else:
-            json_rf = open(os.path.join(
-                prefix, self._log_document + '.json'), 'r')
-        # json_rf = open(self._log_document + ".json", 'r')
-        content = json_rf.read()
-        json_reader = json.loads(content)
-        res_all = json_reader['res_all']
-        res_data = json_reader['res_data']
-        # START
-
-        if self._trial_type.endswith('expt5'):
-            self._iterator.schedule_mspaint(
-                res_data, res_all, self._figname, jt=True)
-        elif self._trial_type.endswith('expt6'):
-            if os.path.exists(self._figname + ".txt"):
-                os.remove(self._figname + ".txt")
-            logger, formatter, fileHandler = get_elogger(
-                "fvote", self._figname + ".txt")
-            self._iterator.schedule_mspaint(
-                res_data, res_all, self._figname, False, logger)
-            # pdb.set_trace()
-        else:
-            self._iterator.schedule_mspaint(res_data, res_all,
-                                            self._figname)
-
-        # END
-        json_rf.close()  # file to read
-        del json_rf, content, json_reader
-        del res_all, res_data  # , new_data
-        if self._trial_type.endswith('expt6'):
-            rm_ehandler(logger, formatter, fileHandler)
-        # END
-        return
-
-    def trial_gather_process(self, prefix=''):
-        since = time.time()
-        # START
-
-        optional_data = ["ricci", "german", "adult", "ppr", "ppvr"]
-        res_all, res_data = {}, {}
-        for data_type in optional_data:
-            log_document = "_".join([
-                self._trial_type,
-                "{}vs{}".format(self._nb_cls, self._nb_pru),
-                "iter{}".format(self._nb_iter),
-                data_type,
-                "ratio{}".format(int(self._ratio * 100)),
-                "pms"])
-            if self._trial_type.endswith('expt6'):
-                log_document += "_lam{}".format(int(self._lam * 100))
-
-            if not prefix:
-                json_rf = open(log_document + ".json", 'r')
-            else:
-                json_rf = open(os.path.join(
-                    prefix, log_document + '.json'), 'r')
-            content = json_rf.read()
-            json_reader = json.loads(content)
-            res_all[data_type] = json_reader['res_all']
-            res_data[data_type] = json_reader['res_data']
-            json_rf.close()
-            del json_rf, content, json_reader
-
-        if self._trial_type.endswith('expt5'):
-            self._iterator.schedule_mspaint(
-                res_data, res_all, optional_data,
-                self._figname, jt=True)
-        elif self._trial_type.endswith('expt6'):
-            if os.path.exists(self._figname + ".txt"):
-                os.remove(self._figname + ".txt")
-            logger, formatter, fileHandler = get_elogger(
-                "fvote", self._figname + ".txt")
-            self._iterator.schedule_mspaint(
-                res_data, res_all, optional_data,
-                self._figname, jt=False, logger=logger)
-            self._iterator.renew_schedule_msgraph(
-                res_data, res_all, optional_data, self._figname,
-                jt=False, logger=logger)
-        else:
-            self._iterator.schedule_mspaint(
-                res_data, res_all, optional_data, self._figname)
-        del res_data, res_all, optional_data
-        if self._trial_type.endswith('expt6'):
-            rm_ehandler(logger, formatter, fileHandler)
-
-        # END
-        tim_elapsed = time.time() - since
         return
 
 
@@ -821,10 +512,10 @@ python wp1_case_plot.py
 
 python wp1_main_plot.py --draw -exp mCV_expt4 --gather
 python wp1_main_plot.py --draw -exp mCV_expt6 --gather --nb-pru 7
-python wp1_main_plot.py -exp mCV_expt3 --gather
-python wp1_main_plot.py -exp mCV_expt11 --gather
 python wp1_main_plot.py -exp mCV_expt8 --gather
 python wp1_main_plot.py -exp mCV_expt8 --gather --tab
+python wp1_main_plot.py -exp mCV_expt3 --gather
+python wp1_main_plot.py -exp mCV_expt11 --gatherx
 python wp1_main_plot.py -exp mCV_expt8 --name-ens Bagging
 python wp1_main_plot.py -exp mCV_expt8 --name-ens AdaBoostM1 --nb-cls 11 --nb-pru 5
 python wp1_main_plot.py -exp mCV_expt8 --name-ens SAMME --nb-cls 11 --nb-pru 5

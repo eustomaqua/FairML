@@ -1,48 +1,52 @@
 # coding: utf-8
+# Usage: empirical results' representation
 
 
 import json
 import os
+import pdb
 import time
 import numpy as np
-from fairml.widget.utils_const import DTY_FLT
+
+from fairml.widget.utils_const import (
+    DTY_FLT, _get_tmp_document)
 from fairml.widget.utils_saver import (
-    elegant_print, get_elogger, rm_ehandler)
+    get_elogger, rm_ehandler, elegant_print)
 from fairml.widget.utils_timer import elegant_durat
 
-from fairml.facils.draw_hypos import (  # .graph.utils_hypos
-    _encode_sign, Friedman_init,
+from fairml.facils.draw_hypos import (
+    _encode_sign, Friedman_init,  # Friedman_test,
     cmp_paired_wtl, cmp_paired_avg, comp_t_sing, comp_t_prep)
+from fairml.facilc.draw_chart import (
+    multiple_scatter_chart, multiple_scatter_alternative,
+    analogous_confusion, analogous_confusion_alternative,
+    analogous_confusion_extended)
 from fairml.facilc.draw_graph import (
     Friedman_chart, stat_chart_stack, multiple_hist_chart)
-from fairml.facilc.draw_chart import (
-    multiple_scatter_chart, analogous_confusion,
-    multiple_scatter_alternative, analogous_confusion_alternative,
-    analogous_confusion_extended)
 
 from fairml.facilc.draw_addtl import (
-    # _subproc_pl_lin_reg_alt,
-    # line_reg_with_marginal_distr, scatter_with_marginal_distrib,
     FairGBM_scatter, FairGBM_tradeoff_v1, FairGBM_tradeoff_v2,
     FairGBM_tradeoff_v3)
-from experiment.wp2_oracle.fetch_data import (
-    GraphSetup, DataSetup, CURR_EXPT_DIR)
+from experiment.wp2_oracle.fvote_draw import PlotC_TheoremsLemma
+from experiment.wp2_oracle.fetch_data import DataSetup, GraphSetup
 
 
 # =====================================
-# Experiments (additional)
+# Experiments (re-presentation)
 # =====================================
 
 
 # -------------------------------------
-# To verify the proposed measure
+# oracle_plot.py
+# -------------------------------------
+# oracle_replot.py
 
-class PlotA_Measures(GraphSetup):
+
+class PlotD_Measures(GraphSetup):
     def __init__(self):
         pass
 
     def prepare_graph(self, res_data):
-        # res_data.shape (#iter, #sen_att, #name_ens, #eval)
         new_data = np.zeros_like(res_data).transpose(1, 2, 3, 0)
         nb_iter, nb_attr, nb_ens, nb_eval = np.shape(res_data)
         for i in range(nb_attr):
@@ -53,50 +57,6 @@ class PlotA_Measures(GraphSetup):
         return new_data
 
     def schedule_mspaint(self, res_data, res_all, figname=""):
-        # rew_data.shape: (#iter, #sen_att, #name_ens, #eval)
-        # new_data.shape: (#sen_att, #name_ens, #eval, #iter)
-        new_data = self.prepare_graph(np.array(res_data))[:, :, 30:, :]
-
-        data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
-        sensitive_attributes = res_all[1]
-        ensemble_methods = res_all[-1]
-        idx = [0, 1, 2, 3, 4, 6]
-        ensemble_methods = np.array(ensemble_methods)[idx].tolist()
-
-        for sa, sens_attr in enumerate(sensitive_attributes):
-            # .shape: (#name_ens, #eval, #iter)
-            fgn = "{}_{}_".format(figname, sens_attr)
-            curr = new_data[sa][idx]  # shape (#ens',30,5)
-            self.plot_multiple_hist_chart(curr, ensemble_methods, "acc", fgn)
-            self.plot_multiple_hist_chart(curr, ensemble_methods, "fair", fgn)
-            del curr, fgn
-
-    def plot_multiple_hist_chart(self, curr, ens, mark="acc", fgn=""):
-        if mark == "acc":
-            idx = [0, 1, 2, 3]  # without sen/spe
-            key = ["Accuracy", "Precision", "Recall", "f1_score"]
-        elif mark == "sen":
-            idx = [6, 7, 8, 10, 11]  # data_imbalance
-            key = ["Sensitivity", "Specificity", "G_mean", "Matthew", "Cohen"]
-        elif mark == "fair":
-            # idx = [23, 24, 25, 26, 27, 28]  # fairness
-            # key = ["unaware", "DP", "EO", "PQP", "Manual", "DR"]
-            idx = [24, 25, 26, 28]
-            key = ["DP", "EO", "PQP", "DR"]  # or "FQ (ours)"
-        # mode = 'ascend' if mark == "fair" else "descend"
-
-        new_curr = curr[:, idx, :]  # .shape (#alg,#eval,#iter)
-        Ys_avg = new_curr.mean(axis=2).T  # .shape (#eval,#alg)
-        Ys_std = new_curr.std(axis=2, ddof=1).T
-        multiple_hist_chart(Ys_avg, Ys_std, key, '', ens,
-                            figname=fgn + mark, rotate=20)
-        return
-
-
-class PlotD_Measures(PlotA_Measures):
-    def schedule_mspaint(self, res_data, res_all, figname=""):
-        # res_data.shape: (#iter, #sen_att, #name_ens, #eval)
-        # new_data.shape: (#sen_att, #name_ens, #eval, #iter)
         new_data = np.array(res_data)
         new_data = self.prepare_graph(new_data)[:, :, 56:, :]
 
@@ -111,38 +71,37 @@ class PlotD_Measures(PlotA_Measures):
 
         for sa, sens_attr in enumerate(sensitive_attributes):
             fgn = "{}_{}_".format(figname, sens_attr)
-            curr = new_data[sa][idx]  # shape (#ens,57,5)
+            curr = new_data[sa][idx]
             del fgn, curr
 
-        num_s, num_e = new_data.shape[:2]
-        # num_s, num_e, num_v, _ = new_data.shape
+        num_s, num_e, num_v, _ = new_data.shape
         alt_data = np.concatenate([
             new_data[i] for i in range(num_s)], axis=2)
-        # shape (7,57,5*2)= (#ens,#eval,#iter*#att)
         alt_data = np.concatenate([
             alt_data[i] for i in range(num_e)], axis=1)
-        # shape   (57,70)= (#eval,#iter*#att*#ens)
         X, Ys = alt_data[26], alt_data[[50, 51, 52, 54], :]
-        # annots = ('diff(Accuracy)', 'Fairness Measure')
         annots = (r"$\Delta$(Accuracy)", "Fairness Measure")
         annotZs = ('DP', 'EO', 'PQP', 'DR')
         fgn = figname + "_correlation"
-        multiple_scatter_chart(X, Ys, annots, annotZs, fgn)
+        # multiple_scatter_chart(X, Ys, annots, annotZs, fgn)
         multiple_scatter_chart(X, Ys, annots, annotZs, fgn,
                                ind_hv='v', identity=False)
 
         Mat = alt_data[[26, 27, 28, 29, 32, 33, 50, 51, 52, 54]]
-        # key = ["Accuracy", "Precision", "Recall", "f1_score",
-        #        "Sensitivity", "Specificity"]
         key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
         key = [r"$\Delta$({})".format(i) for i in key
                ] + ["DP", "EO", "PQP", "DR"]
         fgn = figname + "_confusion"
-        analogous_confusion(Mat, key, fgn, normalize=False)
-        return
+        # pdb.set_trace()
+        # analogous_confusion(Mat, key, fgn, normalize=False)
 
-    # def plot_multiple_scatter(self):
-    #   pass
+        idx_A = [0, 1, 2, 3, 5]
+        Mat_A, Mat_B = Mat[idx_A], Mat[6:]
+        key_A, key_B = [key[i] for i in idx_A], key[6:]
+        analogous_confusion_extended(
+            Mat_B, Mat_A, key_B, key_A, figname + '_confusion_alt',
+            cmap_name='PuBu', rotate=0, figsize='M-WS')
+        return
 
     def plot_multiple_hist_chart(self, curr, ens, mark="acc.norm",
                                  fgn="", ddof=1):
@@ -167,11 +126,10 @@ class PlotD_Measures(PlotA_Measures):
             idx = [i + 13 for i in idx]
         elif mark.endswith("abs_"):
             idx = [i + 26 for i in idx]
-        # mode = "ascend" if mark == "fair" else "descend"
+        mode = "ascend" if mark == "fair" else "descend"
 
-        new_curr = curr[:, idx, :]  # .shape (#alg,#eval,#iter)
-        Ys_avg = new_curr.mean(axis=2).T  # .shape (#eval,#alg)
-        # Ys_std = new_curr.std(axis=2, ddof=1).T
+        new_curr = curr[:, idx, :]
+        Ys_avg = new_curr.mean(axis=2).T
         Ys_std = new_curr.std(axis=2, ddof=ddof).T
         multiple_hist_chart(Ys_avg, Ys_std, key, '', ens,
                             figname=fgn + mark, rotate=20)
@@ -180,26 +138,23 @@ class PlotD_Measures(PlotA_Measures):
 
 class GatherD_Measures(PlotD_Measures):
     def schedule_mspaint(self, res_data, res_all,
-                         optional_data, figname="", verbose=False):
-        # each res_data.shape (#iter,#att,#ens,#eval) =(5,1|2,7,113)
-        # each new_data.shape (#att,#ens,#eval,#iter) =(1|2,7,113,5)
+                         optional_data, figname=""):
+        # each res_data.shape (#iter,#attr,#ens,#eval) =(5,1|2,7,113)
+        # each new_data.shape (#attr,#ens,#eval,#iter) =(1|2,7,113,5)
         new_data = [self.prepare_graph(np.array(
             res_data[i]))[:, :, 56:, :] for i in optional_data]
 
-        alt_data = np.concatenate(new_data, axis=0)  # (9,7,57,5)
-        # num_s, num_e, num_v, _ = alt_data.shape
-        num_s, num_e = alt_data.shape[: 2]
+        alt_data = np.concatenate(new_data, axis=0)
+        num_s, num_e, num_v, _ = alt_data.shape
         alt_data = np.concatenate([
-            alt_data[i] for i in range(num_s)], axis=2)  # (7,57,45)
+            alt_data[i] for i in range(num_s)], axis=2)
         alt_data = np.concatenate([
-            alt_data[i] for i in range(num_e)], axis=1)  # (57,315)
+            alt_data[i] for i in range(num_e)], axis=1)
 
         X, Ys = alt_data[26], alt_data[[50, 51, 52, 54], :]
         annots = (r"$\Delta$(Accuracy)", "Fairness Measure")
         annotZs = ('DP', 'EO', 'PQP', 'DR')
         fgn = figname + "_correlation"
-        if verbose:
-            multiple_scatter_chart(X, Ys, annots, annotZs, fgn)
         multiple_scatter_chart(X, Ys, annots, annotZs, fgn,
                                ind_hv='v', identity=False)
 
@@ -208,28 +163,33 @@ class GatherD_Measures(PlotD_Measures):
         key = [r"$\Delta$(%s)" % i for i in key
                ] + ["DP", "EO", "PQP", "DR"]
         fgn = figname + "_confusion"
-        if verbose:
-            analogous_confusion(Mat, key, fgn, normalize=False)
+
+        Mat_A, Mat_B = Mat[: 6], Mat[6:]
+        key_A, key_B = key[: 6], key[6:]
+        Mat_C = Mat_A[[0, 1, 2, 3, 5]]
+        key_C = [key_A[i] for i in [0, 1, 2, 3, 5]]  # delta(Sen)
         analogous_confusion_extended(
-            Mat[-4:], Mat[[0, 1, 2, 3, 5]], key[-4:],
-            [key[i] for i in [0, 1, 2, 3, 5]], fgn,
-            figsize='M-WS', cmap_name='Blues', rotate=0)
-        # pdb.set_trace()
+            Mat_B, Mat_C, key_B, key_C, figname + '_confusion_alt',
+            cmap_name='PuBu', rotate=0, figsize='M-WS')
         return
 
 
-class PlotE_Measures(PlotD_Measures):
+class PlotE_Measures(GraphSetup):
+    def prepare_graph(self, res_data):
+        new_data = np.zeros_like(res_data).transpose(1, 2, 3, 0)
+        nb_iter, nb_attr, nb_ens, nb_eval = np.shape(res_data)
+        for i in range(nb_attr):
+            for j in range(nb_ens):
+                for k in range(nb_eval):
+                    new_data[i, j, k] = res_data[:, i, j, k]
+        del nb_iter, nb_attr, nb_ens, nb_eval
+        return new_data
+
     def schedule_mspaint(self, res_data, res_all, figname="",
                          jt=False):
-        # res_data.shape: (#iter, #sen_att, #name_ens, #eval)
-        # new_data.shape: (#sen_att, #name_ens, #eval, #iter)
         new_data = np.array(res_data)
         idx = list(range(56, 112)) + list(
             range(168, 224)) + list(range(280, 336)) + [337 - 1, ]
-        # attr_A = list(range(56, 112))
-        # attr_B = list(range(168, 224))
-        # attr_J = list(range(280, 336))
-        # idx = attr_A + attr_B + attr_J + [337 - 1, ]
         new_data = self.prepare_graph(new_data)[:, :, idx, :]
 
         data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
@@ -246,7 +206,6 @@ class PlotE_Measures(PlotD_Measures):
             curr = new_data[sa][idx]
             del fgn, curr
 
-        # new_data.shape: (1|2,7,169,5)= (#sen_att,#name_ens,#eval',#iter)
         attr_A = list(range(56))
         attr_B = list(range(56, 112))
         attr_J = list(range(112, 168))
@@ -254,12 +213,11 @@ class PlotE_Measures(PlotD_Measures):
         if len(sensitive_attributes) > 1:
             test_B = new_data[:, :, attr_B, :].astype(DTY_FLT)
             test_J = new_data[:, :, attr_J, :].astype(DTY_FLT)
-        # test_*.shape: (1|2,7,56,5)= (#sen_att,#name_ens,#eval',#iter)
 
         num_s, num_e, num_v, _ = new_data.shape
-        test_A = np.concatenate([  # (7, 56, 5* 1|2)
+        test_A = np.concatenate([
             test_A[i] for i in range(num_s)], axis=2)
-        test_A = np.concatenate([  # (56, 5* 1|2 *7)
+        test_A = np.concatenate([
             test_A[i] for i in range(num_e)], axis=1)
         if len(sensitive_attributes) > 1:
             test_B = np.concatenate([
@@ -275,10 +233,10 @@ class PlotE_Measures(PlotD_Measures):
         annotZs = ('DP', 'EO', 'PQP', 'DR')
         fgn_r = figname + "_correlation"
         key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
-        key = [
-            r"$\Delta$(%s)" % i for i in key] + [
+        key = [r"$\Delta$(%s)" % i for i in key] + [
             "DP", "EO", "PQP", "DR"]
         fgn_f = figname + "_confusion"
+
         if len(sensitive_attributes) == 1:
             alt_data = [test_A]
         elif not jt:
@@ -307,8 +265,7 @@ class GatherE_Measures(PlotE_Measures):
         idx = list(range(56, 112)) + list(range(
             168, 224)) + list(range(280, 336)) + [337 - 1, ]
         new_data = self.prepare_graph(np.array(res_data))[:, :, idx, :]
-        # num_s, num_e, num_v, _ = new_data.shape  # shape (1|2,7,169,5)
-        num_s, num_e = new_data.shape[:2]
+        num_s, num_e, num_v, _ = new_data.shape
         sensitive_attributes = res_all[1]
 
         attr_A = list(range(56))
@@ -333,11 +290,9 @@ class GatherE_Measures(PlotE_Measures):
                 test_J[i] for i in range(num_s)], axis=2)
             test_J = np.concatenate([
                 test_J[i] for i in range(num_e)], axis=1)
-        # test_?.shape: (7,56,5* 1|2) = (#ens,#eval',?)
-        # test_?.shape: (56,5* 1|2 *7)= (#eval,??)
 
         if len(sensitive_attributes) == 1:
-            return test_A  # .shape (56, 5* 1|2 *7)
+            return test_A
         alt_data = [test_A, test_B]
         if jt:
             alt_data.append(test_J)
@@ -353,8 +308,8 @@ class GatherE_Measures(PlotE_Measures):
         annotZs = ('DP', 'EO', 'PQP', 'DR')
         fgn_r = figname + "_correlation" + "_{}".format(str(jt)[0])
         key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
-        key = [
-            r"$\Delta$(%s)" % i for i in key] + ["DP", "EO", "PQP", "DR"]
+        key = [r"$\Delta$(%s)" % i for i in key] + [
+            "DP", "EO", "PQP", "DR"]
         fgn_f = figname + "_confusion" + "_{}".format(str(jt)[0])
 
         X, Ys = alt_data[26], alt_data[[50, 51, 52, 54], :]
@@ -387,11 +342,13 @@ def _little_helper(name, sensitive_attributes=list()):
     return name
 
 
-class PlotF_Prunings(PlotD_Measures):
+class PlotF_Prunings(GraphSetup):
+    def __init__(self):
+        pass
+
     def prepare_graph(self, res_data):
-        # res_data.shape (5,29,339)= (#iter,#ens/pru,#eval)
-        new_data = np.zeros_like(res_data).transpose(1, 2, 0)  # (29,339,5)
-        nb_iter, nb_ens, nb_eval = np.shape(res_data)          # (5,29,339)
+        new_data = np.zeros_like(res_data).transpose(1, 2, 0)
+        nb_iter, nb_ens, nb_eval = np.shape(res_data)
         for i in range(nb_ens):
             for j in range(nb_eval):
                 new_data[i, j] = res_data[:, i, j]
@@ -400,13 +357,9 @@ class PlotF_Prunings(PlotD_Measures):
 
     def schedule_mspaint(self, res_data, res_all, figname="",
                          jt=False, logger=None):
-        # res_data.shape: (#iter, #ens, #eval)
-        # new_data.shape: (#ens, #eval, #iter)
-        # res_data.shape= (5, 29, 339)
-        # new_data.shape= (29, 339, 5) -> (29, 171, 5)
-        new_data = np.array(res_data)  # .transpose(1, 2, 0)
+        new_data = np.array(res_data)
         idx = list(range(56, 112)) + list(range(168, 224)) + list(
-            range(280, 336)) + list(range(336, 339))  # three times
+            range(280, 336)) + list(range(336, 339))
         new_data = self.prepare_graph(new_data)[:, idx, :]
 
         data_name, binary, nb_cls, nb_pru, nb_iter, _ = res_all[0]
@@ -418,14 +371,14 @@ class PlotF_Prunings(PlotD_Measures):
         for sa in sensitive_attributes:
             domestic_key.extend([
                 '{} via {}'.format(i, sa) for i in res_all[-1]])
-        domestic_key = [_little_helper(
-            i, sensitive_attributes) for i in domestic_key]
+        domestic_key = [
+            _little_helper(i, sensitive_attributes) for i in domestic_key]
 
-        e_i = [0, ]         # [0, 1, 2]
-        p_i = [0, 1, 3, 5]  # [0, 1, 2, 3, 4, 5]
-        f_i = [0, 3]  # [0,1,3]     # [0, 1, 2, 3]
+        e_i = [0, ]
+        p_i = [0, 1, 3, 5]
+        f_i = [0, 3]
         s_i_set = [0, 1] if data_name != 'ricci' else [0]
-        j_i = [20]          # [18, 19, 20]
+        j_i = [20]
         tmp_1 = np.arange(3 * 6).reshape(3, 6)
         tmp_1 = tmp_1[e_i, :][:, p_i].reshape(-1).tolist()
         for s_i in s_i_set:
@@ -597,7 +550,6 @@ class GatherF_Prunings(PlotF_Prunings):
             range(280, 336)) + list(range(336, 339))
         new_data = {i: self.prepare_graph(np.array(
             res_data[i]))[:, idx, :] for i in optional_data}
-        # each.new_data .shape (25|29, 339->171, 5)
         elegant_print("mCV_expt6\n", logger)
         self._tag = {
             0: "Accuracy (%)",
@@ -646,9 +598,10 @@ class GatherF_Prunings(PlotF_Prunings):
         self.tabulate_output(new_data, res_all, optional_data, 54,
                              figname, logger=logger)
 
-    def tabulate_output(self, new_data, res_all, optional_data, pt_i,
+    def tabulate_output(self, new_data, res_all,
+                        optional_data, pt_i,
                         fgn="", ddof=0, logger=None):
-        Ys_avg = np.zeros((9, 7))  # 7*(1+2*4) =63
+        Ys_avg = np.zeros((9, 7))
         Ys_std = np.zeros((9, 7))
         Ys_i = 0
         rez = 2 if pt_i in [0, 13, 26] else 4
@@ -658,9 +611,9 @@ class GatherF_Prunings(PlotF_Prunings):
         for i in optional_data:
             ret_key, ret_r, ret_c, sens_attr = self.merge_sub_data(
                 res_all[i], logger=logger)
-            for sk in sens_attr:  # for si,sk in enumerate(sens_attr):
-                alt_data = new_data[i][:, ret_c[sk]]  # .shape (25|29, 171,5) ->
-                alt_data = alt_data[ret_r[sk], :][:, pt_i]  # (7,56+3,5) ->(7,5)
+            for si, sk in enumerate(sens_attr):
+                alt_data = new_data[i][:, ret_c[sk]]
+                alt_data = alt_data[ret_r[sk], :][:, pt_i]
                 alt_data = alt_data.astype(DTY_FLT)
                 alt_data = alt_data[reorder, :]
                 if pt_i in [0, 13, 26]:
@@ -673,9 +626,7 @@ class GatherF_Prunings(PlotF_Prunings):
                     elegant_print(["\n"] + re_key, logger)
                 else:
                     elegant_print("\n", logger)
-                # elegant_print(["\n", i], logger)
-                elegant_print(
-                    "data sens_attr: {} {}".format(i, sk), logger)
+                elegant_print("data sens_attr: {} {}".format(i, sk), logger)
                 otmp = "{}\n".format(self._tag[pt_i])
                 for t1, t2 in zip(Ys_avg[Ys_i], Ys_std[Ys_i]):
                     otmp += " & {}".format(_encode_sign(t1, t2, rez))
@@ -689,10 +640,10 @@ class GatherF_Prunings(PlotF_Prunings):
                     compared = alt_data[j, :]
                     sign_B, G_B = comp_t_sing(compared, 5, rez)
                     mk_mu, mk_s2 = comp_t_prep(proposed, compared)
-                    otmp_1 += " & {}".format(
-                        cmp_paired_wtl(G_A, G_B, mk_mu, mk_s2, mode))
-                    otmp_2 += " & {}".format(
-                        cmp_paired_avg(G_A, G_B, mode))
+                    otmp_1 += " & {}".format(cmp_paired_wtl(
+                        G_A, G_B, mk_mu, mk_s2, mode))
+                    otmp_2 += " & {}".format(cmp_paired_avg(
+                        G_A, G_B, mode))
                 otmp_1 += " & ---"
                 otmp_2 += " & ---"
                 elegant_print([otmp_1, otmp_2], logger)
@@ -701,7 +652,7 @@ class GatherF_Prunings(PlotF_Prunings):
 
                 Ys_i += 1
         # mode = "ascend" if pt_i >= 39 else "descend"
-        _, idx_bar = Friedman_init(Ys_avg, mode=mode)  # rank,
+        rank, idx_bar = Friedman_init(Ys_avg, mode=mode)
         fgn += "_{}{}".format(pt_i, self._tag[pt_i][:3])
         if pt_i in [0, 54]:
             Friedman_chart(idx_bar, re_key, fgn + "_fried5",
@@ -724,281 +675,42 @@ class GatherF_Prunings(PlotF_Prunings):
         }
         kwargs = {"cmap_name": 'GnBu', "rotation": 35}  # 65
         if 50 <= pt_i <= 52:
-            kwargs["cmap_name"] = 'Greens'  # 'autumn'
+            kwargs["cmap_name"] = 'Greens'
         elif pt_i >= 54:
-            kwargs["cmap_name"] = 'Greens'  # 'Blues'
+            kwargs["cmap_name"] = 'Greens'
         elif 0 <= pt_i < 13:
-            kwargs["cmap_name"] = 'Blues'  # 'bone_r'
+            kwargs["cmap_name"] = 'Blues'
         if pt_i in annots.keys():
             kwargs["annots"] = annots[pt_i]
         stat_chart_stack(idx_bar, re_key, fgn + "_stack", **kwargs)
         elegant_print("\n\n", logger)
 
 
-class PlotB_Measures(GraphSetup):
-    def __init__(self):
-        pass  # To verify the proposed measure
+# =====================================
+# Experiments (representation)
+# =====================================
 
-    def prepare_graph(self, res_data):
-        # res_data.shape (5,12,1|3,8,63)= (#iter, #indv, #sen_att, 1+1+#pru, 63)
-        nb_iter, nb_indv, nb_attr, nb_epru, nb_eval = np.shape(res_data)
-        new_data = np.zeros([  # .transpose(2,1,3,4,0)
-            nb_attr, nb_indv, nb_epru, nb_eval - 3, nb_iter])  # (1|3,12,8,63,5)
-        for i in range(nb_attr):
-            for j in range(nb_indv):
-                for k in range(nb_epru):
-                    for m in range(nb_eval - 3):
-                        for n in range(nb_iter):
-                            new_data[i, j, k, m, n] = res_data[
-                                n][j][i][k][m]
-        del nb_iter, nb_indv, nb_attr, nb_epru, nb_eval
-        return new_data  # .shape (1|3,12,8,60,5)
 
-    def schedule_mspaint(self, res_data, res_all, figname=""):
-        # res_data.shape (#iter=5, #ens=12, #att=1/3, 1+1+#pru=8, 63)
-        # new_data.shape (#att=1/3, #bag=12, 1+1+#pru=8, #iter=5, 60)
-        new_data = self.prepare_graph(res_data)[:, :, :, 30:, :]
-
-        data_name, binary, nb_cls, nb_pru, nb_iter, _ = res_all[0]
-        sensitive_attributes = res_all[1]
-        name_ens_set, abbr_cls_set = res_all[3], res_all[4]
-        rank_pru_set = res_all[-1]  # name_pru based on ranking
-        if len(sensitive_attributes) > 1:
-            sensitive_attributes.append('joint')
-        # idx_1 = [0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11]  # list(range(12))
-        idx_1 = list(range(11))  # after removing `LR' out
-        name_ens_set = [name_ens_set[i] for i in idx_1]
-        abbr_cls_set = [abbr_cls_set[i] for i in idx_1]
-        idx_2 = [3, 4, 5, 7]  # [0, 3, 4, 5, 7]  # list(range(8))
-        rank_pru_set = [rank_pru_set[i] for i in idx_2]
-        rank_pru_set = [i.replace(
-            'rank.', 'Rank by '  # 'Rank.', 'Rank via '
-        ) if 'rank.' in i else i for i in rank_pru_set]
-
-        for sa, sens_attr in enumerate(sensitive_attributes):
-            fgn = "{}_{}_".format(figname, sens_attr)
-            curr = new_data[sa][idx_1]  # shape: (#bag=11, 8, 30, 5)
-
-            curr = curr[:, idx_2, :, :]  # shape (11,5,30,5)= (#bag#ind,#pru,30,#iter)
-            self.plot_multiple_hist_chart(
-                curr, abbr_cls_set, rank_pru_set, "acc",
-                fgn, seperated=False)
-            self.plot_multiple_hist_chart(
-                curr, abbr_cls_set, rank_pru_set, "fair",
-                fgn, seperated=False)
-            del curr, fgn
-
-    def plot_multiple_hist_chart(self, curr, ens, pru, mark="acc",
-                                 fgn="", seperated=True):
-        if mark == "acc":
-            idx = [0, 1, 2, 3]
-            key = ["Accuracy", "Precision", "Recall", "f1_score"]
-        elif mark == "sen":
-            idx = [6, 7, 8, 10, 11]
-            key = ["Sensitivity", "Specificity", "G_mean",
-                   "Matthew", "Cohen"]
-        elif mark == "fair":
-            idx = [24, 25, 26, 28]
-            key = ["DP", "EO", "PQP", "DR"]
-        # mode = "ascend" if mark == "fair" else "descend"
-
-        # new_curr = curr[:, :, idx]  # shape (8, 60, ?)
-        # new_curr = curr[:, :, :, idx]# shape (#bag=12,#pru=8,5,#eval)
-        new_curr = curr[:, :, idx, :]  # shape (11,5,4|5|4,5)= (#indv,#pru,#eval,#iter)
-
-        alt_curr = np.concatenate(
-            [new_curr[i] for i in range(11)], axis=2)
-        # new_curr.shape (11,5,4|5|4,5)= (#indv,#pru,#eval,#iter)
-        # alt_curr.shape   (5,4|5|4,55)= (#pru,#eval,#iter*#indv)
-        # Ys_avg/std.shape ()= (#eval,#indv*#pru)
-        Ys_avg = alt_curr.mean(axis=2).T  # shape (?,8)
-        Ys_std = alt_curr.std(axis=2, ddof=1).T
-        multiple_hist_chart(Ys_avg, Ys_std, key, '', pru,
-                            figname=fgn + mark, rotate=20)
-        if not seperated:
-            return
-
-        for k, val in enumerate(ens):
-            values = new_curr[k]  # .transpose(0, 2, 1) shape(8,?,5)
-            Ys_avg = values.mean(axis=2).T
-            # Ys_std = values.std(axis=2, ddof=1).T
-            Ys_std = values.std(axis=2).T
-            multiple_hist_chart(
-                Ys_avg, Ys_std, key, '', pru,
-                figname=fgn + mark + "_bag_" + str(val),
-                rotate=20)
+class Renew_PlotF_Prunings(PlotF_Prunings):
+    def renew_schedule_msgraph(self):
         return
-
-
-"""
-class PlotD_Measures(GraphSetup):
-    def __init__(self):
-        pass
-
-    def prepare_graph(self, res_data):
-        new_data = np.zeros_like(res_data).transpose(1, 2, 3, 0)
-        nb_iter, nb_attr, nb_ens, nb_eval = np.shape(res_data)
-        for i in range(nb_attr):
-            for j in range(nb_ens):
-                for k in range(nb_eval):
-                    new_data[i, j, k] = res_data[:, i, j, k]
-        del nb_iter, nb_attr, nb_ens, nb_eval
-        return new_data
-
-    def schedule_mspaint(self, res_data, res_all, figname=""):
-        new_data = np.array(res_data)
-        new_data = self.prepare_graph(new_data)[:, :, 56:, :]
-
-        data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
-        sensitive_attributes = res_all[1]
-        ensemble_methods = res_all[-1]
-        ensemble_methods = [
-            i.replace('FPR', 'fpr').replace('FNR', 'fnr') 
-            if 'FairGBM' in i else i for i in ensemble_methods]
-        idx = [0, 1, 2, 3, 4, 6]
-        ensemble_methods = [ensemble_methods[i] for i in idx]
-
-        for sa, sens_attr in enumerate(sensitive_attributes):
-            fgn = "{}_{}_".format(figname, sens_attr)
-            curr = new_data[sa][idx]
-            del fgn, curr
-
-        num_s, num_e, num_v, _ = new_data.shape
-        alt_data = np.concatenate([
-            new_data[i] for i in range(num_s)], axis=2)
-        alt_data = np.concatenate([
-            alt_data[i] for i in range(num_e)], axis=1)
-        X, Ys = alt_data[26], alt_data[[50, 51, 52, 54], :]
-        annots = (r"$\Delta$(Accuracy)", "Fairness Measure")
-        annotZs = ('DP', 'EO', 'PQP', 'DR')
-        fgn = figname + "_correlation"
-        multiple_scatter_chart(X, Ys, annots, annotZs, fgn,
-                               ind_hv='v', identity=False)
-
-        Mat = alt_data[[26, 27, 28, 29, 32, 33, 50, 51, 52, 54]]
-        key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
-        key = [r"$\Delta$({})".format(i) for i in key
-               ] + ["DP", "EO", "PQP", "DR"]
-        fgn = figname + "_confusion"
-        # analogous_confusion(Mat, key, fgn, normalize=False)
-
-        idx_A = [0, 1, 2, 3, 5]
-        Mat_A, Mat_B = Mat[idx_A], Mat[6:]
-        key_A, key_B = [key[i] for i in idx_A], key[6:]
-        analogous_confusion_extended(Mat_B, Mat_A, key_B, key_A,
-                                     figname + '_confusion_alt',
-                                     cmap_name='PuBu', rotate=0,
-                                     figsize='M-WS')
-        return
-
-    def plot_multiple_hist_chart(self, curr, ens, mark="acc.norm",
-                                 fgn="", ddof=1):
-        if mark.startswith("acc"):  # without sen/spe
-            idx = [0, 1, 2, 3]      # normal
-            # idx = [13, 14, 15, 16]  # adversarial
-            # idx = [26, 27, 28, 29]  # abs()
-            key = ["Accuracy", "Precision", "Recall", "f1_score"]
-        elif mark.startswith("sen"):
-            idx = [6, 7, 8, 10, 11]
-            # idx = [19, 20, 21, 23, 24]
-            # idx = [32, 33, 34, 36, 37]
-            key = ["Sensitivity", "Specificity", "G_mean", "Matthew", "Cohen"]
-        elif mark == "fair":
-            idx = [50, 51, 52, 54]
-            key = ["DP", "EO", "PQP", "DR"]  # or "FQ (ours)"
-
-        if mark.endswith("norm"):
-            pass
-        elif mark.endswith("advr"):
-            idx = [i + 13 for i in idx]
-        elif mark.endswith("abs_"):
-            idx = [i + 26 for i in idx]
-        mode = "ascend" if mark == "fair" else "descend"
-
-        new_curr = curr[:, idx, :]
-        Ys_avg = new_curr.mean(axis=2).T
-        Ys_std = new_curr.std(axis=2, ddof=ddof).T
-        multiple_hist_chart(Ys_avg, Ys_std, key, '', ens,
-                            figname=fgn + mark, rotate=20)
-        return
-
-
-class GatherD_Measures(PlotD_Measures):
-    def schedule_mspaint(self, res_data, res_all,
-                         optional_data, figname=""):
-        # each res_data.shape (#iter,#attr,#ens,#eval) =(5,1|2,7,113)
-        # each new_data.shape (#attr,#ens,#eval,#iter) =(1|2,7,113,5)
-        new_data = [self.prepare_graph(np.array(
-            res_data[i]))[:, :, 56:, :] for i in optional_data]
-
-        alt_data = np.concatenate(new_data, axis=0)
-        num_s, num_e, num_v, _ = alt_data.shape
-        alt_data = np.concatenate([
-            alt_data[i] for i in range(num_s)], axis=2)
-        alt_data = np.concatenate([
-            alt_data[i] for i in range(num_e)], axis=1)
-
-        X, Ys = alt_data[26], alt_data[[50, 51, 52, 54], :]
-        # annots = (r"$\Delta$(Accuracy)", "Fairness Measure")
-        annots = (r"$\Delta$(Accuracy)", "Fairness measure")
-        annotZs = ('DP', 'EO', 'PQP', 'DR')
-        fgn = figname + "_correlation"
-        multiple_scatter_chart(X, Ys, annots, annotZs, fgn,
-                               ind_hv='v', identity=False)
-
-        Mat = alt_data[[26, 27, 28, 29, 32, 33, 50, 51, 52, 54]]
-        key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
-        key = [r"$\Delta$(%s)" % i for i in key
-               ] + ["DP", "EO", "PQP", "DR"]
-        fgn = figname + "_confusion"
-        # analogous_confusion(Mat, key, fgn, normalize=False)
-
-        Mat_A, Mat_B = Mat[: 6], Mat[6:]
-        key_A, key_B = key[: 6], key[6:]
-        Mat_C = Mat_A[[0, 1, 2, 3, 5]]
-        key_C = [key_A[i] for i in [0, 1, 2, 3, 5]]  # delta(Sen)
-        analogous_confusion_extended(
-            Mat_B, Mat_C, key_B, key_C, figname + '_confusion_alt',
-            cmap_name='PuBu', rotate=0, figsize='M-WS')
-        return
-
-
-class PlotE_Measures(GraphSetup):
-    def prepare_graph(self, res_data):
-        new_data = np.zeros_like(res_data).transpose(1, 2, 3, 0)
-        nb_iter, nb_attr, nb_ens, nb_eval = np.shape(res_data)
-        for i in range(nb_attr):
-            for j in range(nb_ens):
-                for k in range(nb_eval):
-                    new_data[i, j, k] = res_data[:, i, j, k]
-        del nb_iter, nb_attr, nb_ens, nb_eval
-        return new_data
-
-
-class PlotF_Prunings(GraphSetup):
-    def __init__(self):
-        pass
-
-
-# class Renew_PlotF_Prunings(PlotF_Prunings):
-#     def renew_schedule_msgraph(self):
-#         return
-"""
 
 
 class Renew_GatherF_Prunings(GatherF_Prunings):
     def renew_schedule_msgraph(self, res_data, res_all, optional_data,
-                               figname='', jt=False, logger=None,
-                               verbose=False):
+                               figname='', jt=False, logger=None):
         idx = list(range(56, 112)) + list(range(168, 224)) + list(
             range(280, 336)) + list(range(336, 339))
         new_data = {i: self.prepare_graph(np.array(
             res_data[i]))[:, idx, :] for i in optional_data}
         elegant_print("renew mCV_expt6\n", logger)
 
+        # for i in [0, 3, 50, 51, 52, 54]:
+        #   self.renew_tabulate_output(
+        #       new_data, res_all, optional_data, i, figname, logger=logger)
         _, Ys_model, Ys_acc = self.renew_retrieve_dat(
             new_data, res_all, optional_data, 0)
-        _, _, _ = self.renew_retrieve_dat(  # ,Ys_f1s
+        _, _, Ys_f1s = self.renew_retrieve_dat(
             new_data, res_all, optional_data, 3)
         _, _, Ys_DP = self.renew_retrieve_dat(
             new_data, res_all, optional_data, 50)
@@ -1011,38 +723,45 @@ class Renew_GatherF_Prunings(GatherF_Prunings):
         Ys_annot = ['DP', 'EO', 'PQP', 'DR']
         self.renew_graph_scatter(Ys_acc, [
             Ys_DP, Ys_EO, Ys_PQP, Ys_DR], Ys_model, Ys_annot,
-            verbose)
+            verbose=False)
         return
 
     def renew_retrieve_dat(self, new_data, res_all, optional_data,
                            pt_i, fgn='', ddof=0, logger=None):
         Ys_avg, Ys_std = np.zeros((9, 7)), np.zeros((9, 7))
         Ys_i, reorder = 0, [4, 5, 6, 0, 1, 2, 3]
-        # rez = 2 if pt_i in [0, 13, 26] else 4
-        # mode = 'ascend' if pt_i >= 39 else 'descend'
+        rez = 2 if pt_i in [0, 13, 26] else 4
+        mode = 'ascend' if pt_i >= 39 else 'descend'
         Ys_entire = np.zeros((9, 7, 5))
         for i in optional_data:
             ret_key, ret_r, ret_c, sen_att = self.merge_sub_data(
                 res_all[i], logger=logger)
-            for sk in sen_att:  # for si,sk in enumerate(sen_att):
+            for si, sk in enumerate(sen_att):
                 alt_data = new_data[i][:, ret_c[sk]]
                 alt_data = alt_data[ret_r[sk], :][:, pt_i]
                 alt_data = alt_data.astype(DTY_FLT)[reorder, :]
+                # if pt_i in [0, 13, 26]:
+                #   alt_data *= 100.
                 Ys_avg[Ys_i] = alt_data.mean(axis=1)
                 Ys_std[Ys_i] = alt_data.std(axis=1, ddof=ddof)
                 Ys_entire[Ys_i] = alt_data
                 Ys_i += 1
-        Ys_entire_trans = Ys_entire.transpose(1, 0, 2).reshape(
-            -1, 5 * 9)  # ->(7,9,5) ->(7,45)
+        Ys_entire_trans = Ys_entire.transpose(
+            1, 0, 2).reshape(-1, 5 * 9)
         Ys_models = ret_key[sen_att[0]]
         Ys_models = [Ys_models[i] for i in reorder]
+        # rank, idx_bar = Friedman_init(Ys_avg, mode=mode)
         return Ys_entire, Ys_models, Ys_entire_trans
 
     def renew_graph_scatter(self, X, Ys, Ys_model, Ys_annot,
                             verbose):
+        # fig = plt.figure(dpi=300)
+        # ax = fig.add_subplot(111)
+        # multi_lin_reg_with_distr()
+        # scatter_with_marginal_distrib()
         label_x = 'Performance (Accuracy)'  # f1_score
         kw_balance = {'alpha_loc': 'b4', 'alpha_rev': True}
-        n = len(Ys_model)
+        n = len(Ys_model)  # Ys.shape  (4, #model, #iteration)
         for i in range(4):
             FairGBM_scatter(
                 X, Ys[i], Ys_model, (
@@ -1087,11 +806,9 @@ class Renew_GatherF_Prunings(GatherF_Prunings):
                 figname='exp6_fairep_bal_0acc_bias{}'.format(i),
                 num_gap=100, **kw_balance)
         # pdb.set_trace()
+        # fig = _setup_figsize(fig, 'L-WS', invt=False)
+        # _setup_figshow(fig, figname + '_')
         return
-
-
-# -------------------------------------
-# To verify
 
 
 # =====================================
@@ -1099,73 +816,92 @@ class Renew_GatherF_Prunings(GatherF_Prunings):
 # =====================================
 
 
-class FairVoteDrawing(DataSetup):
-    def __init__(self, trial_type, nb_cls, nb_pru,
+class FVre_Drawing(DataSetup):
+    def __init__(self, trial_type, nb_cls, nb_pru=None,
                  nb_iter=5, ratio=.5, lam=.5, data_type='ricci',
                  name_ens="AdaBoostM1", abbr_cls="DT",
+                 partition=False, nb_lam=9,
                  gather=False, screen=True, logged=False):
         super().__init__(data_type)
         self._trial_type = trial_type
-
         self._nb_cls = nb_cls
         self._nb_pru = nb_pru
         self._nb_iter = nb_iter
         self._ratio = ratio
         self._lam = lam
+        self._name_ens = name_ens
+        self._abbr_cls = abbr_cls
+        self._screen = screen
+        self._logged = logged
+        self._pn = partition
 
         self._log_document = "_".join([
             trial_type, "{}vs{}".format(nb_cls, nb_pru),
             "iter{}".format(nb_iter), self._log_document,
             "ratio{}".format(int(ratio * 100)), "pms"])
-
-        self._name_ens = name_ens
-        self._abbr_cls = abbr_cls
-        if trial_type.endswith('expt3'):
-            nmens_tmp = _get_tmp_name_ens(name_ens)
-            self._log_document = self._log_document.replace(
-                data_type, '')
-            self._log_document += "_{}_{}_{}".format(
-                nmens_tmp, abbr_cls, data_type)
         if trial_type.endswith('expt6'):
             self._log_document += "_lam{}".format(int(lam * 100))
+        if trial_type[-5:] in ('expt3'):
+            nmens_tmp = _get_tmp_document(name_ens, nb_cls)
+            self._log_document = "_".join([
+                trial_type, nmens_tmp, "paint"])
 
-        self._screen = screen
-        self._logged = logged
-
-        if self._trial_type.endswith('expt1'):
-            self._iterator = PlotA_Measures()
-
-        elif self._trial_type.endswith('expt4') and (not gather):
-            self._iterator = PlotD_Measures()
-        elif self._trial_type.endswith('expt5') and (not gather):
-            self._iterator = PlotE_Measures()
-        elif self._trial_type.endswith('expt6') and (not gather):
-            self._iterator = PlotF_Prunings()
-
-        elif self._trial_type.endswith('expt4') and gather:
-            self._iterator = GatherD_Measures()
-        elif self._trial_type.endswith('expt6') and gather:
-            self._iterator = GatherF_Prunings()
-        elif self._trial_type.endswith('expt5') and gather:
-            self._iterator = GatherE_Measures()
-
-        elif self._trial_type.endswith('expt2'):
-            self._iterator = PlotB_Measures()
+        if self._trial_type.endswith('expt5'):
+            self._iterator = PlotE_Measures() if not gather else GatherE_Measures()
+        elif self._trial_type.endswith('expt6'):  # UPDATE
+            # self._iterator = PlotF_Prunings() if not gather else GatherF_Prunings()
+            self._iterator = Renew_PlotF_Prunings(
+            ) if not gather else Renew_GatherF_Prunings()
+        elif self._trial_type.endswith('expt4'):
+            self._iterator = PlotD_Measures() if not gather else GatherD_Measures()
+        elif trial_type.endswith('expt3'):
+            self._iterator = PlotC_TheoremsLemma(
+                name_ens, nb_cls,
+                nb_iter=nb_iter, trial_type=trial_type)
         self._figname = "{}_{}".format(trial_type, data_type)
         if gather:
             self._figname = "{}_entire".format(trial_type)
 
-    def trial_one_process(self):
+    def trial_one_process(self, prefix):
         since = time.time()
         # START
+        if self._trial_type[-5:] in ('expt6', 'expt4'):
+            self.trial_one_proc_json(prefix=prefix)
+        elif self._trial_type[-5:] in ('expt3',):
+            self.trial_one_proc_csvr(prefix=prefix)
+        # END
+        tim_elapsed = time.time() - since
+        elegant_print("\tDrawing: time cost {:.6f} minutes".format(
+            tim_elapsed / 60), None)  # logger)
+        return
 
-        json_rf = open(os.path.join(
-            CURR_EXPT_DIR, self._log_document + ".json"), 'r')
+    def trial_one_proc_csvr(self, prefix=''):
+        trial_type = self._iterator.trial_type
+        filename = self._iterator.get_raw_filename(trial_type)
+        filename = filename.split('/')[-1]
+        if prefix:
+            filename = os.path.join(prefix, filename)
+        # assert os.path.exists(filename), filename
+        raw_dframe = self._iterator.load_raw_dataset(filename)
+        if self._trial_type.endswith('expt10'):
+            self._iterator.schedule_mspaint(raw_dframe, None)
+        else:
+            self._iterator.schedule_mspaint(raw_dframe, self._pn)
+        return
+
+    def trial_one_proc_json(self, prefix=''):
+        # START
+        if not prefix:
+            json_rf = open(self._log_document + ".json", 'r')
+        else:
+            json_rf = open(os.path.join(
+                prefix, self._log_document + '.json'), 'r')
         # json_rf = open(self._log_document + ".json", 'r')
         content = json_rf.read()
         json_reader = json.loads(content)
         res_all = json_reader['res_all']
         res_data = json_reader['res_data']
+        # START
 
         if self._trial_type.endswith('expt5'):
             self._iterator.schedule_mspaint(
@@ -1177,26 +913,24 @@ class FairVoteDrawing(DataSetup):
                 "fvote", self._figname + ".txt")
             self._iterator.schedule_mspaint(
                 res_data, res_all, self._figname, False, logger)
+            # pdb.set_trace()
         else:
             self._iterator.schedule_mspaint(res_data, res_all,
                                             self._figname)
-        json_rf.close()  # file to read
-        del json_rf, content, json_reader
-        del res_all, res_data
-        if self._trial_type.endswith('expt6'):
-            rm_ehandler(logger, formatter, fileHandler)
 
         # END
-        tim_elapsed = time.time() - since
-        elegant_print("Time period in total: {}".format(
-            elegant_durat(tim_elapsed)), None)
+        json_rf.close()  # file to read
+        del json_rf, content, json_reader
+        del res_all, res_data  # , new_data
+        if self._trial_type.endswith('expt6'):
+            rm_ehandler(logger, formatter, fileHandler)
+        # END
         return
 
-    def trial_gather_process(self):
+    def trial_gather_process(self, prefix=''):
         since = time.time()
         # START
 
-        # optional_data = ["ricci", "german", "adult", "ppc", "ppvc"]
         optional_data = ["ricci", "german", "adult", "ppr", "ppvr"]
         res_all, res_data = {}, {}
         for data_type in optional_data:
@@ -1210,9 +944,11 @@ class FairVoteDrawing(DataSetup):
             if self._trial_type.endswith('expt6'):
                 log_document += "_lam{}".format(int(self._lam * 100))
 
-            json_rf = open(os.path.join(
-                CURR_EXPT_DIR, log_document + ".json"), 'r')
-            # json_rf = open(log_document + ".json", 'r')
+            if not prefix:
+                json_rf = open(log_document + ".json", 'r')
+            else:
+                json_rf = open(os.path.join(
+                    prefix, log_document + '.json'), 'r')
             content = json_rf.read()
             json_reader = json.loads(content)
             res_all[data_type] = json_reader['res_all']
@@ -1232,6 +968,9 @@ class FairVoteDrawing(DataSetup):
             self._iterator.schedule_mspaint(
                 res_data, res_all, optional_data,
                 self._figname, jt=False, logger=logger)
+            self._iterator.renew_schedule_msgraph(
+                res_data, res_all, optional_data, self._figname,
+                jt=False, logger=logger)
         else:
             self._iterator.schedule_mspaint(
                 res_data, res_all, optional_data, self._figname)
@@ -1242,5 +981,5 @@ class FairVoteDrawing(DataSetup):
         # END
         tim_elapsed = time.time() - since
         elegant_print("Time period in total: {}".format(
-            elegant_durat(tim_elapsed)), None)
+            elegant_durat(tim_elapsed)), logger)
         return
