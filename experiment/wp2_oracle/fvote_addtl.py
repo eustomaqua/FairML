@@ -1009,7 +1009,7 @@ class Renew_GatherF_Prunings(GatherF_Prunings):
                            pt_i, fgn='', ddof=0, logger=None):
         Ys_avg, Ys_std = np.zeros((9, 7)), np.zeros((9, 7))
         Ys_i, reorder = 0, [4, 5, 6, 0, 1, 2, 3]
-        rez = 2 if pt_i in [0, 13, 26] else 4
+        # rez = 2 if pt_i in [0, 13, 26] else 4
         # mode = 'ascend' if pt_i >= 39 else 'descend'
         Ys_entire = np.zeros((9, 7, 5))
         for i in optional_data:

@@ -30,6 +30,7 @@ from experiment.wp2_oracle.fvote_draw import (
     PlotH_ImprovePruning, PlotHGather_ImprovePruning,
     TableHGather_ImprovePruning, PlotC_TheoremsLemma,
     PlotK_PACGeneralisation)
+from experiment.wp2_oracle.fvote_draw import PlotD_ImprovePruning  # legacy
 
 
 # ----------------------------------

@@ -1133,7 +1133,7 @@ _line_marker = [
 
 
 def line_chart(data,
-               pickup_thin, set_k2, 
+               pickup_thin, set_k2,
                pickup_lam2, set_lam2,
                figname, figsize='S-NT'):
     if not isinstance(data, np.ndarray):

@@ -1065,7 +1065,7 @@ class TableHGather_ImprovePruning(PlotH_ImprovePruning):
 
     def schedule_spreadsheet(self, raw_dframe, tag_col):
         nb_set, id_set, index = self.recap_sub_data(raw_dframe[0])
-        nm_set = ['ricci', 'german', 'adult', 'ppr', 'ppvr']
+        # nm_set = ['ricci', 'german', 'adult', 'ppr', 'ppvr']
 
         for i, name_ens in enumerate(AVAILABLE_ABBR_ENSEM):
             tdf = raw_dframe[i]['DT']
@@ -1292,6 +1292,203 @@ class TableHGather_ImprovePruning(PlotH_ImprovePruning):
                     results.append(self.formulate_sign(ans_cmp))
                     print("kws", kws)
                     self.tabulate_output(results, kws)
+
+
+# Section 3.3 (legacy)
+
+
+class PlotD_ImprovePruning(GraphSetup):
+    def __init__(self, name_ens, nb_cls, nb_pru, nb_iter=5,
+                 trial_type='mCV_expt4',
+                 figname='expt4_pru', logger=None):
+        super().__init__(name_ens, nb_cls, nb_pru,
+                         nb_iter=nb_iter, figname=figname)
+        self._trial_type = trial_type
+        self._logger = logger
+
+        self._set_pru_name = [
+            'ES', 'KL', 'KL+', 'KPk', 'KPz',  # 'KP', 'KP+',
+            'RE', 'CM', 'OO', 'GMA', 'LCS',
+            'DREP', 'drepm', 'SEP', 'OEP', 'PEP',
+            # 'PEP+', 'pepre', 'pepr+'
+        ]
+        self._set_pru_late = [
+            'MRMC-MRMR', 'MRMC-MRMC', 'MRMC-ALL',
+            'MRMREP', 'mRMR-EP', 'Disc-EP',
+            'TSP-AP', 'TSP-DP', 'TSP-AP+DP', 'TSP-DP+AP',
+            # "TSPrev-DP", "TSPrev-AD", "TSPrev-DA",
+        ]
+        # len(self._set_pru_name) + len(self._set_pru_late)
+        self._length = sum(map(len, [
+            self._set_pru_name, self._set_pru_late]))
+
+    @property
+    def length(self):
+        return self._length
+
+    def prepare_graph(self):
+        csv_row_1 = unique_column(8 + 26 + 24 * (self._length + 5) - 1)
+        # 23  : ensemble performance
+        # 24*4: proposed pruning
+        # 24*l: compared baseline for pruning
+
+        # csv_row_1, csv_row_3 = csv_row_1[(8 + 26):], []
+        # return csv_row_1, csv_row_3
+        return csv_row_1[(8 + 26 - 2):]
+
+    def pick_up_idx(self, rel_id=None):
+        if rel_id is None:
+            return []
+        num_len, num_gap = self._length + 4, 11 * 2 + 2
+        # rel_id:
+        #   0-5:  'Acc', 'P', 'R', 'F1', 'G1=Lt(MV)', 'G2=Lat(MV)',
+        #   6-9:  'L()', 'E_rho2[Lt(f,fp)]', 'E_rho[Lat(f)]', 'L(MV)',
+        #   10-:  'E_rho[Lt(f)]'
+        #         for trn + for tst + [ut.pru, ut.calc] (unit:minute)
+
+        if rel_id == 11:
+            ind_pru = [i * num_gap + 22 for i in range(num_len)]
+            ind_pru = [num_gap - 1 + i for i in ind_pru]
+            ind_ens = [-2]
+            ind_trn, ind_tst = ind_ens + ind_pru, []
+
+        elif rel_id < 11:
+            ind_trn = [i * num_gap + rel_id for i in range(num_len)]
+            ind_tst = [i * num_gap + rel_id + 11 for i in range(num_len)]
+            ind_trn = [num_gap - 1 + i for i in ind_trn]
+            ind_tst = [num_gap - 1 + i for i in ind_tst]
+            ind_trn = [rel_id] + ind_trn
+            ind_tst = [rel_id + 11] + ind_tst
+
+        ind_trn = [i + 2 for i in ind_trn]
+        ind_tst = [i + 2 for i in ind_tst]
+        return ind_trn, ind_tst
+
+    def pick_up_tag(self, csv_row_1, ind):
+        return [csv_row_1[i] for i in ind]
+
+    def pick_up_comparison(self, rel_id=None):
+        # aka. def pick_up_idx_comparison(self, csv_row_1, rel_id):
+        csv_row_1 = self.prepare_graph()
+        ind_trn, ind_tst = self.pick_up_idx(rel_id)
+        tag_trn = self.pick_up_tag(csv_row_1, ind_trn)
+        tag_tst = self.pick_up_tag(csv_row_1, ind_tst)
+        return tag_trn, tag_tst  # idx_trn, idx_tst
+
+    def schedule_mspaint(self, raw_dframe, partition=False):
+        nb_set, id_set, index = self.recap_sub_data(raw_dframe)
+        tag_col = self.prepare_graph()
+        avg, _, _, raw = pd_concat_divide_raw(
+            raw_dframe, tag_col, nb_set, index)
+        # self.verify_aggregated_rank(avg, "whole_avg")
+        self.verify_aggregated_rank(raw, "whole_raw")
+
+        if not partition:
+            return
+        tmp = _get_tmp_name_ens(self._name_ens)
+
+        for k, v in raw_dframe.items():
+            avg, _, _, raw = pd_concat_divide_sht(v, tag_col, nb_set, index)
+            # self.verify_aggregated_rank(avg, "split_avg_" + tmp + k)
+            self.verify_aggregated_rank(raw, "split_raw_" + tmp + k)
+
+    def pick_up_pru(self, tag_trn, tag_tst,
+                    category=None, ind_ens=False):
+        # self._set_pru_name .size=15
+        # self._set_pru_late .size=10
+        # 0,1,{3,4},5,6,7,8,9,10,12,13,14, 15,16,20,21,22
+        # 1,{3,4},5,6,7, 10,12,13,14, 15,16,20
+
+        set_pru = self._set_pru_name + self._set_pru_late
+        # ind_pru = [1, 3, 5, 6, 7, 10, 12, 13, 14, 15, 16, 20]
+        ind_pru = [1, 3, 5, 6, 7, 10, 12, 13, 14, 15, 16, 20, 21, 22]
+        if category == 'ranking':
+            ind_pru = [0, 1, 3, 5, 6, 7, 10, 13, 21, 22]
+        elif category == 'optimis':
+            # aka. 'optimisation'
+            ind_pru = [8, 9, 12, 14, 15, 16, 20]
+
+        name_pru = [set_pru[i] for i in ind_pru]
+        for k in ['KPk', 'KPz']:
+            if k in name_pru:
+                j = name_pru.index(k)
+                name_pru[j] = 'KP'
+        for k in ['MRMC-MRMR', 'MRMC-MRMC']:
+            if k in name_pru:
+                j = name_pru.index(k)
+                name_pru[j] = k[-4:]
+        for k in ['Disc-EP', 'TSP-AP', 'TSP-DP']:
+            if k in name_pru:
+                j = name_pru.index(k)
+                name_pru[j] = k.replace('-', '.')
+        # name_pru = name_pru + ['EPAF-C', 'EPAF-D', 'POEPAF']  # 'EPAF-D:2'
+        name_pru = name_pru + ['EPAF-C', 'EPAF-D', 'POAF']  # POPEP
+
+        ind_pru = [i + 5 for i in ind_pru]
+        # ind_pru = [0] + ind_pru + [1, 2, 4]
+        ind_pru = ind_pru + [1, 2, 4]
+        if ind_ens:  # if ensem:
+            ind_pru = [0] + ind_pru
+            name_pru = ['Ensem'] + name_pru
+
+        tag_trn = [tag_trn[i] for i in ind_pru]
+        tag_tst = [tag_tst[i] for i in ind_pru] if tag_tst else []
+        return ind_pru, name_pru, tag_trn, tag_tst
+
+    def verify_Friedman_chart(self, df, kw, rel_id):
+        # rel_id: choice=[0,1,2,3,4,5,9]
+        #     0-3:  Accuracy, Precision, Recall, F1,
+        #     4-6:  G1=Lt(MV), G2=Lat(MV), L(),
+        #     7-9:  E_rho2[Lt(f,fp)], E_rho[Lat(f)], L(MV),
+        #     10-:  E_rho[Lt(f)]
+        tag_trn, tag_tst = self.pick_up_comparison(rel_id)
+        _, name_pru, tag_trn, tag_tst = self.pick_up_pru(tag_trn, tag_tst)
+
+        tag_col = tag_trn if rel_id == 11 else tag_tst
+        U = df[tag_col].values.astype(DTY_FLT)
+        mode = 'ascend'  # rel_id=11, means `ut`
+        if rel_id in [0, 1, 2, 3]:
+            mode = 'descend'
+        # mode = 'descend' if pickup_uat == 'ua' else 'ascend'
+
+        rank, idx_bar = Friedman_init(U, mode=mode)
+        figname = self._figname + '_' + kw + '_rel' + str(rel_id)
+        Friedman_chart(idx_bar, name_pru, figname + '_fried5',
+                       alpha=0.05, logger=self._logger)
+        # Friedman_chart(idx_bar, name_pru, figname + '_fried10',
+        #                alpha=0.10, logger=self._logger)
+
+        annots = {
+            0: r"aggr.rank.accuracy",
+            1: r"aggr.rank.precision",
+            2: r"aggr.rank.recall",
+            3: r"aggr.rank.f1_score",
+
+            4: r"aggr.rank.$G_1(\mathbf{wv}_\rho)$",
+            5: r"aggr.rank.$G_2(\mathbf{wv}_\rho)$",
+            9: r"aggr.rank.$\mathcal{L}(\mathbf{wv}_\rho)$",
+        }
+        kwargs = {"cmap_name": 'GnBu', "rotation": 65}
+        if rel_id in annots.keys():
+            kwargs["annots"] = annots[rel_id]
+        stat_chart_stack(idx_bar, name_pru, figname + '_stack',
+                         **kwargs)
+        # def plot_aggregated_rank(self, df, tag_col, name_pru,
+        #                        figname, annots='aggregated.Y',
+        #                        pickup_uat='ua')
+        # annots=annots, cmap_name='GnBu', rotation=65)
+
+    def verify_aggregated_rank(self, df, kw):
+        self.verify_Friedman_chart(df, kw, rel_id=0)
+        self.verify_Friedman_chart(df, kw, rel_id=1)
+        self.verify_Friedman_chart(df, kw, rel_id=2)
+        self.verify_Friedman_chart(df, kw, rel_id=3)
+
+        self.verify_Friedman_chart(df, kw, rel_id=4)
+        self.verify_Friedman_chart(df, kw, rel_id=5)
+        self.verify_Friedman_chart(df, kw, rel_id=9)
+
+        self.verify_Friedman_chart(df, kw, rel_id=11)
 
 
 # -------------------------------------

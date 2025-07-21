@@ -264,7 +264,7 @@ def _relevancy_score(y, yt):
 #       Com_{C_i} = \frac{ P(S\cup C_i) }{ P(S) } - 1       (7)
 # where P(S\cup Ci) is the accuracy of the ensemble with all the classi-
 # fiers in S and the classifier Ci, P(S) is the accuracy of the ensemble
-# with all the classifiers in $S$. $Com_{C_i}$ reflects how much $C_i$ 
+# with all the classifiers in $S$. $Com_{C_i}$ reflects how much $C_i$
 # contributes to existing sub-ensemble.
 # e.g., Com_{C_i}=0.1 implies that the performance of ensemble can be
 #       increased 10% by adding classifier Ci into the ensemble.
@@ -325,7 +325,7 @@ def _MRMR_MI(Ci, Cj):  # multi-class
 #       F = F \setminus \{f_i\}         (5)
 # 2. Select feature $f_i$ from $F$ which satisfies the following condition:
 #       f_i = \max_{f_i\in F} \{
-#                   MI(f_i;CL) - \frac{1}{|S|}\sum_{f_j\in S} MI(f_i,f_j) 
+#                   MI(f_i;CL) - \frac{1}{|S|}\sum_{f_j\in S} MI(f_i,f_j)
 #             \}
 # 3. Update $S$ and $F$ according to Eq.(4) and Eq.(5), and repeat step (2)
 #    until desired number of features is selected.
@@ -953,13 +953,13 @@ def MRMREP_Pruning(y, yt, nb_cls, nb_pru, L=4, R=3, alpha=0.5):
 #
 # 1. Initialize (x^0, y^0) \in \Omega, k <-- 0
 # 2. repeat
-# 3.    Compute \bar{x}^k \in \partial h(x^k) 
+# 3.    Compute \bar{x}^k \in \partial h(x^k)
 #                                         \forall i=1,...,n
 #               \bar{y_i}^k \in -\rho \partial (-r)(y_i^k)
-# 4.    Compute x^{k+1} \in \argmin_{x\in C}\{ 
-#                               g(x)- <\bar{x}^k,x> + <\bar{y}^k,|x|> 
+# 4.    Compute x^{k+1} \in \argmin_{x\in C}\{
+#                               g(x)- <\bar{x}^k,x> + <\bar{y}^k,|x|>
 #                           \}
-#               \bar{y_i}^{k+1} = |x_i^{k+1}| 
+#               \bar{y_i}^{k+1} = |x_i^{k+1}|
 #                                         \forall i=1,...,n.
 # 5.    k <-- k+1
 # 6. until Stopping criterion
@@ -1030,9 +1030,9 @@ def MRMREP_Pruning(y, yt, nb_cls, nb_pru, L=4, R=3, alpha=0.5):
 #    accuracy is the highest
 # 2. according to mRMR approach, the s_u selected for
 #    sub-ensemble S_u can be proposed as:
-#       s_u = \argmax_k[ 
-#                   I(h_k;Y) - 
-#                   \frac{1}{u-1} \sum_{h_i \in S_{u-1}} I(h_k;h_i) 
+#       s_u = \argmax_k[
+#                   I(h_k;Y) -
+#                   \frac{1}{u-1} \sum_{h_i \in S_{u-1}} I(h_k;h_i)
 #             ]
 #    in which I(m;n) is the mutation information of variable m
 #    and n. Y is target class; the index k \in L_{u-1} and
@@ -1072,7 +1072,7 @@ def mRMR_ensemble_pruning(y, yt, nb_cls, nb_pru):
 #   s_u = \argmax_k[ 
 #               I(h_k^{mis}; Y^{mis}) +
 #               \frac{1}{u-1} \sum_{h_i \in S_{u-1}}
-#                           I(h_k^{cor}; h_i^{cor}) 
+#                           I(h_k^{cor}; h_i^{cor})
 #         ]
 # in which h_k^{mis} and h_k^{cor} is misclassified instance part
 # and correctly classified instance part of h_k by S_{u-1} respec-

@@ -1392,7 +1392,7 @@ def _PEP_dominate(g_s1, g_s2):
 # 2. Let N(\cdot) denote the set of neighbor solutions of a
 # binary vector with Hamming distance 1.
 # 3. While V_\mathbf{s} = {
-#                   \bm{y} \in N(\mathbf{s}) | 
+#                   \bm{y} \in N(\mathbf{s}) |
 #                   (y_i \neq s_i \Rightarrow i \notin L)
 #               } \neq \emptyset
 # 4.     Choose \bm{y} \in V_\mathbf{s} with the minimal f value.
@@ -1461,10 +1461,10 @@ def _PEP_VDS(y, yt, nb_cls, s):
 #  4.     Select \mathbf{s} \in P uniformly at random.
 #  5.     Generate \mathbf{s}' by flipping each bit of \mathbf{s}
 #         with prob.\frac{1}{n}.
-#  6.     if \nexists \mathbf{z} \in P such that 
+#  6.     if \nexists \mathbf{z} \in P such that
 #                                   \mathbf{z} \succ_g \mathbf{s}'
 #  7.         P = (P - \{
-#                           \mathbf{z} \in P | 
+#                           \mathbf{z} \in P |
 #                           \mathbf{s}' \succeq_g \mathbf{z}
 #                 \}) \cup \{\mathbf{s}'\}.
 #  8.         Q = VDS(f, \mathbf{s}').
@@ -1506,7 +1506,7 @@ def PEP_PEP(y, yt, nb_cls, rho):
         del g_z1, z1
         #   #
         if not flag1:
-            # 7. P= (P-\{ 
+            # 7. P= (P-\{
             #               \mathbf{z} \in P | 
             #               \mathbf{s}' \succeq_s \mathbf{z}
             #    \}) \cup \{\mathbf{s}'\}.
@@ -1535,7 +1535,7 @@ def PEP_PEP(y, yt, nb_cls, rho):
                         break
                 del g_z3, z3
                 if not flag3:
-                    # 11. P=(P- \{ 
+                    # 11. P=(P- \{
                     #               \mathbf{z} \in P | 
                     #               \mathbf{q} \succeq_g \mathbf{z}
                     #     \}) \cup \{\mathbf{q}\}.

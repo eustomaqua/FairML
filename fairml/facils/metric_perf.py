@@ -1,5 +1,8 @@
 # coding: utf-8
 # metrics_perf.py
+#
+# TARGET:
+#   works for binary classification only
 
 
 import numpy as np
@@ -21,7 +24,7 @@ from fairml.widget.utils_const import check_zero, non_negative
 
 
 # 精度 /正确率
-@numba.jit(nopython=True)
+# @numba.jit(nopython=True)
 def calc_accuracy(tp, fp, fn, tn):
     n = float(tp + fp + fn + tn)
     tmp = (tp + tn) / check_zero(n)
@@ -258,4 +261,4 @@ def imba_likelihoods(sen, spe):
 
 
 # -------------------------------------
-# 
+#

@@ -69,7 +69,7 @@ def marginalised_confusion(Cij, loc=1):
     Cm[1, 0] = np.sum(Cij[:, loc]) - Cij[loc, loc]
 
     # Cm[1, 1] = np.sum(Cij[:loca, :, loca])
-    Cm[1, 1] = (np.sum(Cij) + Cij[loc, loc] 
+    Cm[1, 1] = (np.sum(Cij) + Cij[loc, loc]
                 - np.sum(Cij[loc]) - np.sum(Cij[:, loc]))
     return Cm  # np.ndarray
 

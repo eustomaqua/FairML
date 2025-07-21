@@ -28,6 +28,9 @@ from experiment.wp2_oracle.empirical import (
     PartH_ImprovedPruning, PartJ_LambdaEffect)
 from experiment.wp2_oracle.empirical import (
     PartD_ImprovedPruning, PartF_ImprovedFairness)  # legacy
+from experiment.wp2_oracle.empirical import (
+    PartA_TheoremsLemma, PartB_TheoremsLemma, PartI_LambdaEffect,
+    PartG_ImprovedPruning, PartE_ImprovedFairness)  # legacy
 
 AVAILABLE_FAIR_DATASET = [
     'ricci', 'german', 'adult', 'ppr', 'ppvr']

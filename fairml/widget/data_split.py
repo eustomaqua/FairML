@@ -222,7 +222,7 @@ def situation_split1(y, pr_trn, pr_tst=None):
         nb_tst = int(np.round(nb_y * pr_tst))
         nb_tst = min(max(nb_tst, 1), nb_y - 1)
         nb_val = nb_y - nb_trn - nb_tst
-        del pr_val
+        # del pr_val
 
     i_tst, i_val, i_trn = [], [], []
     for i in range(dY):

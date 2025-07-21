@@ -15,12 +15,11 @@ import numpy as np
 import pandas as pd
 
 from fairml.facilc.draw_graph import (
-    _style_set_axis, _setup_config,
-    _setup_figsize, _setup_figshow, _setup_locater,
-    _set_quantile, _sns_line_err_bars,
-    cnames, cname_keys, cmap_names, _setup_rgb_color,
-    _backslash_distributed, _barh_patterns,
-    _sns_line_fit_regs, _sns_line_err_bars, PLT_LOCATION)
+    PLT_LOCATION, PLT_FRAMEBOX, _setup_config,
+    _style_set_axis, _setup_figsize, _setup_figshow,
+    _sns_line_err_bars, _setup_rgb_color)
+# _setup_locater,_set_quantile, cnames, cname_keys, cmap_names,
+# _backslash_distributed, _barh_patterns, _sns_line_fit_regs,
 from fairml.widget.utils_const import DTY_FLT
 
 
@@ -356,7 +355,7 @@ def multiple_scatter_comparison(X, Yss, zs, picked_keys,
 
     tx_min, tx_max = ax.get_xlim()
     tz_avg = np.mean(zs, axis=1)            # (#att_sen,)
-    tz_std = np.std(zs, axis=1, ddof=ddof)  # (#att_sen,)
+    # tz_std = np.std(zs, axis=1, ddof=ddof)  # (#att_sen,)
     for i in range(nb_att):
         kws = {'color': cs[i % cl], 'lw': 1}
         ax.plot([tx_min, tx_max], [tz_avg[i], tz_avg[i]], **kws)
@@ -746,13 +745,13 @@ def line_reg_with_marginal_distr(df, col_X, col_Y, tag_Ys,
         _marginal_distrib_step1(grid, df_all, col_X, mycolor)
         _marginal_distrib_step2(grid, df_all, col_Y, mycolor)
     if snspec == 'sty0':
-        # ax3 = 
+        # ax3 =
         _marginal_distrib_step3(grid, dfs_pl, picked_keys,
                                 col_X, col_Y, annotX, annotY,
                                 mycolor)  # , distrib=distrib)
     elif snspec in ['sty1', 'sty2', 'sty3',  # 'sty4', 'sty5',
                     'sty6', 'sty4a', 'sty4b', 'sty5a', 'sty5b']:
-        # ax4 = 
+        # ax4 =
         _marginal_distr_step4(
             grid, dfs_pl, picked_keys, col_X, col_Y,
             annotX, annotY, mycolor, snspec,

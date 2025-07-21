@@ -430,7 +430,7 @@ def interrater_agreement_multiclass(yt, y, m, nb_cls):
 #
 # Ent_cc= \frac{1}{m}\sum_{k=1}^m \sum_{y\in\mathcal{Y}}
 #                                     -\mathbf{P}(y|x_k) \log(\mathbf{P(y|x_k)})
-#   where \mathbf{P}(y|\mathbf{x}_k) = 
+#   where \mathbf{P}(y|\mathbf{x}_k) =
 #                        \frac{1}{n}\sum_{i=1}^n \mathbb{I}(h_i(\mathbf{x}) =y)
 #
 # the calculation doesn't require to know the correctness of individual classifiers.

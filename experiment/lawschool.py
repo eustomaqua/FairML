@@ -226,16 +226,17 @@ def visualization_parallel(train_set, test_set, model,
 
     n_a = len(sen_att)
     _curr_font = 'Times New Roman'
-    _curr_leg = {'family': _curr_font, 'size': 8}
+    # _curr_leg = {'family': _curr_font, 'size': 8}
 
     f, axes = plt.subplots(n_a, 2)
     f.set_size_inches(9, 5)
     for i, attr in enumerate(sen_att):
-        ls1 = sns.kdeplot(
+        # ls1, ls2 =
+        sns.kdeplot(
             x="FYA", data=fit_trn, hue=attr, ax=axes[i][0],
             legend=True, common_norm=False,
             palette=sns.color_palette(n_colors=sen_num[i]))
-        ls2 = sns.kdeplot(
+        sns.kdeplot(
             x="FYA", data=fit_tst, hue=attr, ax=axes[i][1],
             legend=True, common_norm=False,
             palette=sns.color_palette(n_colors=sen_num[i]))

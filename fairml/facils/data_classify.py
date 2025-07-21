@@ -190,7 +190,8 @@ def _AdaBoostSelectTraining(X_trn, y_trn, weight):
     tem_y = np.concatenate(stack_y, axis=0)
     tem_idx = np.concatenate(stack_idx, axis=0)
 
-    rndsed, prng = renew_random_seed_generator()
+    # rndsed, prng = renew_random_seed_generator()
+    rndsed, prng = random_seed_generator()
     # rndsed = renew_fixed_tseed()
     # prng = renew_random_seed(rndsed)
 

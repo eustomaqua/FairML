@@ -44,7 +44,7 @@ from fairml.facilc.metric_fair import prev_unpriv_manual \
 # =====================================
 
 
-# Trail Part A.  To demonstrate that 
+# Trail Part A.  To demonstrate that
 #   for one classifier (individual or ensemble), calculate its
 #   values of optimisation objectives
 # -------------------------------------
@@ -324,7 +324,7 @@ class PartK_PACGeneralisation(EnsembleSetup):
 
 
 # Trial Part B.  To demonstrate that
-#   for an ensemble, 
+#   for an ensemble,
 # -------------------------------------
 
 
@@ -477,7 +477,7 @@ class PartD_ImprovedPruning(EnsembleSetup):
 
     def propose_prune_val(self,
                           y_trn, y_insp, yq_insp,
-                          y_tst, y_pred, yq_pred, 
+                          y_tst, y_pred, yq_pred,
                           name_pru, positive_label, dist=1, n_m=2):
         since = time.time()
         if name_pru == 'POEPAF':

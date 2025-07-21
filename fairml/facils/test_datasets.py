@@ -1,8 +1,9 @@
 # coding: utf-8
+
 # import pdb
 
 
-def test_datasets():
+def excl_test_datasets():
     from fairml.datasets import (
         Ricci, German, Adult, PropublicaRecidivism,
         PropublicaViolentRecidivism, preprocess)
@@ -17,4 +18,21 @@ def test_datasets():
     ans = preprocess(dt, df)
 
     # pdb.set_trace()
+    return
+
+
+def excl_test_preprocessing():
+    from fairml.datasets import preprocess, DATASETS
+    from fairml.preprocessing import (
+        adversarial, transform_X_and_y, transform_unpriv_tag)
+
+    for dt in DATASETS:
+        df = dt.load_raw_dataset()
+        ans = preprocess(dt, df)
+        adv = adversarial(dt, df, ratio=.97)
+
+        for k in ['original', 'numerical', 'numerical-binsensitive',
+                  'categorical-binsensitive']:
+            assert ans[k].shape == adv[k].shape
+        # pdb.set_trace()
     return

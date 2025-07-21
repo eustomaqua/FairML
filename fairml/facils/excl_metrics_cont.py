@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import numpy as np
-import numba
+# import numba
 from fairml.widget.utils_const import (
     judge_transform_need, check_zero, DTY_INT)
 

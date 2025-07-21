@@ -386,7 +386,7 @@ def analogous_confusion_alternative(Mat, sens,
             ax[k].set_xlabel(sa.upper() + " Attribute")  # sa+
         if normalize:
             cm = cm / cm.sum(axis=1)[:, np.newaxis]
-        thresh = cm.max() / 1.5 if normalize else cm.max() / 2
+        # thresh = cm.max() / 1.5 if normalize else cm.max() / 2
         for i, j in itertools.product(range(num_z),
                                       range(num_z)):
             ax[k].text(j, i, "{:.3f}".format(cm[i, j]),
