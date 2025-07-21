@@ -190,7 +190,7 @@ def _sns_algo_bootstrap(*args, **kwargs):
     func = kwargs.get("func", np.mean)
     n, boot_dist = len(args[0]), []
 
-    for i in range(int(n_boots)):
+    for _ in range(int(n_boots)):  # for i in
         resampler = np.random.randint(0, n, n, dtype=np.intp)
         sample = [a.take(resampler, axis=0) for a in args]
         boot_dist.append(func(*sample))
@@ -1286,7 +1286,7 @@ _hist_linsty = [
 
 
 def _hist_calc_XY(X, Ys):
-    N, k = np.shape(Ys)
+    k = np.shape(Ys)[1]  # N, k = np.shape(Ys)
 
     X_avg = None if X is None else np.mean(X, axis=0).tolist()
     Y_avg = np.mean(Ys, axis=0)

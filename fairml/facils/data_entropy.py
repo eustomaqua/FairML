@@ -318,7 +318,7 @@ def Greedy(T, k, L, lam):
     S = np.zeros(n, dtype='bool')  # np.bool
     p = np.random.randint(0, n)
     S[p] = True
-    for i in range(1, k):
+    for _ in range(1, k):  # for i in range(1,k):
         idx = _arg_max_p(T, S, L, lam)
         if idx > -1:
             S[idx] = True  # #1
@@ -349,7 +349,7 @@ def _choose_proper_platform(nb, pr):
 
 
 def _randomly_partition(n, m):
-    rndsed, prng = random_seed_generator('fixed_tseed')
+    _, prng = random_seed_generator('fixed_tseed')  # rndsed,
     # rndsed = renew_fixed_tseed()
     # prng = renew_random_seed(rndsed)
 

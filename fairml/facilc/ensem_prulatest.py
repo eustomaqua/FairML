@@ -1047,7 +1047,7 @@ def mRMR_ensemble_pruning(y, yt, nb_cls, nb_pru):
     seq = [idx]  # seq.append(int(idx))
     #   #
     # mRMR to choose s_u
-    for u in range(2, nb_pru + 1):
+    for _ in range(2, nb_pru + 1):  # for u in range(2, nb_pru+1):
         S_u = np.where(P)[0]  # pruned sub- # selected individuals
         L_u = np.where(np.logical_not(P))[0]  # left individuals
         term_left = [EntropyI(yt[k], y) for k in L_u]

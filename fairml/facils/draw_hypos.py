@@ -468,7 +468,7 @@ def Friedman_test(idx_bar, alpha=.05):
     N, k = np.shape(idx_bar)  # U)
     r_i = np.mean(idx_bar, axis=0)
     # mu = (k + 1.) / 2
-    sig2 = (k**2 - 1.) / 12
+    # sig2 = (k**2 - 1.) / 12
 
     '''
     tau_chi2 = [(i - (k + 1) / 2)**2 for i in r_i]

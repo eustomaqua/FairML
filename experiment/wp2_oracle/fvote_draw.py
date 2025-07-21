@@ -137,7 +137,7 @@ class PlotC_Revised_TheoremsLemma(GraphSetup):
                          trial_type, figname)
 
     def schedule_mspaint(self, raw_dframe, partition=False):
-        nb_set, id_set, index = self.recap_sub_data(raw_dframe)
+        _, id_set, index = self.recap_sub_data(raw_dframe)  # nb_set,
         tag_col = self.prepare_graph()
         ind = np.concatenate(index, axis=0)
 
@@ -551,7 +551,7 @@ class PlotH_ImprovePruning(GraphSetup):
         # U = U_g1 - U_g0
         U = np.abs(U_g1 - U_g0)
         mode = 'ascend'
-        rank, idx_var = Friedman_init(U, mode=mode)
+        _, idx_var = Friedman_init(U, mode=mode)  # rank,
         figname = '_'.join([kw, 'fair{}'.format(rel_id)])
         Friedman_chart(idx_var, name_pru, figname + '_fried5',
                        alpha=0.05, logger=self._logger,
@@ -1064,7 +1064,8 @@ class TableHGather_ImprovePruning(PlotH_ImprovePruning):
                          trial_type, tabname, logger)
 
     def schedule_spreadsheet(self, raw_dframe, tag_col):
-        nb_set, id_set, index = self.recap_sub_data(raw_dframe[0])
+        nb_set, _, index = self.recap_sub_data(
+            raw_dframe[0])  # ,id_set,
         # nm_set = ['ricci', 'german', 'adult', 'ppr', 'ppvr']
 
         for i, name_ens in enumerate(AVAILABLE_ABBR_ENSEM):
@@ -1451,7 +1452,7 @@ class PlotD_ImprovePruning(GraphSetup):
             mode = 'descend'
         # mode = 'descend' if pickup_uat == 'ua' else 'ascend'
 
-        rank, idx_bar = Friedman_init(U, mode=mode)
+        _, idx_bar = Friedman_init(U, mode=mode)  # rank,
         figname = self._figname + '_' + kw + '_rel' + str(rel_id)
         Friedman_chart(idx_bar, name_pru, figname + '_fried5',
                        alpha=0.05, logger=self._logger)

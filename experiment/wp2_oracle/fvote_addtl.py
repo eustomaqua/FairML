@@ -108,7 +108,8 @@ class PlotD_Measures(PlotA_Measures):
             curr = new_data[sa][idx]  # shape (#ens,57,5)
             del fgn, curr
 
-        num_s, num_e, num_v, _ = new_data.shape
+        num_s, num_e = new_data.shape[:2]
+        # num_s, num_e, num_v, _ = new_data.shape
         alt_data = np.concatenate([
             new_data[i] for i in range(num_s)], axis=2)
         # shape (7,57,5*2)= (#ens,#eval,#iter*#att)
@@ -180,7 +181,8 @@ class GatherD_Measures(PlotD_Measures):
             res_data[i]))[:, :, 56:, :] for i in optional_data]
 
         alt_data = np.concatenate(new_data, axis=0)  # (9,7,57,5)
-        num_s, num_e, num_v, _ = alt_data.shape
+        # num_s, num_e, num_v, _ = alt_data.shape
+        num_s, num_e = alt_data.shape[: 2]
         alt_data = np.concatenate([
             alt_data[i] for i in range(num_s)], axis=2)  # (7,57,45)
         alt_data = np.concatenate([
@@ -299,7 +301,8 @@ class GatherE_Measures(PlotE_Measures):
         idx = list(range(56, 112)) + list(range(
             168, 224)) + list(range(280, 336)) + [337 - 1, ]
         new_data = self.prepare_graph(np.array(res_data))[:, :, idx, :]
-        num_s, num_e, num_v, _ = new_data.shape  # shape (1|2,7,169,5)
+        # num_s, num_e, num_v, _ = new_data.shape  # shape (1|2,7,169,5)
+        num_s, num_e = new_data.shape[:2]
         sensitive_attributes = res_all[1]
 
         attr_A = list(range(56))
@@ -644,12 +647,12 @@ class GatherF_Prunings(PlotF_Prunings):
         Ys_i = 0
         rez = 2 if pt_i in [0, 13, 26] else 4
         reorder = [4, 5, 6, 0, 1, 2, 3]
-        mode = "ascend" if pt_i >= 39 else "descend"
+        # mode = "ascend" if pt_i >= 39 else "descend"
 
         for i in optional_data:
             ret_key, ret_r, ret_c, sens_attr = self.merge_sub_data(
                 res_all[i], logger=logger)
-            for si, sk in enumerate(sens_attr):
+            for sk in sens_attr:  # for si,sk in enumerate(sens_attr):
                 alt_data = new_data[i][:, ret_c[sk]]  # .shape (25|29, 171,5) ->
                 alt_data = alt_data[ret_r[sk], :][:, pt_i]  # (7,56+3,5) ->(7,5)
                 alt_data = alt_data.astype(DTY_FLT)
@@ -691,8 +694,8 @@ class GatherF_Prunings(PlotF_Prunings):
                 del sign_A, sign_B, G_A, G_B, mk_mu, mk_s2
 
                 Ys_i += 1
-        # mode = "ascend" if pt_i >= 39 else "descend"
-        rank, idx_bar = Friedman_init(Ys_avg, mode=mode)
+        mode = "ascend" if pt_i >= 39 else "descend"
+        _, idx_bar = Friedman_init(Ys_avg, mode=mode)  # rank,
         fgn += "_{}{}".format(pt_i, self._tag[pt_i][:3])
         if pt_i in [0, 54]:
             Friedman_chart(idx_bar, re_key, fgn + "_fried5",
@@ -989,7 +992,7 @@ class Renew_GatherF_Prunings(GatherF_Prunings):
 
         _, Ys_model, Ys_acc = self.renew_retrieve_dat(
             new_data, res_all, optional_data, 0)
-        _, _, Ys_f1s = self.renew_retrieve_dat(
+        _, _, _ = self.renew_retrieve_dat(  # ,Ys_f1s
             new_data, res_all, optional_data, 3)
         _, _, Ys_DP = self.renew_retrieve_dat(
             new_data, res_all, optional_data, 50)
@@ -1015,7 +1018,7 @@ class Renew_GatherF_Prunings(GatherF_Prunings):
         for i in optional_data:
             ret_key, ret_r, ret_c, sen_att = self.merge_sub_data(
                 res_all[i], logger=logger)
-            for si, sk in enumerate(sen_att):
+            for sk in sen_att:  # for si,sk in enumerate(sen_att):
                 alt_data = new_data[i][:, ret_c[sk]]
                 alt_data = alt_data[ret_r[sk], :][:, pt_i]
                 alt_data = alt_data.astype(DTY_FLT)[reorder, :]

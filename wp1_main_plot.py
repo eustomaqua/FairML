@@ -266,7 +266,7 @@ class OracleGatheredDrawing(object):
         for name_ens in AVAILABLE_ABBR_ENSEM:
             used_tc = time.time()
 
-            _, nb_pru = self.get_hyper_params(name_ens)  # nb_cls,
+            # nb_cls, nb_pru = self.get_hyper_params(name_ens)
             iterator = self.get_iterator(name_ens)
             filename = iterator.get_raw_filename(
                 trial_type=self._trial_type)

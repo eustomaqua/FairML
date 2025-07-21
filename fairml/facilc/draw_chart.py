@@ -366,7 +366,8 @@ def analogous_confusion_alternative(Mat, sens,
     fig, ax = plt.subplots(1, sa_len,
                            figsize=_figsize[sa_len])
     # ax = ax.flatten()
-    for k, (mt, sa) in enumerate(zip(Mat, sens)):
+    # for k, (mt, sa) in enumerate(zip(Mat, sens)):
+    for k, (_, sa) in enumerate(zip(Mat, sens)):  # mt,
         cm = np.zeros((num_z, num_z))
         for i in range(num_z):
             for j in range(num_z):
@@ -541,7 +542,7 @@ def _discrete_illustrate(IndexSlices, SubIndices):
     dis_2 = JS_div(SubIndices, IndexSlices)
     dist = "EMD= {:.4f}\nJS = {:.4f}".format(dis_1, dis_2)
 
-    px, py, vXY = _discrete_joint_cnts(
+    px, py, _ = _discrete_joint_cnts(  # ,vXY
         IndexSlices, SubIndices, density=True)
 
     ans_1 = KL_divergence(py, px)

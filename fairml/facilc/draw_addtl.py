@@ -83,7 +83,7 @@ def multiple_lines_with_errorbar(X, Ys, picked_keys=('Baseline #1',),
     fig = plt.figure(figsize=_setup_config['M-NT'])
     ax = fig.gca()
 
-    cs, cl = _setup_rgb_color(pick_baseline, cmap_name)
+    cs, _ = _setup_rgb_color(pick_baseline, cmap_name)  # ,cl
     kws = {'color': 'navy', 'lw': 1}  # plt.plot(.5, 0.5)
     for j in range(pick_baseline):
         kws['color'] = cs[j]
@@ -108,7 +108,7 @@ def box_plot(Ys, picked_keys, annotY='Acc',
              figname='box_lam', figsize='M-WS', rotate=60):
     # Ys.shape (#baseline_for_comparison, #iter)
 
-    pick_baseline, nb_iter = Ys.shape  # picked_ways/method,
+    pick_baseline, _ = Ys.shape  # ,nsb_iter #picked_ways/method,
     fig, ax = plt.subplots(figsize=_setup_config['M-NT'])
     ax.boxplot(Ys.T, patch_artist=patch_artist)  # bp=
 
@@ -160,7 +160,7 @@ def scatter_k_cv_with_real(X, Ys, z,  # y/z: real values
     # Ys.shape= (nb_iter, #num)  # Ys.shape= (#num, nb_iter)
     # z .shape= (nb_iter,)
 
-    nb_iter, num = Ys.shape
+    nb_iter = Ys.shape[0]  # nb_iter, num = Ys.shape
     fig, ax = plt.subplots(figsize=_setup_config['M-NT'])
 
     kws = {'color': '#F65F47', 'lw': 1}
@@ -298,7 +298,7 @@ def approximated_dist_comparison(
     # Ys = abs(Yss - zs) / zs
     # Ys .shape= (#att_sen, #iter, #num)
 
-    nb_att, nb_iter, num = Ys.shape
+    nb_att, nb_iter = Ys.shape[:2]  # nb_att,nb_iter,num=Ys.shape
     fig, ax = plt.subplots(figsize=_setup_config['M-NT'])
 
     # cs, cl = _setup_rgb_color(nb_iter, cmap_name)
@@ -901,7 +901,7 @@ def _uncertainty_read_in(dfs_pl, col_X, col_Y, num_gap=1000,
 
     X = np.linspace(0, 1, num_gap)
     baseline_Ys = []
-    for i, df in enumerate(dfs_pl):
+    for df in dfs_pl:  # for i, df in enumerate(dfs_pl):
         Ys = []
         for alpha in X:
             if (alpha_loc == 'b4') and (not alpha_rev):
@@ -982,7 +982,7 @@ def lineplot_with_uncertainty(df, col_X, col_Y, tag_Ys, picked_keys,
                               alpha_rev=True,  # middle of annotY
                               figsize='M-WS', figname='lwu',
                               alpha_clarity=.3):
-    dfs_pl, df_all = _marginal_distr_read_in(
+    dfs_pl, _ = _marginal_distr_read_in(  # ,df_all
         df, col_X, col_Y, tag_Ys, picked_keys)  # alp_loc/rev
     X, Ys = _uncertainty_read_in(dfs_pl, col_X, col_Y, num_gap=num_gap,
                                  alpha_loc=alpha_loc, alpha_rev=alpha_rev)

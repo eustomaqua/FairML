@@ -230,7 +230,7 @@ def Kappa_Statistic_binary(hi, hj, m):
 def Kappa_Statistic_multi(hi, hj, y, m):
     # m = len(y)  # number of instances / samples
     tem = np.concatenate([hi, hj, y])
-    vY, dY = judge_transform_need(tem)
+    _, dY = judge_transform_need(tem)  # vY,
     del tem
     if dY == 1:
         dY = 2

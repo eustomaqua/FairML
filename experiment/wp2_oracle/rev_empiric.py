@@ -11,7 +11,7 @@ from lightgbm import LGBMClassifier
 from fairgbm import FairGBMClassifier
 from fairml.widget.pkgs_AdaFair import AdaFair
 
-from fairml.facils.metric_cont import contg_tab_mu_type2 \
+from fairml.widget.metric_cont import contg_tab_mu_type2 \
     as contingency_table
 from fairml.facils.metric_perf import (
     calc_accuracy, calc_precision, calc_recall, calc_f1_score,
@@ -1861,10 +1861,10 @@ class FairVoteEmpirical(DataSetup):
                 positive_label, self._lam)
             # res_iter.shape (1, #attr=1/3, 7, 63)
 
-    tim_elapsed = time.time() - since
-    elegant_print(["Iteration {}, Consumed {}".format(
-        k + 1, elegant_durat(tim_elapsed)), ], logger)
-    return res_iter
+        tim_elapsed = time.time() - since
+        elegant_print(["Iteration {}, Consumed {}".format(
+            k + 1, elegant_durat(tim_elapsed)), ], logger)
+        return res_iter
 
     # def routine_fair_ensem(self, logger, k,
     #                        X_trn, y_trn, Xd_trn, gones_trn, jt_trn,
