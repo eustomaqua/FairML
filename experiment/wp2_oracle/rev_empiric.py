@@ -49,6 +49,26 @@ from fairml.widget.utils_const import unique_column
 from fairml.facils.data_classify import EnsembleAlgorithm
 
 
+# rev_baseline.py
+import csv
+import json
+import logging
+import os
+import sys
+from fairml.widget.utils_saver import (
+    get_elogger, rm_ehandler, elegant_print)
+from fairml.widget.utils_timer import elegant_dated, elegant_durat
+from fairml.widget.utils_const import _get_tmp_name_ens
+from fairml.widget.data_split import (
+    sklearn_k_fold_cv, sklearn_stratify, manual_cross_valid,
+    situation_split1)
+from fairml.datasets import preprocess
+from fairml.preprocessing import (
+    adversarial, transform_X_and_y, transform_unpriv_tag,
+    transform_perturbed)
+from experiment.wp2_oracle.fetch_data import DataSetup
+
+
 # =====================================
 # Benchmarks
 # =====================================
@@ -1326,5 +1346,528 @@ class PartF_FairPruning(PartE_FairPruning):
 
 
 # -------------------------------------
+# Experimental design
 #
-#
+
+
+# class ExperimentSetup(DataSetup):  # that is, ExptSetting()
+class FairVoteEmpirical(DataSetup):
+    def __init__(self, trial_type, data_type,
+                 # name_ens, abbr_cls, nb_cls, nb_pru,
+                 # nb_iter=5, ratio=.5, screen=True, logged=False):
+                 nb_cls, nb_pru, nb_iter=5, ratio=.5, lam=.5,
+                 name_ens='bagging', abbr_cls='DT',
+                 screen=True, logged=False):
+        super().__init__(data_type)
+        self._trial_type = trial_type
+
+        # nmens_temp = _get_tmp_name_ens(name_ens)
+        # self._log_document = "_".join([
+        #     trial_type, nmens_temp, abbr_cls + str(nb_cls),
+        #     self._log_document])  # aka. data_type
+        self._log_document = "_".join([
+            trial_type, "{}vs{}".format(nb_cls, nb_pru),
+            "iter{}".format(nb_iter), self._log_document,
+            "ratio{}".format(int(ratio * 100)), "pms"])
+
+        self._nb_cls = nb_cls
+        self._nb_pru = nb_pru
+        self._nb_iter = nb_iter
+        self._ratio = ratio
+        self._lam = lam
+
+        self._screen = screen
+        self._logged = logged
+        # self._log_document += '_iter{}'.format(nb_iter)
+        # self._log_document += '_pms'
+        # self._iterator = EnsembleSetup(
+        #     name_ens, abbr_cls, nb_cls, nb_pru)
+
+        self._name_ens = name_ens
+        self._abbr_cls = abbr_cls
+        if trial_type.endswith('expt3'):
+            nmens_tmp = _get_tmp_name_ens(name_ens)
+            self._log_document = self._log_document.replace(
+                data_type, '')
+            self._log_document += "_{}_{}_{}".format(
+                nmens_tmp, abbr_cls, data_type)
+        if trial_type.endswith('expt6'):
+            self._log_document += "_lam{}".format(int(lam * 100))
+
+        if trial_type.endswith('expt1'):
+            self._iterator = PartA_FairMeasure()
+        elif trial_type.endswith('expt4'):
+            self._iterator = PartD_FairMeasure()
+        elif trial_type.endswith('expt2'):
+            self._iterator = PartB_FairMeasure()
+        elif trial_type.endswith('expt3'):
+            self._iterator = PartC_FairMeasure(name_ens, abbr_cls)
+            # self._iterator = PartB_FairTheorems()
+        elif trial_type.endswith('expt5'):
+            self._iterator = PartE_FairPruning()
+        elif trial_type.endswith('expt6'):
+            self._iterator = PartF_FairPruning()
+
+    # def __del__(self):
+    #     pass
+    # @property
+    # def trial_type(self):
+    #     return self._trial_type
+
+    @property
+    def nb_iter(self):
+        return self._nb_iter
+
+    # @property
+    # def ratio(self):
+    #     return self._ratio
+    #
+    # @property
+    # def iterator(self):
+    #     return self._iterator
+    #
+    # @iterator.setter
+    # def iterator(self, value):
+    #     self._iterator = value
+
+    def trial_one_process(self):
+        since = time.time()
+        csv_t = open(self._log_document + '.csv', "w")
+        csv_w = csv.writer(csv_t)
+
+        if (not self._screen) and (not self._logged):
+            saveout = sys.stdout
+            fsock = open(self._log_document + '.log', "w")
+            sys.stdout = fsock
+        if self._logged:
+            '''
+            logger = logging.getLogger("oracle_fair")
+            formatter = logging.Formatter(
+                '%(asctime)s - %(name)s:%(levelname)s | %(message)s')
+            if os.path.exists(self._log_document + ".txt"):
+                os.remove(self._log_document + ".txt")
+            log_file = logging.FileHandler(self._log_document + '.txt')
+            log_file.setLevel(logging.DEBUG)
+            log_file.setFormatter(formatter)
+            logger.addHandler(log_file)
+            '''
+            if os.path.exists(self._log_document + ".txt"):
+                os.remove(self._log_document + ".txt")
+            logger, formatter, fileHandler = get_elogger(
+                "fairvote", self._log_document + ".txt")
+        else:
+            logger = None
+
+        '''
+        elegant_print("[BEGAN AT {:s}]".format(time.strftime(
+            "%d-%b-%Y %H:%M:%S", time.localtime(since)
+        )), logger)
+        elegant_print(" EXPERIMENT  :", logger)
+        elegant_print([
+            "\t trial    = {}".format(self._trial_type),
+            "\t dataset  = {}".format(self._data_type),
+            "\t binary?  = {}".format(
+                str(not self._trial_type.startswith('mu')))], logger)
+        elegant_print(" PARAMETERS  :", logger)
+        elegant_print([
+            "\t name_ens = {}".format(self._iterator.name_ens),
+            "\t abbr_cls = {}".format(self._iterator.abbr_cls),
+            "\t   nb_cls = {}".format(self._iterator.nb_cls),
+            "\t   nb_pru = {}".format(self._iterator.nb_pru),
+            "\t  nb_iter = {}".format(self._nb_iter)], logger)
+        elegant_print(" HYPER-PARAMS:", logger)
+        elegant_print("", logger)
+        '''
+
+        elegant_print([
+            "[BEGAN AT {}]".format(elegant_dated(since)),
+            " EXPERIMENT",
+            "\t   trial = {}".format(self._trial_type),
+            "\t dataset = {}".format(self._data_type),
+            "\t binary? = {}".format(
+                not self._trial_type.startswith('mu')),
+            " PARAMETERS",
+            "\t  nb_cls = {}".format(self._nb_cls),
+            "\t  nb_pru = {}".format(self._nb_pru),
+            "\t nb_iter = {}".format(self._nb_iter),
+            "\t   ratio = {}".format(self._ratio),
+            " HYPER-PARAMS", ""], logger)
+        # self.trial_one_dataset(logger)
+
+        # START
+        '''
+        csv_row_2a = ['data_name', 'binary',
+                      'name_ens', 'abbr_cls', 'nb_cls', 'nb_pru',
+                      'nb_iter', 'iteration']
+        csv_row_2b = ['Ensemble'] + [''] * 12
+        csv_row_3b = ['', 'accuracy',
+                      'Acc', 'P', 'R', 'F1*', 'F1', 'F2', 'F3',
+                      'TPR', 'FPR', 'FNR', 'TNR']
+        csv_row_1, csv_row_2c, csv_row_3c = self._iterator.prepare_trial()
+        csv_row_2 = csv_row_2a + csv_row_2b + csv_row_2c
+        csv_row_3 = [''] * 8 + csv_row_3b + csv_row_3c
+        csv_w.writerows([csv_row_1, csv_row_2, csv_row_3])
+        del csv_row_1, csv_row_2, csv_row_3
+        del csv_row_2a, csv_row_2b, csv_row_3b
+        del csv_row_2c, csv_row_3c
+        res_all = self.trial_one_dataset(logger=logger)
+        # csv_w.writerows(res_all)
+        csv_w.writerow(res_all[0])
+        for res_iter in res_all[1:]:
+            for i_ens in res_iter:
+                csv_w.writerow([''] * 7 + i_ens)
+        del res_all
+        '''
+
+        csv_row_2a = ['data_name', 'binary',
+                      'nb_cls', 'nb_pru', 'nb_iter', 'iteration']
+        csv_row_2b = ["#sens_attr", "name_ens", "abbr_cls",
+                      "name_pru", "#iter", "#eval"]
+        csv_row_1, csv_r2c, csv_r3c, csv_r4c = self._iterator.prepare_trial()
+        csv_row_2 = csv_row_2a + csv_row_2b + csv_r2c
+        csv_w.writerows([csv_row_1, csv_row_2])
+        csv_w.writerow([''] * 12 + csv_r3c)
+        csv_w.writerow([''] * 12 + csv_r4c)
+        del csv_row_2a, csv_row_2b, csv_row_2
+        del csv_row_1, csv_r2c, csv_r3c, csv_r4c
+
+        res_data, res_all = self.trial_one_dataset(logger)
+        json_saver = json.dumps({
+            "res_all": res_all, "res_data": res_data})
+        json_w = open(self._log_document + ".json", "w")
+        json_w.write(json_saver)
+        json_w.close()
+        del json_saver, json_w
+
+        if self._trial_type[-5:] in ['expt1', 'expt4', 'expt5']:
+            # res_data.shape: (#iter=5, #att=1/2, #alg/baseline=5, #criteria)
+            res_data = np.array(res_data).transpose(1, 2, 0, 3)
+            for sa, sens_attr in enumerate(res_all[1]):
+                csv_w.writerow(res_all[0] + [sens_attr])
+                for en, name_ens in enumerate(res_all[-1]):
+                    tmp_1 = np.array([[name_ens] + [''] * (self._nb_iter - 1),
+                                      [''] * self._nb_iter,
+                                      [''] * self._nb_iter,
+                                      res_all[2],
+                                      [''] * self._nb_iter]).T
+                    tmp_2 = np.array([[''] * self._nb_iter] * 7).T
+                    curr = np.c_[tmp_2, tmp_1, res_data[sa, en]]
+                    csv_w.writerows(curr)
+        elif self._trial_type.endswith('expt6'):
+            # res_data.shape (#iter=5, 6*3+2+1+4*?, 339)
+            #            --> (6*3+2+1+4*?, #iter=5, 339)
+            res_data = np.array(res_data).transpose(1, 0, 2)
+            csv_w.writerow(res_all[0])
+            tmp_2 = np.array([[''] * self._nb_iter] * 7).T
+            for e_i, e_n in enumerate(res_all[-4]):
+                s_a, s_b = 6 * e_i, 6 * (e_i + 1)
+                tmp_1 = np.array([
+                    [e_n] + [''] * (self._nb_iter - 1),
+                    ['DT'] + [''] * (self._nb_iter - 1),
+                    ['Entire'] + [''] * (self._nb_iter - 1),
+                    res_all[2],
+                    [''] * self._nb_iter]).T
+                curr = np.c_[tmp_2, tmp_1, res_data[s_a]]
+                csv_w.writerows(curr)
+                del tmp_1, curr
+                s_a += 1
+                for p_i, p_n in enumerate(res_all[-3][1:]):
+                    tmp_1 = np.array([
+                        [''] * self._nb_iter,
+                        [''] * self._nb_iter,
+                        [p_n] + [''] * (self._nb_iter - 1),
+                        res_all[2],
+                        [''] * self._nb_iter]).T
+                    curr = np.c_[tmp_2, tmp_1, res_data[s_a + p_i]]
+                    csv_w.writerows(curr)
+                    del tmp_1, curr
+                del s_a, s_b
+            for e_i, e_n in enumerate(res_all[-2]):
+                tmp_1 = np.array([
+                    [e_n] + [''] * (self._nb_iter - 1),
+                    [''] * self._nb_iter,
+                    [''] * self._nb_iter,
+                    res_all[2],
+                    [''] * self._nb_iter]).T
+                curr = np.c_[tmp_2, tmp_1, res_data[18 + e_i]]
+                csv_w.writerows(curr)
+                del tmp_1, curr
+            del tmp_2
+            tmp_2 = np.array([[''] * self._nb_iter] * 6).T
+            for sa, sens_attr in enumerate(res_all[1]):
+                s_b = 21 + 4 * sa
+                for e_i, e_n in enumerate(res_all[-1]):
+                    tmp_1 = np.array([
+                        [sens_attr] + [''] * (self._nb_iter - 1),
+                        [e_n] + [''] * (self._nb_iter - 1),
+                        [''] * self._nb_iter,
+                        [''] * self._nb_iter,
+                        res_all[2],
+                        [''] * self._nb_iter]).T
+                    curr = np.c_[tmp_2, tmp_1, res_data[s_b + e_i]]
+                    csv_w.writerows(curr)
+                    del tmp_1, curr
+                del s_b
+            del tmp_2
+        elif self._trial_type[-5:] in ['expt2', 'expt3']:
+            # res_data.shape: (#iter=5, #ens=13-1, #attr=1/3, 1+1+#pru=8, 63)
+            res_data = np.array(
+                res_data, dtype=object).transpose(2, 1, 3, 0, 4)
+            for sa, sens_attr in enumerate(res_all[1]):
+                for j, (name_ens, abbr_cls) in enumerate(zip(res_all[-3], res_all[-2])):
+                    if name_ens == "AdaBoost":
+                        continue
+                    csv_w.writerow(
+                        # res_all[0] + [sens_attr, "{} ({})".format(name_ens, abbr_cls)]
+                        res_all[0] + [sens_attr, name_ens, abbr_cls])
+                    for pr, name_pru in enumerate(res_all[-1]):
+                        tmp_1 = np.array([
+                            # ['{} .{}'.format(name_ens, abbr_cls)] + [''] * (self._nb_iter - 1),
+                            [name_ens] + [''] * (self._nb_iter - 1),
+                            [abbr_cls] + [''] * (self._nb_iter - 1),
+                            # ['rank .{}'.format(i) for i in CRITERIA],
+                            # ['rank .{}'.format(name_pru)] + [''] * (self._nb_iter - 1),
+                            [name_pru] + [''] * (self._nb_iter - 1),
+                            res_all[2], [''] * self._nb_iter]).T
+                        tmp_2 = np.array([[''] * self._nb_iter] * 7).T
+                        curr = np.c_[tmp_2, tmp_1, res_data[sa, j, pr]]
+                        csv_w.writerows(curr)
+
+        # END
+        '''
+        tim_elapsed = time.time() - since
+        elegant_print(" Duration: {:.0f} min {:.2f} sec".format(
+            tim_elapsed // 60, tim_elapsed % 60), logger)
+        tim_elapsed /= 60
+        elegant_print(" Duration: {:.0f} hrs {:.2f} min".format(
+            tim_elapsed // 60, tim_elapsed % 60), logger)
+        elegant_print(" Time Cost in total: {:.10f} hour(s)."
+                      "".format(tim_elapsed / 60), logger)
+        since = time.time()
+        elegant_print("[ENDED AT {:s}]".format(time.strftime(
+            "%d-%b-%Y %H:%M:%S", time.localtime(since)
+        )), logger)  # min, sec, minute(s), hrs, min, hour(s)
+
+        if self._logged:
+            logger.removeHandler(log_file)
+            del log_file, formatter
+        '''
+        tim_elapsed = time.time() - since
+        elegant_print([
+            "",
+            "Duration /Time Cost: {}".format(elegant_durat(
+                tim_elapsed)),
+            "[ENDED AT {:s}]".format(elegant_dated(time.time()))
+        ], logger)
+        if self._logged:
+            rm_ehandler(logger, formatter, fileHandler)
+        del logger
+        if not self._screen and not self._logged:
+            fsock.close()
+            sys.stdout = saveout
+        csv_t.close()
+        del csv_t, csv_w, since, tim_elapsed
+        return
+
+    def trial_one_dataset(self, logger):
+        processed_data = preprocess(
+            self._dataset, self._data_frame, logger)
+        disturbed_data = adversarial(
+            self._dataset, self._data_frame, self._ratio, logger)
+
+        processed_Xy = processed_data['numerical-binsensitive']
+        disturbed_Xy = disturbed_data['numerical-binsensitive']
+        X, y = transform_X_and_y(self._dataset, processed_Xy)
+        Xp, _ = transform_X_and_y(self._dataset, disturbed_Xy)
+        belongs_priv, ptb_with_joint = transform_unpriv_tag(
+            self._dataset, processed_data['original'])
+        # Note that PTB: place to belong
+        # X, Xp, y: pd.DataFrame
+
+        tmp = processed_data['original'][self._dataset.label_name]
+        elegant_print("\t BINARY? Y= {}".format(set(y)), logger)
+        elegant_print("\t  NB. i.e., {}".format(set(tmp)), logger)
+        del tmp
+
+        # {tr/bi/mu}_{KF,KFS,mCV}_{trial_part_*}
+        if "mCV" in self._trial_type:
+            split_idx = manual_cross_valid(self._nb_iter, y)
+            elegant_print("\t CrossValid  {}".format('mCV'), logger)
+        elif 'KFS' in self._trial_type:
+            split_idx = sklearn_stratify(self._nb_iter, y, X)
+            elegant_print("\t CrossValid  {}".format('KFS'), logger)
+        elif 'KF' in self._trial_type:
+            split_idx = sklearn_k_fold_cv(self._nb_iter, y)
+            elegant_print("\t CrossValid  {}".format('KF'), logger)
+        else:
+            raise ValueError("No proper CV (cross-validation).")
+
+        # START
+        # res_all = []
+        # res_all.append([
+        #     self._dataset.dataset_name, len(set(y)),
+        #     self._iterator.name_ens, self._iterator.abbr_cls,
+        #     self._iterator.nb_cls, self._iterator.nb_pru,
+        #     self._nb_iter])
+        res_all = [[self._dataset.dataset_name, len(set(y)),
+                    self._nb_cls, self._nb_pru, self._nb_iter, ''],
+                   self._dataset.sensitive_attrs,
+                   list(range(self._nb_iter))]
+        if self._trial_type[-5:] in ['expt1', 'expt4', 'expt5']:
+            res_all.append(['bagging', 'AdaBoost',  # SAMME
+                            'LightGBM', 'FairGBM (FPR)', 'FairGBM (FNR)',
+                            'FairGBM (FPR,FNR)', 'AdaFair'])
+        elif self._trial_type.endswith('expt6'):
+            res_all.append(["Bagging", "AdaBoostM1", "SAMME"])
+            res_all.append(["Entire",
+                            "EPAF-C", "EPAF-D:2", "EPAF-D:3",
+                            "POEPAF", "POPEP"])
+            res_all.append(["bagging", "adaboost", "LightGBM"])
+            res_all.append(["FairGBM (fpr)", "FairGBM (fnr)",
+                            "FairGBM (fpr,fnr)", "AdaFair"])
+        elif self._trial_type.endswith('expt2'):
+            # # res_all.append(['bagging'] + [''] * (12 - 1) + ['AdaBoost'])
+            res_all.append(['bagging'] * 11 + ['AdaBoost'])
+            res_all.append(ALG_NAMES + ['DT'])
+            res_all.append(['Ensem'] * 2 + [
+                'rank.' + i for i in CRITERIA])
+        elif self._trial_type.endswith('expt3'):
+            res_all.append([self._name_ens])
+            res_all.append([self._abbr_cls])
+            # res_all.append(CRITERIA)
+            res_all.append(['Ensem'] + ['rank.' + i for i in CRITERIA])
+        res_data = []
+
+        for k, (i_trn, i_tst) in enumerate(split_idx):
+            # X_trn = X.iloc[i_trn]
+            # y_trn = y.iloc[i_trn]
+            # Xp_trn = Xp.iloc[i_trn]
+            # X_tst = X.iloc[i_tst]
+            # y_tst = y.iloc[i_tst]
+            # Xp_tst = Xp.iloc[i_tst]
+
+            X_trn, Xd_trn, y_trn, gones_trn, jt_trn = transform_perturbed(
+                X, Xp, y, i_trn, belongs_priv, ptb_with_joint)
+            X_tst, Xd_tst, y_tst, gones_tst, jt_tst = transform_perturbed(
+                X, Xp, y, i_tst, belongs_priv, ptb_with_joint)
+            # X_*, Xd_*, y_*: pd.DataFrame
+            # gones_*, jt_* : list of np.ndarray (element)
+
+            X_trn = X_trn.to_numpy()   # .tolist()
+            X_tst = X_tst.to_numpy()   # .tolist()
+            y_trn = y_trn.to_numpy().reshape(-1)  # .tolist()
+            y_tst = y_tst.to_numpy().reshape(-1)  # .tolist()
+            Xd_trn = Xd_trn.to_numpy()  # .tolist()
+            Xd_tst = Xd_tst.to_numpy()  # .tolist()
+
+            # i-th K-Fold
+            elegant_print("Iteration {}-th".format(k + 1), logger)
+            res_iter = self.trial_one_iteration(
+                logger, k,
+                X_trn, y_trn, Xd_trn, gones_trn, jt_trn,
+                X_tst, y_tst, Xd_tst, gones_tst, jt_tst)
+            res_data.append(res_iter)
+            del X_trn, Xd_trn, y_trn, gones_trn, jt_trn
+            del X_tst, Xd_tst, y_tst, gones_tst, jt_tst
+        # # res_data.shape: (#iter=5, #attr=1/2, #alg/baseline, #criteria)
+        # res_data = np.array(res_data, dtype=object).transpose(1, 2, 0, 3)
+        del split_idx  # return res_all
+        return res_data, res_all
+
+    def trial_one_iteration(self, logger, k,
+                            X_trn, y_trn, Xd_trn, gones_trn, jt_trn,
+                            X_tst, y_tst, Xd_tst, gones_tst, jt_tst):
+        since = time.time()
+        positive_label = \
+            self._dataset.get_positive_class_val('numerical-binsensitive')
+
+        '''
+        y_insp, _, y_pred, _ = \
+            self._iterator.achieve_ensemble_from_train_set(
+                X_trn, y_trn, [], X_tst)  # logger,
+        yd_insp = [j.predict(Xd_trn) for j in self._iterator.member]
+        yd_pred = [j.predict(Xd_tst) for j in self._iterator.member]
+        # y_*, yd_* : list of np.ndarray (element)
+        fens_trn = self._iterator.majority_vote(y_trn, y_insp)
+        fens_tst = self._iterator.majority_vote(y_tst, y_pred)
+        fd_E_trn = self._iterator.majority_vote(y_trn, yd_insp)
+        fd_E_tst = self._iterator.majority_vote(y_tst, yd_pred)
+        # fens_*, fd_E_*: list
+
+        res_ensem = []
+        Acc, temp = self._iterator.calculate_sub_ensemble_metrics(
+            y_trn, fens_trn, self._dataset.positive_label)
+        res_ensem.append([k, 'X_trn', Acc] + temp)
+        Acc, temp = self._iterator.calculate_sub_ensemble_metrics(
+            y_tst, fens_tst, self._dataset.positive_label)
+        res_ensem.append([k, 'X_tst', Acc] + temp)
+        Acc, temp = self._iterator.calculate_sub_ensemble_metrics(
+            y_trn, fd_E_trn, self._dataset.positive_label)
+        res_ensem.append([k, 'Xd_trn', Acc] + temp)
+        Acc, temp = self._iterator.calculate_sub_ensemble_metrics(
+            y_tst, fd_E_tst, self._dataset.positive_label)
+        res_ensem.append([k, 'Xd_tst', Acc] + temp)
+
+        tim_elapsed = time.time() - since
+        elegant_print("\tEnsem: time cost {:.2f} seconds"
+                      "".format(tim_elapsed), logger)
+        # self._iterator.schedule_content()
+        return res_ensem
+        '''
+
+        if self._trial_type.endswith('expt1'):
+            res_iter = self._iterator.schedule_content(
+                self._nb_cls, logger,
+                X_trn, y_trn, Xd_trn, gones_trn, jt_trn,
+                X_tst, y_tst, Xd_tst, gones_tst, jt_tst,
+                self.saIndex, self.saValue, positive_label)
+            # res_iter.shape (#attr= 1/2, 5, 61)
+        elif self._trial_type.endswith('expt4'):
+            res_iter = self._iterator.schedule_content(
+                self._nb_cls, logger,
+                X_trn, y_trn, Xd_trn, gones_trn, jt_trn,
+                X_tst, y_tst, Xd_tst, gones_tst, jt_tst,
+                self.saIndex, self.saValue, positive_label)
+            # res_iter.shape (#attr= 1/2, 7, 87)
+            # res_iter.shape (#attr= 1/2, 7, 113)
+        elif self._trial_type.endswith('expt5'):
+            res_iter = self._iterator.schedule_content(
+                self._nb_cls, logger,
+                X_trn, y_trn, Xd_trn, gones_trn, jt_trn,
+                X_tst, y_tst, Xd_tst, gones_tst, jt_tst,
+                self.saIndex, self.saValue, positive_label)
+            # res_iter.shape (#attr= 1/2, 7, 337)
+        elif self._trial_type.endswith('expt6'):
+            res_iter = self._iterator.schedule_content(
+                self._nb_cls, self._nb_pru, logger,
+                X_trn, y_trn, Xd_trn, gones_trn, jt_trn,
+                X_tst, y_tst, Xd_tst, gones_tst, jt_tst,
+                self.saIndex, self.saValue, positive_label, self._lam)
+            # res_iter.shape (21+4*?, 339) where ?=1|2
+            # ie. (6*3+2+1+(3+1)*#attr, 56, 339)
+        elif self._trial_type.endswith('expt2'):
+            res_iter = self._iterator.schedule_content(
+                self._nb_cls, self._nb_pru, logger,
+                X_trn, y_trn, Xd_trn, gones_trn, jt_trn,
+                X_tst, y_tst, Xd_tst, gones_tst, jt_tst,
+                positive_label, self._lam)
+            # res_iter.shape (11, #attr=1/3, 8, 63)
+            # # res_iter.shape (1+11+1, #attr=1/3, 8, 63)
+        elif self._trial_type.endswith('expt3'):
+            res_iter = self._iterator.schedule_content(
+                self._nb_cls, self._nb_pru, logger,
+                X_trn, y_trn, Xd_trn, gones_trn, jt_trn,
+                X_tst, y_tst, Xd_tst, gones_tst, jt_tst,
+                positive_label, self._lam)
+            # res_iter.shape (1, #attr=1/3, 7, 63)
+
+    tim_elapsed = time.time() - since
+    elegant_print(["Iteration {}, Consumed {}".format(
+        k + 1, elegant_durat(tim_elapsed)), ], logger)
+    return res_iter
+
+    # def routine_fair_ensem(self, logger, k,
+    #                        X_trn, y_trn, Xd_trn, gones_trn, jt_trn,
+    #                        X_tst, y_tst, Xd_tst, gones_tst, jt_tst):
+    #   pass
+    #   # self._iterator = ClassifierSetup()

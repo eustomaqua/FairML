@@ -43,6 +43,8 @@ from experiment.wp2_oracle.empirical import (
     PartA_TheoremsLemma, PartB_TheoremsLemma,
     PartI_LambdaEffect, PartE_ImprovedFairness)  # legacy
 
+from experiment.wp2_oracle.rev_empiric import FairVoteEmpirical
+
 AVAILABLE_FAIR_DATASET = [
     'ricci', 'german', 'adult', 'ppr', 'ppvr']
 
@@ -131,13 +133,13 @@ class OracleEmpirical(ExperimentSetup):
         else:
             logger = None
 
-        elegant_print([
-            "[BEGAN AT {:s}]".format(
-                time.strftime("%d-%b-%Y %H:%M:%S", time.localtime(since))),
+        elegant_print(["[BEGAN AT {:s}]".format(
+            time.strftime("%d-%b-%Y %H:%M:%S", time.localtime(since))),
             " EXPERIMENT",
             "\t   trial = {}".format(self._trial_type),
             "\t dataset = {}".format(self._data_type),
-            "\t binary? = {}".format(not self._trial_type.startswith('mu')),
+            "\t binary? = {}".format(
+                not self._trial_type.startswith('mu')),
             " PARAMETERS",
             "\tname_ens = {}".format(self._iterator.name_ens),
             "\tabbr_cls = {}".format(self._iterator.abbr_cls),
@@ -555,7 +557,8 @@ if args.add_expt:
         kwargs['abbr_cls'] = args.abbr_cls
     # elif trial_type[-5:] in ('expt4', 'expt5', 'expt6'):
     #     kwargs['gather'] = args.gather
-    case = ExperimentSetup(
+    # case = ExperimentSetup(
+    case = FairVoteEmpirical(
         trial_type, data_type, nb_cls, nb_pru,
         nb_iter, args.ratio, args.lam,
         screen=screen, logged=logged, **kwargs)
@@ -613,4 +616,6 @@ python wp1_main_exec.py --logged -exp mCV_expt6 --name-ens Bagging --abbr-cls DT
 
 # add_expt
 python wp1_main_exec.py -add -exp mCV_expt1 -dat german
+python wp1_main_exec.py -add -exp mCV_expt4 -dat * --ratio .95 --nb-cls 7 --nb-pru 3
+python wp1_main_exec.py -add -exp mCV_expt5 -dat * --ratio .95 --nb-cls 3 --nb-pru 1
 """

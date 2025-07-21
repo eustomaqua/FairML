@@ -40,7 +40,7 @@ from sklearn.ensemble import BaseEnsemble
 from sklearn.ensemble._forest import BaseEnsemble
 # from sklearn.externals import six
 
-from hfm.utils.verifiers import check_zero
+from fairml.widget.utils_const import check_zero
 import six
 import sys
 # import pdb  # Modification to make it suit for multi-class classification

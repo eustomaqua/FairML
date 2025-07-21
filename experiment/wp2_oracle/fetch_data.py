@@ -146,9 +146,9 @@ class DataSetup:
         self._log_document = data_type
 
         # ['ricci', 'german', 'adult', 'ppc', 'ppvc']
-        if data_type == 'ppr':
+        if data_type == 'ppr':     # or data_type == 'ppc':
             self._data_type = DATASET_NAMES[-2]
-        elif data_type == 'ppvr':
+        elif data_type == 'ppvr':  # or data_type == 'ppvc':
             self._data_type = DATASET_NAMES[-1]
         elif data_type not in ['ricci', 'german', 'adult']:
             raise ValueError("Wrong dataset `{}`".format(data_type))
@@ -163,9 +163,9 @@ class DataSetup:
             self.saIndex = [3, 5]  # ['sex', 'age'] [, 12]
         elif data_type == "adult":
             self.saIndex = [2, 3]  # ['race', 'sex'] [7, 8]
-        elif data_type == "ppc":
+        elif data_type == "ppr":
             self.saIndex = [0, 2]  # ['sex', 'race'] [0, 3]
-        elif data_type == "ppvc":
+        elif data_type == "ppvr":
             self.saIndex = [0, 2]  # ['sex', 'race'] [0, 3]
         self.saValue = self._dataset.get_privileged_group('numerical-binsensitive')
         # self.saValue = 0  # 1 means the privileged group
@@ -452,8 +452,8 @@ class IndividualSetup:
         # # hx: np.ndarray    --> `.tolist()`
         # y,hx,ind_priv: np.ndarray  # indicator_of_priv
 
-        g1_Cij, g0_Cij, gones_Cm, gzero_Cm = \
-            marginalised_pd_mat(y, hx, pos, ind_priv)
+        _, _, gones_Cm, gzero_Cm = marginalised_pd_mat(
+            y, hx, pos, ind_priv)  # g1_Cij, g0_Cij,
         fair_measure = {
             'unaware': unpriv_unaware(gones_Cm, gzero_Cm),
             'group_1': unpriv_group_one(gones_Cm, gzero_Cm),
@@ -521,7 +521,8 @@ class EnsembleSetup(IndividualSetup):
         self._weight = value
 
     def achieve_ensemble_from_train_set(self,
-                                        X_trn, y_trn, X_val, X_tst):
+                                        X_trn, y_trn,
+                                        X_val, X_tst):
         # since = time.time()
         name_cls = INDIVIDUALS[self._abbr_cls]
         coef, clfs, indices = EnsembleAlgorithm(
@@ -548,19 +549,21 @@ class EnsembleSetup(IndividualSetup):
         vY = np.unique(np.concatenate([[y], yt]))
         wgt = self._weight if not wgt else wgt
         coef = np.array([wgt]).transpose()
-        weig = [np.sum(
-            coef * np.equal(yt, i), axis=0).tolist() for i in vY]
+        weig = [np.sum(coef * np.equal(
+            yt, i), axis=0).tolist() for i in vY]
         loca = np.array(weig).argmax(axis=0).tolist()
         fens = [vY[i] for i in loca]
         return fens
 
-    def pruning_baseline(self, y, yt, name_pru, epsilon=1e-6, rho=.4,
-                         alpha=0.5, L=3, R=2, X=None, indices=None):
+    def pruning_baseline(
+            self, y, yt, name_pru, epsilon=1e-6, rho=.4,
+            alpha=0.5, L=3, R=2, X=None, indices=None):
         # rho = float(self._nb_pru) / self._nb_cls  # default: 0.4
 
         if name_pru in AVAILABLE_NAME_PRUNE + ['KP']:
             ys, P, seq, _ = exist_pruning_basics(
-                name_pru, self._nb_cls, self._nb_pru, y, yt, epsilon, rho)
+                name_pru, self._nb_cls, self._nb_pru, y, yt,
+                epsilon, rho)
 
         elif name_pru in LATEST_NAME_PRUNE:
             kwargs = {}
@@ -571,14 +574,16 @@ class EnsembleSetup(IndividualSetup):
                 kwargs["X_val"] = X
 
             ys, _, P, seq = exist_pruning_latest(
-                name_pru, self._nb_cls, self._nb_pru, y, [], yt, [],
-                alpha, L, R, **kwargs)
+                name_pru, self._nb_cls, self._nb_pru,
+                y, [], yt, [], alpha, L, R, **kwargs)
 
         else:
-            raise ValueError("No such pruning named `{}`".format(name_pru))
+            raise ValueError("No such pruning named `{}`".format(
+                name_pru))
         return ys, P, seq
 
-    def pruning_proposed(self, y, yt, yq, name_pru, lam, dist=1, n_m=2):
+    def pruning_proposed(self, y, yt, yq, name_pru, lam,
+                         dist=1, n_m=2):
         if name_pru == 'POEPAF':
             H = Pareto_Optimal_EPAF_Pruning(
                 y, yt, yq, self._weight, self._nb_pru, lam, dist)
@@ -589,10 +594,12 @@ class EnsembleSetup(IndividualSetup):
             H = Distributed_EPAF_Pruning(
                 y, yt, yq, self._weight, self._nb_pru, lam, n_m)
         elif name_pru == 'POPEP':
-            H = POAF_PEP(y, yt, yq, self._weight, lam, self._nb_pru)
+            H = POAF_PEP(y, yt, yq, self._weight, lam,
+                         self._nb_pru)
         else:
-            raise ValueError("No such pruning proposed `{}`".format(
-                name_pru))
+            raise ValueError(
+                "No such pruning proposed `{}`".format(
+                    name_pru))
         return H
 
     def calculate_sub_ensemble_metrics(self, y, hx, pos=1):
@@ -617,9 +624,9 @@ class EnsembleSetup(IndividualSetup):
 
         tmp_pru = []
         # Acc, (a, p, r, f, _, _, _, _, _, _, _) = \
-        Acc, (_, p, r, f, _, _, _, _, _, _, _) = \
+        Acc, (_, p, r, f1, _, _, _, _, _, _, _) = \
             self.calculate_sub_ensemble_metrics(y, fens, pos)
-        tmp_pru.extend([Acc, p, r, f])
+        tmp_pru.extend([Acc, p, r, f1])
 
         # L_fair(MV_rho), L_acc(MV_rho)
         sub_whole = (hat_L_fair(fens, fqtb), hat_L_loss(fens, y))
@@ -627,8 +634,8 @@ class EnsembleSetup(IndividualSetup):
         tmp_pru.append(_bi_objectives(sub_whole, lam))
 
         # objective
-        sub_split = (
-            Erho_sup_L_fair(ys, yr, wgt), E_rho_L_loss_f(ys, y, wgt))
+        sub_split = (Erho_sup_L_fair(ys, yr, wgt),
+                     E_rho_L_loss_f(ys, y, wgt))
         tmp_pru.extend(sub_split)
         tmp_pru.append(_bi_objectives(sub_split, lam))
         tmp_pru.append(E_rho_L_fair_f(ys, yr, wgt))
@@ -646,51 +653,32 @@ class EnsembleSetup(IndividualSetup):
 # -------------------------------------
 
 
-class ExperimentSetup(DataSetup):  # that is, ExptSetting()
+class ExperimentSetup(DataSetup):
+    # that is, ExperimentSetting()
     def __init__(self, trial_type, data_type,
-                 # name_ens, abbr_cls, nb_cls, nb_pru,
-                 # nb_iter=5, ratio=.5, screen=True, logged=False):
-                 nb_cls, nb_pru, nb_iter=5, ratio=.5, lam=.5,
-                 name_ens='bagging', abbr_cls='DT',
-                 screen=True, logged=False):
+                 name_ens, abbr_cls, nb_cls, nb_pru,
+                 nb_iter=5, ratio=.5, screen=True, logged=False):
+        # super().__init__(trial_type, data_type)
         super().__init__(data_type)
         self._trial_type = trial_type
 
-        # nmens_temp = _get_tmp_name_ens(name_ens)
-        # self._log_document = "_".join([
-        #     trial_type, nmens_temp, abbr_cls + str(nb_cls),
-        #     self._log_document])  # aka. data_type
+        nmens_temp = _get_tmp_name_ens(name_ens)
         self._log_document = "_".join([
-            trial_type, "{}vs{}".format(nb_cls, nb_pru),
-            "iter{}".format(nb_iter), self._log_document,
-            "ratio{}".format(int(ratio * 100)), "pms"])
+            trial_type, nmens_temp, abbr_cls + str(nb_cls),
+            self._log_document])  # aka. data_type
 
-        self._nb_cls = nb_cls
         self._nb_pru = nb_pru
         self._nb_iter = nb_iter
         self._ratio = ratio
-        self._lam = lam
-
         self._screen = screen
         self._logged = logged
-        # self._log_document += '_iter{}'.format(nb_iter)
-        # self._log_document += '_pms'
-        # self._iterator = EnsembleSetup(
-        #     name_ens, abbr_cls, nb_cls, nb_pru)
+        self._log_document += '_iter{}'.format(nb_iter)
+        self._log_document += '_pms'
+        # self._iterator = TrialPartSub(abbr_cls, nb_cls, name_ens)
+        self._iterator = EnsembleSetup(name_ens, abbr_cls, nb_cls, nb_pru)
 
-        self._name_ens = name_ens
-        self._abbr_cls = abbr_cls
-        if trial_type.endswith('expt3'):
-            nmens_tmp = _get_tmp_name_ens(name_ens)
-            self._log_document = self._log_document.replace(
-                data_type, '')
-            self._log_document += "_{}_{}_{}".format(
-                nmens_tmp, abbr_cls, data_type)
-        if trial_type.endswith('expt6'):
-            self._log_document += "_lam{}".format(int(lam * 100))
-
-    # def __del__(self):
-    #     pass
+    def __del__(self):
+        pass
 
     @property
     def trial_type(self):
@@ -773,6 +761,13 @@ class ExperimentSetup(DataSetup):  # that is, ExptSetting()
                 csv_w.writerow([''] * 7 + i_ens)
         del res_all
 
+        '''
+        tim_elapsed = (time.time() - since) / 60
+        elegant_print(
+            "Total Time Cost: {:.0f}h {:.2f}m, i.e., {:.10f} hour(s)"
+            ".".format(tim_elapsed // 60,
+                       tim_elapsed % 60, tim_elapsed / 60 ), logger)
+        '''
         tim_elapsed = time.time() - since
         elegant_print(" Duration: {:.0f} min {:.2f} sec".format(
             tim_elapsed // 60, tim_elapsed % 60), logger)
@@ -876,9 +871,11 @@ class ExperimentSetup(DataSetup):  # that is, ExptSetting()
                             X_trn, y_trn, Xd_trn, gones_trn, jt_trn,
                             X_tst, y_tst, Xd_tst, gones_tst, jt_tst):
         since = time.time()
+        # y_insp, _, y_pred, ut, us = \
         y_insp, _, y_pred, _ = \
             self._iterator.achieve_ensemble_from_train_set(
-                X_trn, y_trn, [], X_tst)  # logger,
+                # logger,
+                X_trn, y_trn, [], X_tst)
         yd_insp = [j.predict(Xd_trn) for j in self._iterator.member]
         yd_pred = [j.predict(Xd_tst) for j in self._iterator.member]
         # y_*, yd_* : list of np.ndarray (element)
@@ -905,6 +902,7 @@ class ExperimentSetup(DataSetup):  # that is, ExptSetting()
         tim_elapsed = time.time() - since
         elegant_print("\tEnsem: time cost {:.2f} seconds"
                       "".format(tim_elapsed), logger)
+
         # self._iterator.schedule_content()
         return res_ensem
 
