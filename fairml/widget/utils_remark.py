@@ -38,11 +38,13 @@ from sklearn import neural_network  # MLPClassifier
 # weights (in resample):    np.ndarray, shape=(nb_y/X,) i.e., [nb_y/X]
 #
 
-AVAILABLE_ABBR_ENSEM = ['Bagging', 'AdaBoostM1', 'SAMME']  # 'AdaBoost'
+AVAILABLE_ABBR_ENSEM = ['Bagging', 'AdaBoostM1', 'SAMME']
 AVAILABLE_ABBR_CLS = [
-    'DT', 'NB', 'SVM', 'linSVM', 'kNNu', 'kNNd',
-    'MLP', 'LR1', 'LR2', 'LM1', 'LM2',
-]
+    # 'DT', 'NB', 'SVM', 'linSVM', 'kNNu', 'kNNd',
+    # 'MLP', 'LR1', 'LR2', 'LM1', 'LM2',
+    'DT', 'NB', 'SVM', 'linSVM', 'MLP',
+    'LR1', 'LR2', 'LM1', 'LM2', 'kNNu', 'kNNd',
+]  # ALG_NAMES  # 'lmSGD','LR',
 
 
 NAME_INDIVIDUALS = {

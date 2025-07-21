@@ -21,7 +21,7 @@ def test_group_fair():
         marginalised_pd_mat, unpriv_unaware, unpriv_manual)
     '''
 
-    from fairml.facilc.metric_fair import (
+    from fairml.facils.metric_fair import (
         marginalised_contingency, marginalised_confusion,
         prev_unpriv_grp_one, prev_unpriv_grp_two, prev_unpriv_grp_thr,
         marginalised_pd_mat, prev_unpriv_manual, prev_unpriv_unaware)

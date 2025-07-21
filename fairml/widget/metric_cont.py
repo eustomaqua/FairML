@@ -4,7 +4,7 @@
 
 import numpy as np
 import numba
-from fairml.widget.utils_const import DTY_INT
+# from fairml.widget.utils_const import DTY_INT
 
 
 # -------------------------------------
@@ -20,10 +20,10 @@ from fairml.widget.utils_const import DTY_INT
 @numba.jit(nopython=True)
 def contingency_tab_bi(y, y_hat, pos=1):
     # For one single classifier
-    tp = np.sum((y == pos) & (y_hat == pos))
-    fn = np.sum((y == pos) & (y_hat != pos))
-    fp = np.sum((y != pos) & (y_hat == pos))
-    tn = np.sum((y != pos) & (y_hat != pos))
+    tp = np.sum((y == pos) & (y_hat == pos))  # a
+    fn = np.sum((y == pos) & (y_hat != pos))  # b
+    fp = np.sum((y != pos) & (y_hat == pos))  # c
+    tn = np.sum((y != pos) & (y_hat != pos))  # d
     return tp, fp, fn, tn
 
 # input: np.ndarray, not list
@@ -60,7 +60,7 @@ contingency_table_{?} when ?==2
 
 def contg_tab_mu_type3(y, y_hat, vY):
     dY = len(vY)
-    Cij = np.zeros(shape=(dY, dY), dtype=DTY_INT)  # 'int')
+    Cij = np.zeros(shape=(dY, dY), dtype='int')  # DTY_INT)
     for i in range(dY):
         for j in range(dY):
             Cij[i, j] = np.sum((y == vY[i]) & (y_hat == vY[j]))
@@ -119,8 +119,8 @@ McNemar test
 
 
 def contg_tab_mu_type1(y, ha, hb):
-    za = np.array(y == ha, dtype=DTY_INT)  # 'int')
-    zb = np.array(y == hb, dtype=DTY_INT)  # 'int')
+    za = np.array(y == ha, dtype='int')  # DTY_INT)
+    zb = np.array(y == hb, dtype='int')  # DTY_INT)
 
     tp = np.sum((za == 1) & (zb == 1))  # N^{11} # e_{00}
     fn = np.sum((za == 1) & (zb != 1))  # N^{10} # e_{10}

@@ -8,17 +8,18 @@ from fairml.widget.utils_remark import (
 # Experiments
 from fairml.widget.utils_const import (
     _get_tmp_document, _get_tmp_name_ens, check_zero)
-from fairml.widget.utils_wpclf import INDIVIDUALS
 from fairml.datasets import (
     DATASETS, DATASET_NAMES, RAW_EXPT_DIR, preprocess)
 from fairml.preprocessing import (
     adversarial, transform_X_and_y, transform_unpriv_tag)
 from fairml.facils.data_classify import EnsembleAlgorithm
+from fairml.facils.utils_wpclf import FAIR_INDIVIDUALS as INDIVIDUALS
+# from fairml.widget.utils_wpclf import INDIVIDUALS
 # from fairml.facils.metrics_cont import (
 #     calc_accuracy, calc_Acc, calc_PR, calc_F1, calc_4Rate,
 #     calc_confusion)
 
-from fairml.facilc.metric_fair import marginalised_pd_mat
+from fairml.facils.metric_fair import marginalised_pd_mat
 # from fairml.facils.fairness_group import marginalised_pd_mat
 from fairml.facilc.ensem_pruning import \
     contrastive_pruning_methods as exist_pruning_basics
@@ -31,15 +32,15 @@ from fairml.dr_pareto_optimal import (
     Pareto_Optimal_EPAF_Pruning, _bi_objectives, POAF_PEP,
     Centralised_EPAF_Pruning, Distributed_EPAF_Pruning)
 
-from fairml.facilc.metric_fair import prev_unpriv_grp_one \
+from fairml.facils.metric_fair import prev_unpriv_grp_one \
     as unpriv_group_one
-from fairml.facilc.metric_fair import prev_unpriv_grp_two \
+from fairml.facils.metric_fair import prev_unpriv_grp_two \
     as unpriv_group_two
-from fairml.facilc.metric_fair import prev_unpriv_grp_thr \
+from fairml.facils.metric_fair import prev_unpriv_grp_thr \
     as unpriv_group_thr
-from fairml.facilc.metric_fair import prev_unpriv_unaware \
+from fairml.facils.metric_fair import prev_unpriv_unaware \
     as unpriv_unaware
-from fairml.facilc.metric_fair import prev_unpriv_manual \
+from fairml.facils.metric_fair import prev_unpriv_manual \
     as unpriv_manual
 from fairml.widget.data_split import (
     sklearn_k_fold_cv, sklearn_stratify, manual_cross_valid)
@@ -647,25 +648,46 @@ class EnsembleSetup(IndividualSetup):
 
 class ExperimentSetup(DataSetup):  # that is, ExptSetting()
     def __init__(self, trial_type, data_type,
-                 name_ens, abbr_cls, nb_cls, nb_pru,
-                 nb_iter=5, ratio=.5, screen=True, logged=False):
+                 # name_ens, abbr_cls, nb_cls, nb_pru,
+                 # nb_iter=5, ratio=.5, screen=True, logged=False):
+                 nb_cls, nb_pru, nb_iter=5, ratio=.5, lam=.5,
+                 name_ens='bagging', abbr_cls='DT',
+                 screen=True, logged=False):
         super().__init__(data_type)
         self._trial_type = trial_type
 
-        nmens_temp = _get_tmp_name_ens(name_ens)
+        # nmens_temp = _get_tmp_name_ens(name_ens)
+        # self._log_document = "_".join([
+        #     trial_type, nmens_temp, abbr_cls + str(nb_cls),
+        #     self._log_document])  # aka. data_type
         self._log_document = "_".join([
-            trial_type, nmens_temp, abbr_cls + str(nb_cls),
-            self._log_document])  # aka. data_type
+            trial_type, "{}vs{}".format(nb_cls, nb_pru),
+            "iter{}".format(nb_iter), self._log_document,
+            "ratio{}".format(int(ratio * 100)), "pms"])
 
+        self._nb_cls = nb_cls
         self._nb_pru = nb_pru
         self._nb_iter = nb_iter
         self._ratio = ratio
+        self._lam = lam
+
         self._screen = screen
         self._logged = logged
-        self._log_document += '_iter{}'.format(nb_iter)
-        self._log_document += '_pms'
-        self._iterator = EnsembleSetup(
-            name_ens, abbr_cls, nb_cls, nb_pru)
+        # self._log_document += '_iter{}'.format(nb_iter)
+        # self._log_document += '_pms'
+        # self._iterator = EnsembleSetup(
+        #     name_ens, abbr_cls, nb_cls, nb_pru)
+
+        self._name_ens = name_ens
+        self._abbr_cls = abbr_cls
+        if trial_type.endswith('expt3'):
+            nmens_tmp = _get_tmp_name_ens(name_ens)
+            self._log_document = self._log_document.replace(
+                data_type, '')
+            self._log_document += "_{}_{}_{}".format(
+                nmens_tmp, abbr_cls, data_type)
+        if trial_type.endswith('expt6'):
+            self._log_document += "_lam{}".format(int(lam * 100))
 
     # def __del__(self):
     #     pass

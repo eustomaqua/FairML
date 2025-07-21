@@ -7,7 +7,7 @@ from fairml.facilc.draw_graph import (
     histogram_chart, scatter_parl_chart,  # twinx_bars_chart,
     scatter_id_chart,  # scatter_and_corr,sns_scatter_corr,
     _setup_config, _setup_figsize, _setup_figshow)
-from fairml.facilc.draw_hypos import (
+from fairml.facils.draw_hypos import (
     Friedman_init, _encode_sign,  # _avg_and_stdev,
     comp_t_prep, comp_t_sing,  # comp_t_init,
     cmp_paired_avg, cmp_paired_wtl)

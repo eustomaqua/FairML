@@ -18,8 +18,9 @@ from scipy import stats
 from sklearn.metrics import confusion_matrix
 
 from fairml.widget.utils_saver import elegant_print
-from fairml.facilc.draw_hypos import (  # .draw.utils_hypos
+from fairml.facils.draw_hypos import (
     Friedman_test, Nememyi_posthoc_test)
+# from fairml.facilc.draw_hypos import (  # .draw.utils_hypos
 
 
 # =====================================

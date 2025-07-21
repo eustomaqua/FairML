@@ -5,7 +5,7 @@ import numpy as np
 from fairml.widget.utils_const import DTY_FLT
 from fairml.widget.utils_saver import elegant_print
 
-from fairml.facilc.draw_hypos import (  # .graph.utils_hypos
+from fairml.facils.draw_hypos import (  # .graph.utils_hypos
     _encode_sign, Friedman_init,
     cmp_paired_wtl, cmp_paired_avg, comp_t_sing, comp_t_prep)
 from fairml.facilc.draw_graph import (

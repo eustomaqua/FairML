@@ -51,7 +51,8 @@ z_trn, z_hat = np.array(z_trn), np.array(z_hat)
 
 
 def test_contingency():
-    from fairml.facils.metric_cont import (
+    # from fairml.facils.metric_cont import (
+    from fairml.widget.metric_cont import (
         contingency_tab_bi, contg_tab_mu_type3)
 
     ans = metrics.cluster.contingency_matrix(y_trn, y_hat)
@@ -72,7 +73,7 @@ def test_contingency():
 
 
 def test_performance():
-    from fairml.facils.metric_cont import contingency_tab_bi
+    from fairml.widget.metric_cont import contingency_tab_bi
     from fairml.facils.metric_perf import (
         calc_accuracy, calc_error_rate, calc_precision, calc_recall,
         calc_f1_score, calc_f_beta)

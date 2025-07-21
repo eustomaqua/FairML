@@ -9,8 +9,8 @@ import numpy as np
 import numba
 from fairml.widget.utils_timer import fantasy_timer
 from fairml.widget.utils_const import (
-    check_zero, DTY_INT, judge_transform_need)
-from fairml.facils.metric_cont import contingency_tab_bi
+    check_zero, judge_transform_need)  # DTY_INT,
+from fairml.widget.metric_cont import contingency_tab_bi
 # from fairml.facils.metric_cont import (
 #     contg_tab_mu_type3, contg_tab_mu_merge)
 
@@ -49,7 +49,7 @@ C_{ij}
 
 def marginalised_contingency(y, hx, vY, dY):
     assert len(y) == len(hx), "Shapes do not match."
-    Cij = np.zeros(shape=(dY, dY), dtype=DTY_INT)
+    Cij = np.zeros(shape=(dY, dY), dtype='int')  # DTY_INT)
     for i in range(dY):
         for j in range(dY):
             tmp = np.logical_and(
@@ -61,7 +61,7 @@ def marginalised_contingency(y, hx, vY, dY):
 
 @numba.jit(nopython=True)
 def marginalised_confusion(Cij, loc=1):
-    Cm = np.zeros((2, 2), dtype=DTY_INT)
+    Cm = np.zeros((2, 2), dtype='int')  # DTY_INT)
     # loca = vY.index(pos)  # [[TP,FN],[FP,TN]]
 
     Cm[0, 0] = Cij[loc, loc]

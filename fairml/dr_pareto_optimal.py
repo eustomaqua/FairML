@@ -12,16 +12,31 @@ from itertools import permutations, combinations
 import numpy as np
 from pathos import multiprocessing as pp
 
-from fairml.facils.ensem_voting import weighted_voting
 from fairml.discriminative_risk import (
     hat_L_fair, E_rho_L_fair_f, Erho_sup_L_fair,
     hat_L_loss, E_rho_L_loss_f, Erho_sup_L_loss,
     hat_L_objt, tandem_objt, cal_L_obj_v1)
-
-from fairml.widget.utils_const import DTY_BOL
+# from fairml.widget.utils_const import DTY_BOL
+from fairml.facils.ensem_voting import weighted_voting
 from fairml.facilc.ensem_pruning import _PEP_flipping_uniformly
 
+# Algorithm 4
+from fairml.facils.metric_fair import (
+    marginalised_pd_mat, prev_unpriv_unaware, prev_unpriv_manual,
+    prev_unpriv_grp_one, prev_unpriv_grp_two, prev_unpriv_grp_thr)
+from fairml.facils.draw_hypos import _Friedman_sequential
+# from fairml.facilc.draw_hypos import _Friedman_successive
+
+
 gc.enable()
+
+unpriv_group_one = prev_unpriv_grp_one
+unpriv_group_two = prev_unpriv_grp_two
+unpriv_group_thr = prev_unpriv_grp_thr
+unpriv_unaware = prev_unpriv_unaware
+unpriv_manual = prev_unpriv_manual
+del prev_unpriv_grp_one, prev_unpriv_grp_two, prev_unpriv_grp_thr
+del prev_unpriv_unaware, prev_unpriv_manual
 
 
 # =====================================
@@ -408,6 +423,7 @@ def Pareto_Optimal_EPAF_Pruning(y, yt, yq, wgt, nb_pru, lam, dist=1):
 
 # -------------------------------------
 # Algorithm 2.
+#     Centralised Version (EPAF-C)
 # -------------------------------------
 
 # 1. H= an arbitrary individual member f_i\in F
@@ -463,6 +479,7 @@ def Centralised_EPAF_Pruning(y, yt, yq, wgt, nb_pru, lam):
 
 # -------------------------------------
 # Algorithm 3.
+#     Distributed Version (EPAF-D)
 # -------------------------------------
 
 # 1. Partition F randomly into n_m groups as equally as possible
@@ -622,7 +639,7 @@ def _POAF_check_flipping(s, nb_pru=None):
 def _POAF_bi_objects(y, zt, zq, wgt, s):
     # aka. def _bi_goals_whole()
     # but not quite the same exactly
-    bf_h = np.array(s, dtype=DTY_BOL)  # 'bool')
+    bf_h = np.array(s, dtype='bool')  # DTY_BOL)
 
     yt = zt[bf_h].tolist()
     yq = zq[bf_h].tolist()
@@ -638,7 +655,7 @@ def _POAF_bi_objects(y, zt, zq, wgt, s):
 def _POAF_obj_eval(y, zt, zq, wgt, s, lam):
     # aka. def _bi_goals_split()
     # but not quite the same exactly
-    bf_h = np.array(s, dtype=DTY_BOL)  # 'bool')
+    bf_h = np.array(s, dtype='bool')  # DTY_BOL)
     if np.sum(bf_h) < 1:
         return 1, (1, 1)
     # namely, def _POAF_eval()
@@ -674,7 +691,7 @@ def _POAF_obj_eval(y, zt, zq, wgt, s, lam):
 
 def POAF_VDS(y, zt, zq, wgt, s, lam):
     nb_cls = len(wgt)
-    QL = np.zeros(nb_cls, dtype=DTY_BOL)
+    QL = np.zeros(nb_cls, dtype='bool')
     sp = deepcopy(s)
     Q, L = [], []
     while np.sum(QL) < nb_cls:
@@ -754,8 +771,7 @@ def POAF_PEP(y, yt, yq, wgt, lam, nb_pru):
     zt, zq = np.array(yt), np.array(yq)
 
     s = np.random.randint(2, size=nb_cls).tolist()
-    # s = _POAF_check_randpick(s)
-    s = _POAF_check_randpick(s, nb_pru)
+    s = _POAF_check_randpick(s, nb_pru)  # _POAF_check_randpick(s)
     P = [deepcopy(s)]
 
     nb_cnt = int(np.ceil(rho * nb_cls))
@@ -763,8 +779,8 @@ def POAF_PEP(y, yt, yq, wgt, lam, nb_pru):
     while nb_cnt > 0:
         idx = np.random.randint(len(P))
         s0 = P[idx]
-        # sp = _PEP_flipping_uniformly(s0)
-        sp = _POAF_check_flipping(s0, nb_pru)
+        sp = _POAF_check_flipping(
+            s0, nb_pru)  # _PEP_flipping_uniformly(s0)
 
         signal_1, _ = POAF_if_nexists_succ(y, zt, zq, wgt, P, sp)
 
@@ -776,7 +792,8 @@ def POAF_PEP(y, yt, yq, wgt, lam, nb_pru):
             # IF sum(sp)==1, then it will get bug
             Q = POAF_check_item_empty(Q)
             for q in Q:
-                signal_3, _ = POAF_if_nexists_succ(y, zt, zq, wgt, P, q)
+                signal_3, _ = POAF_if_nexists_succ(
+                    y, zt, zq, wgt, P, q)
 
                 if not signal_3:
                     P, _ = POAF_refresh_succeq(y, zt, zq, wgt, P, q)
@@ -799,4 +816,58 @@ def POAF_PEP(y, yt, yq, wgt, lam, nb_pru):
 
 
 # -------------------------------------
+# -------------------------------------
+
+
+# =====================================
+# Algorithm 4.
+# Ranking based (different fairness measures)
+# =====================================
+
+
+def Ranking_based_criterion(y, hx, f_qtb, lam, criteria="DR",
+                            pos=1, idx_priv=list()):
+    if criteria == "DR":
+        l_fair = hat_L_fair(hx, f_qtb)
+        l_acc_ = hat_L_loss(hx, y)
+        return lam * l_acc_ + (1. - lam) * l_fair
+
+    _, _, gones_Cm, gzero_Cm = marginalised_pd_mat(y, hx, pos,
+                                                   idx_priv)
+    if criteria == "unaware":
+        g1, g0 = unpriv_unaware(gones_Cm, gzero_Cm)
+    elif criteria == "DP":
+        g1, g0 = unpriv_group_one(gones_Cm, gzero_Cm)
+    elif criteria == "EO":
+        g1, g0 = unpriv_group_two(gones_Cm, gzero_Cm)
+    elif criteria == "PQP":
+        g1, g0 = unpriv_group_thr(gones_Cm, gzero_Cm)
+    elif criteria == "manual":
+        g1, g0 = unpriv_manual(gones_Cm, gzero_Cm)
+    else:
+        raise ValueError("Wrong criteria `{}`".format(criteria))
+    return abs(g1 - g0)
+
+
+def Ranking_based_fairness_Pruning(y, yt, yq, nb_pru, lam,
+                                   criteria="DR", pos=1, idx_priv=list()):
+    nb_cls = len(yt)  # len(wgt)
+    rank_val = list(map(Ranking_based_criterion,
+                        [y] * nb_cls, yt, yq,
+                        # yt.tolist(), yq.tolist(),
+                        [lam] * nb_cls, [criteria] * nb_cls,
+                        [pos] * nb_cls, [idx_priv] * nb_cls))
+
+    # U = np.array([rank_val])
+    # rank_idx = _Friedman_sequential(U, mode='ascend', dim=2)
+    # idx_bar = _Friedman_successive(U, rank_idx)
+
+    rank_idx = _Friedman_sequential(
+        [rank_val], mode='ascend', dim=2)[0]
+    H = rank_idx <= nb_pru
+    return H.tolist(), rank_idx.tolist()
+
+
+# -------------------------------------
+# Algorithm 4.
 # -------------------------------------

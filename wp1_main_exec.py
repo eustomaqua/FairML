@@ -23,14 +23,25 @@ from fairml.preprocessing import (
     adversarial, transform_X_and_y, transform_unpriv_tag,
     transform_perturbed)
 from experiment.wp2_oracle.fetch_data import ExperimentSetup
+# from experiment.wp2_oracle.empirical import (
+#     PartC_TheoremsLemma, PartK_PACGeneralisation,
+#     PartH_ImprovedPruning, PartJ_LambdaEffect)
+# from experiment.wp2_oracle.empirical import (
+#     PartD_ImprovedPruning, PartF_ImprovedFairness)  # legacy
+# from experiment.wp2_oracle.empirical import (
+#     PartA_TheoremsLemma, PartB_TheoremsLemma, PartI_LambdaEffect,
+#     PartG_ImprovedPruning, PartE_ImprovedFairness)  # legacy
+
 from experiment.wp2_oracle.empirical import (
     PartC_TheoremsLemma, PartK_PACGeneralisation,
-    PartH_ImprovedPruning, PartJ_LambdaEffect)
+    PartJ_LambdaEffect, PartF_ImprovedFairness)
+from experiment.wp2_oracle.empirical_ep import (
+    PartH_ImprovedPruning, PartD_ImprovedPruning)
+from experiment.wp2_oracle.empirical_ep import (
+    PartG_ImprovedPruning)  # legacy
 from experiment.wp2_oracle.empirical import (
-    PartD_ImprovedPruning, PartF_ImprovedFairness)  # legacy
-from experiment.wp2_oracle.empirical import (
-    PartA_TheoremsLemma, PartB_TheoremsLemma, PartI_LambdaEffect,
-    PartG_ImprovedPruning, PartE_ImprovedFairness)  # legacy
+    PartA_TheoremsLemma, PartB_TheoremsLemma,
+    PartI_LambdaEffect, PartE_ImprovedFairness)  # legacy
 
 AVAILABLE_FAIR_DATASET = [
     'ricci', 'german', 'adult', 'ppr', 'ppvr']
@@ -476,6 +487,7 @@ def default_parameters():
     parser.add_argument(  # , help='Data set'
         '-dat', '--dataset', type=str, default='ricci',
         choices=['ricci', 'german', 'adult', 'ppr', 'ppvr'])
+    parser.add_argument('-add', '--add-expt', action='store_true')
 
     parser.add_argument(
         '--name-ens', type=str, default='Bagging',
@@ -536,6 +548,24 @@ logged = args.logged
 rho = float(nb_pru) / nb_cls
 
 
+if args.add_expt:
+    kwargs = {}
+    if trial_type.endswith('expt3'):
+        kwargs['name_ens'] = args.name_ens
+        kwargs['abbr_cls'] = args.abbr_cls
+    # elif trial_type[-5:] in ('expt4', 'expt5', 'expt6'):
+    #     kwargs['gather'] = args.gather
+    case = ExperimentSetup(
+        trial_type, data_type, nb_cls, nb_pru,
+        nb_iter, args.ratio, args.lam,
+        screen=screen, logged=logged, **kwargs)
+    case.trial_one_process()
+    del kwargs, case, rho, screen, logged
+    del nb_cls, nb_pru, abbr_cls, name_ens
+    del nb_iter, data_type, trial_type
+    sys.exit()
+
+
 kwargs = {}
 if trial_type.endswith('3') or trial_type.endswith('11'):
     if trial_type.endswith('11'):
@@ -580,4 +610,7 @@ python wp1_main_exec.py --logged -exp mCV_expt4 --name-ens Bagging --abbr-cls DT
 python wp1_main_exec.py --logged -exp mCV_expt6 --name-ens Bagging --abbr-cls DT --nb-cls 21 --nb-pru 7 -dat *
 python wp1_main_exec.py --logged -exp mCV_expt4 --name-ens Bagging --abbr-cls DT --nb-cls 7 --nb-pru 3 -nk 2 -dat ricci
 python wp1_main_exec.py --logged -exp mCV_expt6 --name-ens Bagging --abbr-cls DT --nb-cls 7 --nb-pru 3 -nk 2 -dat ricci
+
+# add_expt
+python wp1_main_exec.py -add -exp mCV_expt1 -dat german
 """

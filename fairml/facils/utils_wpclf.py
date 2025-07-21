@@ -21,16 +21,26 @@ from sklearn.ensemble import (
     # HistGradientBoostingClassifier,
     VotingClassifier, StackingClassifier)
 
+from lightgbm import LGBMClassifier
+from fairgbm import FairGBMClassifier
+import sklearn
+skl_ver = sklearn.__version__
+if skl_ver.startswith('1.3.0'):
+    from fairml.widget.pkgs_AdaFair_py36 import AdaFair
+elif skl_ver.startswith('1.5.1'):
+    pass
+del skl_ver
+
 
 # =====================================
 # degree/core
 # =====================================
 
 
-ALG_NAMES = [
-    "DT", "NB", "LR", "SVM", "linSVM", "MLP",
-    "LR1", "LR2", "LM1", "LM2", "kNNu", "kNNd",
-]
+# ALG_NAMES = [
+#     "DT", "NB", "LR", "SVM", "linSVM", "MLP",
+#     "LR1", "LR2", "LM1", "LM2", "kNNu", "kNNd",
+# ]
 
 
 CONCISE_ALG_NAMES = [
@@ -56,7 +66,7 @@ CONCISE_INDIVIDUALS = {
 # -------------------------------------
 
 
-INDIVIDUALS = {
+FAIR_INDIVIDUALS = {
     'DT': tree.DecisionTreeClassifier(),
     'NB': naive_bayes.GaussianNB(),
     'LR': linear_model.LogisticRegression(max_iter=500),
@@ -96,8 +106,7 @@ HETERO_ENSEMBLES = {
 }  # heterogeneous
 
 ENS_NAMES = [
-    'RF', 'ET',
-    'Bagging', 'AdaBoost',
+    'RF', 'ET', 'Bagging', 'AdaBoost',
     'GradBoost',  # 'GradientBoost',
     'VotingC', 'StackingC',
 ]
@@ -151,50 +160,8 @@ from sklearn.neural_network import MLPClassifier
 # -------------------------------------
 
 
-'''
-class EnsemAlgorithm(GenericAlgorithm):
-  def __init__(self, nb_cls):
-    # super().__init__()
-    self._nb_cls = nb_cls
-
-  def running(self, df_trn, df_tst,
-              label, pos_val, sens_attrs, priv_vals,
-              single_sensitive, params):
-    trn_df_nosens = df_trn.drop(columns=sens_attrs)
-    tst_df_nosens = df_tst.drop(columns=sens_attrs)
-
-    ens = self.classifier
-    y_trn = trn_df_nosens[label]
-    X_trn = trn_df_nosens.drop(columns=label)
-    ens.fit(X_trn, y_trn)
-
-    y_tst = tst_df_nosens[label]
-    X_tst = tst_df_nosens.drop(label, axis=1)
-
-    tst_pred = ens.predict(X_tst)
-    trn_pred = ens.predict(X_trn)
-
-    return
-'''
-
-
 # list.py
 # -------------------------------------
-'''
-ALGORITHMS = {
-    "DT": DecisionTreeALG(),
-    "NB": GaussianNBALG(),
-    "LR": LogicRegreALG(),
-    "svm": SvmALG(),
-    "lsvm": LsvmALG(),
-    "kNNu": KnnALG(name='kNNu'),
-    "kNNd": KnnALG(name='kNNd'),
-    "LM1": LmodelALG(name='LM1'),
-    "LM2": LmodelALG(name='LM2'),
-    "NN": MlpNetALG(),  # 'nn'
-    # individual baselines
-}
-'''
 
 
 # -------------------------------------
