@@ -1,8 +1,7 @@
 # coding: utf-8
 
-import time
-import numpy as np
 
+import numpy as np
 from sklearn.ensemble import (
     BaggingClassifier, AdaBoostClassifier, RandomForestClassifier,
     ExtraTreesClassifier, GradientBoostingClassifier)
@@ -44,7 +43,8 @@ from fairml.facils.utils_wpclf import (
     FAIR_INDIVIDUALS, TREE_ENSEMBLES, HOMO_ENSEMBLES)  # ,ALG_NAMES)
 from fairml.dr_pareto_optimal import (
     Pareto_Optimal_EPAF_Pruning, POAF_PEP,  # POAF_PEP(alternative)
-    Centralised_EPAF_Pruning, Distributed_EPAF_Pruning)
+    Centralised_EPAF_Pruning, Distributed_EPAF_Pruning,
+    Ranking_based_fairness_Pruning)
 from fairml.widget.utils_const import unique_column
 from fairml.facils.data_classify import EnsembleAlgorithm
 
@@ -52,16 +52,16 @@ from fairml.facils.data_classify import EnsembleAlgorithm
 # rev_baseline.py
 import csv
 import json
-import logging
+# import logging
 import os
 import sys
+import time
 from fairml.widget.utils_saver import (
     get_elogger, rm_ehandler, elegant_print)
 from fairml.widget.utils_timer import elegant_dated, elegant_durat
 from fairml.widget.utils_const import _get_tmp_name_ens
-from fairml.widget.data_split import (
-    sklearn_k_fold_cv, sklearn_stratify, manual_cross_valid,
-    situation_split1)
+from fairml.widget.data_split import (  # situation_split1,
+    sklearn_k_fold_cv, sklearn_stratify, manual_cross_valid)
 from fairml.datasets import preprocess
 from fairml.preprocessing import (
     adversarial, transform_X_and_y, transform_unpriv_tag,

@@ -10,13 +10,13 @@ import numpy as np
 import time
 
 from fairml.widget.utils_const import check_zero, unique_column
-from fairml.widget.utils_saver import elegant_print
+# from fairml.widget.utils_saver import elegant_print
 
 from fairml.discriminative_risk import (
-    ell_fair_x, hat_L_fair, tandem_fair, E_rho_L_fair_f,
-    ell_loss_x, hat_L_loss, tandem_loss, E_rho_L_loss_f,
-    Erho_sup_L_fair, Erho_sup_L_loss, ED_Erho_I_fair,
-    hat_L_objt, cal_L_obj_v1, cal_L_obj_v2)
+    hat_L_fair, E_rho_L_fair_f,  # ell_fair_x,tandem_fair,
+    hat_L_loss, E_rho_L_loss_f,  # ell_loss_x,tandem_loss,
+    Erho_sup_L_fair)  # Erho_sup_L_loss, ED_Erho_I_fair,
+# hat_L_objt, cal_L_obj_v1, cal_L_obj_v2)
 from fairml.dr_pareto_optimal import (
     Pareto_Optimal_EPAF_Pruning, Centralised_EPAF_Pruning,
     Distributed_EPAF_Pruning, POAF_PEP, _POAF_calc_eval)

@@ -225,7 +225,7 @@ def visualization_parallel(train_set, test_set, model,
         fit_tst["FYA"] = curr_y_tst.detach().numpy()
 
     n_a = len(sen_att)
-    _curr_font = 'Times New Roman'
+    # _curr_font = 'Times New Roman'
     # _curr_leg = {'family': _curr_font, 'size': 8}
 
     f, axes = plt.subplots(n_a, 2)
