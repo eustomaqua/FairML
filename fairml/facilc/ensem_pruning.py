@@ -695,34 +695,14 @@ def _LocalSearch_kappa_sum(S, y):
     return float(ans)
 
 
+"""
 def _LCS_sub_get_index(nb_cls, nb_pru, row, col):
     rndsed, prng = random_seed_generator()
-
     idx2 = np.arange(nb_cls).tolist()
     prng.shuffle(idx2)
     idx3 = idx2[: nb_pru]
-    '''
-    if (row in idx3) and (col in idx3):
-        idx4 = idx3  # idx2[: nb_pru]
-    elif (row in idx3) and (col not in idx3):
-        # idx4 = idx3[: -1]
-        idx4 = idx3[: -1] if row != idx3[-1] else idx3[: -2]
-    elif (row not in idx3) and (col in idx3):
-        # idx4 = idx3[: -1]
-        idx4 = idx3[: -1] if col != idx3[-1] else idx3[: -2]
-    elif (row not in idx3) and (col not in idx3):
-        idx4 = idx3[: -2]
-    # else:
-    #     pass
-    del rndsed, prng, idx3
-    if row in idx4:
-        idx4.remove(row)
-    if col in idx4:
-        idx4.remove(col)
-    return idx4, idx2
-    '''
     del rndsed, prng
-    # print("row/col= {}/{} idx3 = {}".format(row, col, idx3))
+
     if (row not in idx3) and (col not in idx3):
         idx3 = idx3[: -2]
     elif (row in idx3) and (col in idx3):
@@ -734,7 +714,28 @@ def _LCS_sub_get_index(nb_cls, nb_pru, row, col):
     elif (col in idx3) and (row not in idx3):
         idx3.remove(col)
         idx3 = idx3[: -1]
-    # print("{:12s} idx4 = {}".format('', idx3))
+    return idx3, idx2
+"""
+
+
+def _LCS_sub_get_index(nb_cls, nb_pru, row, col):
+    _, prng = random_seed_generator()
+    idx2 = list(range(nb_cls))
+    prng.shuffle(idx2)
+    idx3 = idx2[: nb_pru]
+    del prng
+
+    if (row in idx3) and (col in idx3):
+        idx3.remove(row)
+        idx3.remove(col)
+    elif row in idx3:
+        idx3.remove(row)
+        idx3 = idx3[: -1]
+    elif col in idx3:
+        idx3.remove(col)
+        idx3 = idx3[: -1]
+    else:
+        idx3 = idx3[: -2]
     return idx3, idx2
 
 

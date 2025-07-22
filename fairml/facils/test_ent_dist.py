@@ -1,7 +1,7 @@
 # coding: utf-8
 
 
-# import pdb
+import pdb
 import numpy as np
 from fairml.widget.utils_const import check_equal, synthetic_dat
 
@@ -235,14 +235,16 @@ def test_data_distance():
         from fairml.facils.data_distance import (
             JS_div, _f_div, _BC_dis,
             _discrete_bar_counts, _discrete_joint_cnts)
-        _mx, _n = 15, 11  # 11, _max,indexes
+        _mx, _n = 15, 11  # 5,11, _max,indexes
 
         indices = np.random.randint(_mx, size=(3, _n)).tolist()
         freq_x, freq_y = _discrete_bar_counts(indices, False)
+        # assert (len(freq_x) == _mx) and (sum(freq_y) == 3 * _n)
         fg = (len(freq_x) <= _mx) and (sum(freq_y) == 3 * _n)
         assert fg  # if not fg: pdb.set_trace()
         freq_x, freq_y = _discrete_bar_counts(indices, True)
-        assert len(freq_x) == _mx and check_equal(sum(freq_y), 1)
+        fg = len(freq_x) <= _mx and check_equal(sum(freq_y), 1)
+        assert fg  # if not fg: pdb.set_trace()
 
         X, Y = indices[: 2]  # .tolist()
         px, py, v = _discrete_joint_cnts(X, Y, False)

@@ -13,6 +13,9 @@ from fairml.widget.utils_const import (
 from fairml.widget.utils_remark import (
     PAIRWISE, NONPAIRWISE, AVAILABLE_NAME_DIVER)
 
+from fairml.widget.metric_cont import (
+    contingency_tab_bi, contg_tab_mu_type3, contg_tab_mu_type1)
+
 
 # ==================================
 #  General
@@ -55,6 +58,38 @@ contingency_table_multiclass
 '''
 
 
+def contingency_table_binary(hi, hj):  # list
+    if len(hi) != len(hj):  # number of instances/samples
+        raise AssertionError(
+            "These two individual classifiers have different shapes.")
+    if len(set(hi + hj)) > 2:
+        raise AssertionError("contingency_table works for binary"
+                             " classification only.")
+    if -1 not in set(hi + hj):  # [0,1], not [-1,1]
+        hi = [i * 2 - 1 for i in hi]
+        hj = [i * 2 - 1 for i in hj]
+    hi = np.array(hi, dtype='int')
+    hj = np.array(hj, dtype='int')
+    a, c, b, d = contingency_tab_bi(hi, hj, pos=1)
+    return a, b, c, d
+
+
+def contingency_table_multi(hi, hj, y):
+    # dY = len(set(hi + hj + y))
+    vY = sorted(set(hi + hj + y))  # list()
+    ha, hb = np.array(hi), np.array(hj)
+    # construct a contingency table
+    return contg_tab_mu_type3(ha, hb, vY)
+
+
+def contingency_table_multiclass(ha, hb, y):
+    # construct a contingency table, Cij
+    ha, hb = np.array(ha), np.array(hb)
+    a, b, c, d = contg_tab_mu_type1(np.array(y), ha, hb)
+    return int(a), int(b), int(c), int(d)
+
+
+"""
 def contingency_table_binary(hi, hj):
     if not (len(hi) == len(hj)):  # number of instances/samples
         raise AssertionError("These two individual classifiers have"
@@ -106,6 +141,7 @@ def contingency_table_multiclass(ha, hb, y):
     d = np.sum(np.logical_and(np.not_equal(ha, y), np.not_equal(hb, y)))
     # a,b,c,d are `np.integer` (not `int`), a/b/c/d.tolist() gets `int`
     return int(a), int(b), int(c), int(d)
+"""
 
 
 # ----------------------------------
