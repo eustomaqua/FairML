@@ -219,7 +219,7 @@ def boxplot_k_cv_with_real(X, Ys, z,
     # Ys.shape= (nb_iter, #num)
     # z .shape= (nb_iter,)
 
-    nb_iter, num = Ys.shape
+    nb_iter = Ys.shape[0]  # nb_iter, num = Ys.shape
     fig, ax = plt.subplots(figsize=_setup_config['M-NT'])
 
     ax.boxplot(Ys, positions=X, patch_artist=patch_artist)  # bp=

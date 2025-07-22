@@ -910,7 +910,7 @@ class PartE_FairPruning(PartD_FairMeasure):
             y_trn, hx_trn, hq_trn, jt_trn, positive_label)
         attr_J2 = self.count_single_member(
             y_tst, hx_tst, hq_tst, jt_tst, positive_label)
-        return (attr_A1 + attr_A2 + attr_B1 + attr_B2 + 
+        return (attr_A1 + attr_A2 + attr_B1 + attr_B2 +
                 attr_J1 + attr_J2)  # .shape (336,)= (56*6,)
 
     def routine_one_sens_attr(self, nb_cls, logger,
@@ -1250,7 +1250,7 @@ class PartF_FairPruning(PartE_FairPruning):
     #                       y_trn, y_insp, yq_insp, tag_trn, jt_trn,
     #                       y_tst, y_pred, yq_pred, tag_tst, jt_tst,
     #                       positive_label):
-    #   return 
+    #   return
 
     def routine_each_pruning(self, wgt, nb_cls, nb_pru, logger,
                              y_trn, y_insp, yq_insp, tag_trn, jt_trn,

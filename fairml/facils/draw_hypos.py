@@ -360,7 +360,8 @@ def _Friedman_successive(U, rank):
             continue
 
         tmp = deepcopy(rank[m])  # Notice!
-        for k in range(len(uniq)):
+        # for k in range(len(uniq)):
+        for k, _ in enumerate(uniq):
             loca = U[m] == uniq[k]
             if np.sum(loca) > 1:
                 tmp[loca] = np.mean(rank[m, loca])
@@ -616,8 +617,8 @@ def cmp_paired_avg(G_A, G_B, mode="descend"):
 
 
 def cmp_paired_wtl(G_A, G_B, mk_mu, mk_s2, mode="ascend"):
-    avg_A, std_A = G_A
-    avg_B, std_B = G_B
+    std_A = G_A[1]  # avg_A, std_A = G_A
+    std_B = G_B[1]  # avg_B, std_B = G_B
     if _decode_sign(mk_s2) == "T":
         if _decode_sign(mk_mu) == "T":
             mark = "T"  # tie

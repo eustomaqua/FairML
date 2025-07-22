@@ -1,6 +1,6 @@
 # coding: utf-8
 
-# import pdb
+
 import numpy as np
 import pandas as pd
 from fairml.facilc.draw_addtl import (
@@ -10,6 +10,7 @@ from fairml.facilc.draw_addtl import (
     line_reg_with_marginal_distr, single_line_reg_with_distr,
     lineplot_with_uncertainty, multi_lin_reg_with_distr,
     FairGBM_tradeoff_v3, FairGBM_tradeoff_v2)
+lc_error_bar = multiple_lines_with_errorbar
 
 
 # -----------------------
@@ -56,9 +57,7 @@ def excl_test_multi_lins():
     from prgm.nucleus.oracle_graph import \
         multiple_lines_with_errorbar as lc_error_bar
     '''
-    from fairml.facilc.draw_graph import multiple_line_chart as lc_v1
-    lc_v2 = multiple_line_chart
-    lc_error_bar = multiple_lines_with_errorbar
+    # lc_error_bar = multiple_lines_with_errorbar
 
     num, nb_iter, baseline = 10, 5, 4
     X = np.linspace(0, 1, num)  # doc issue  # no issue
@@ -67,7 +66,6 @@ def excl_test_multi_lins():
 
     # lc_v2(X, Ys)  # , figname='lam_box')
     # lc_v1(X, Ys, annotY=annotY, figname='lam_lin')
-
     # pdb.set_trace()
     lc_error_bar(X, Ys, picked_keys=annotY)
 
@@ -153,8 +151,10 @@ def excl_test_fairmanf_exp2a():
     df_1['learning'] = 'DP'
     df_2['learning'] = 'EO'
     df_3['learning'] = 'PQP'
+    '''
     df_alternative = pd.concat([
         df_1, df_2, df_3], axis=0).reset_index(drop=True)  # 合并表格
+    '''
 
     tag_Ys, picked_keys = ['GM1', 'GM2', 'GM3'], ['DP', 'EO', 'PQP']
     scatter_with_marginal_distrib(
@@ -356,24 +356,32 @@ def test_fairmanf_ext_plt4s():
     line_reg_with_marginal_distr(df, col_X, col_Y, tag_Ys, picked_keys, figname='cheers_li0')
     kws = {'identity': 'identity'}  # None}
 
-    line_reg_with_marginal_distr(df, col_X, col_Y, tag_Ys, picked_keys,
-                                 snspec='sty1', figname='cheers_li1')  # ,**kws)
-    line_reg_with_marginal_distr(df, col_X, col_Y, tag_Ys, picked_keys,
-                                 snspec='sty1', figname='cheers_li1p', **kws)
-    line_reg_with_marginal_distr(df, col_X, col_Y, tag_Ys, picked_keys,
-                                 snspec='sty5a', figname='cheers_li5a', identity=None)
-    line_reg_with_marginal_distr(df, col_X, col_Y, tag_Ys, picked_keys,
-                                 snspec='sty5b', figname='cheers_li5b', **kws)
+    line_reg_with_marginal_distr(
+        df, col_X, col_Y, tag_Ys, picked_keys,
+        snspec='sty1', figname='cheers_li1')  # ,**kws)
+    line_reg_with_marginal_distr(
+        df, col_X, col_Y, tag_Ys, picked_keys,
+        snspec='sty1', figname='cheers_li1p', **kws)
+    line_reg_with_marginal_distr(
+        df, col_X, col_Y, tag_Ys, picked_keys,
+        snspec='sty5a', figname='cheers_li5a', identity=None)
+    line_reg_with_marginal_distr(
+        df, col_X, col_Y, tag_Ys, picked_keys,
+        snspec='sty5b', figname='cheers_li5b', **kws)
 
-    line_reg_with_marginal_distr(df, col_X, col_Y, tag_Ys, picked_keys,
-                                 snspec='sty4a', figname='cheers_li4a', **kws)
-    line_reg_with_marginal_distr(df, col_X, col_Y, tag_Ys, picked_keys,
-                                 snspec='sty4b', figname='cheers_li4b', **kws)
+    line_reg_with_marginal_distr(
+        df, col_X, col_Y, tag_Ys, picked_keys,
+        snspec='sty4a', figname='cheers_li4a', **kws)
+    line_reg_with_marginal_distr(
+        df, col_X, col_Y, tag_Ys, picked_keys,
+        snspec='sty4b', figname='cheers_li4b', **kws)
 
-    line_reg_with_marginal_distr(df, col_X, col_Y, tag_Ys, picked_keys,
-                                 snspec='sty2', figname='cheers_li2')  # ,**kws)
-    line_reg_with_marginal_distr(df, col_X, col_Y, tag_Ys, picked_keys,
-                                 snspec='sty3', figname='cheers_li3')  # ,**kws)
+    line_reg_with_marginal_distr(
+        df, col_X, col_Y, tag_Ys, picked_keys,
+        snspec='sty2', figname='cheers_li2')  # ,**kws)
+    line_reg_with_marginal_distr(
+        df, col_X, col_Y, tag_Ys, picked_keys,
+        snspec='sty3', figname='cheers_li3')  # ,**kws)
     # line_reg_with_marginal_distr(df, col_X, col_Y, tag_Ys, picked_keys, snspec='sty6', figname='cheers_li6', **kws)
 
     return
@@ -388,13 +396,15 @@ def test_fairGBM():
     #     FairGBM_tradeoff_v2, FairGBM_tradeoff_v3)
     n, it = 3, 11  # nb_model
     annot_model = ['Model {}'.format(i + 1) for i in range(n)]
-    annot_fair = ['DP', 'EO', 'PQP', 'DR']
+    # annot_fair = ['DP', 'EO', 'PQP', 'DR']
     label = ('error rate', 'Fairness')
     Xs = np.random.rand(n, it)
     Ys = np.random.rand(n, it)
     kws = {'num_gap': 100, 'alpha_loc': 'b4'}
-    FairGBM_tradeoff_v3(Xs, Ys, annot_model, label, figname='fairgbm_v3', **kws)
-    FairGBM_tradeoff_v2(Xs, Ys, annot_model, label, figname='fairgbm_v2', **kws)
+    FairGBM_tradeoff_v3(Xs, Ys, annot_model, label,
+                        figname='fairgbm_v3', **kws)
+    FairGBM_tradeoff_v2(Xs, Ys, annot_model, label,
+                        figname='fairgbm_v2', **kws)
     # pdb.set_trace()
     return
 

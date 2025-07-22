@@ -1069,7 +1069,7 @@ def mRMR_ensemble_pruning(y, yt, nb_cls, nb_pru):
 # Disc ensemble pruning
 #
 # discriminative pruning criterion:
-#   s_u = \argmax_k[ 
+#   s_u = \argmax_k[
 #               I(h_k^{mis}; Y^{mis}) +
 #               \frac{1}{u-1} \sum_{h_i \in S_{u-1}}
 #                           I(h_k^{cor}; h_i^{cor})

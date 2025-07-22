@@ -718,7 +718,7 @@ def test_compared_utus():
 #   RuntimeWarning: numpy.ufunc size changed, may indicate binary incompatibility.
 #   Expected 192 from C header, got 216 from PyObject
 #     return f(*args, **kwds)
-# 
+#
 # -- Docs: https://docs.pytest.org/en/stable/warnings.html
 #
 

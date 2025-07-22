@@ -1411,7 +1411,7 @@ def _PEP_VDS(y, yt, nb_cls, s):
     # 2. Let N(\cdot) denote the set of neighbor solutions of a
     #    binary vector with Hamming distance 1.
     # 3. While V_mathbf{s} = {
-    #               \bm{y} \in N(\mathbf{s}) | 
+    #               \bm{y} \in N(\mathbf{s}) |
     #               y_i \neq s_i \Rightarrow i \notin L
     #          } \neq \emptyset
     while np.sum(QL) < nb_cls:
@@ -1473,7 +1473,7 @@ def _PEP_VDS(y, yt, nb_cls, s):
 # 10.             if \nexists \mathbf{z} \in P such that
 #                                    \mathbf{z} \succ_g \mathbf{q}
 # 11.                 P = (P - \{
-#                                  \mathbf{z} \in P | 
+#                                  \mathbf{z} \in P |
 #                                  \mathbf{q} \succeq_g \mathbf{z}
 #                         \}) \cup \{\mathbf{q}\}.
 # 12. Output \argmin_{\mathbf{s} \in P} eval(\mathbf{s}).
@@ -1512,7 +1512,8 @@ def PEP_PEP(y, yt, nb_cls, rho):
             #               \mathbf{s}' \succeq_s \mathbf{z}
             #    \}) \cup \{\mathbf{s}'\}.
             idx1 = []
-            for i in range(len(P)):
+            # for i in range(len(P)):
+            for i, _ in enumerate(P):
                 g_z2 = _PEP_bi_objective(y, yt, P[i])
                 if _PEP_weakly_dominate(g_sp, g_z2):
                     idx1.append(i)
@@ -1541,7 +1542,8 @@ def PEP_PEP(y, yt, nb_cls, rho):
                     #               \mathbf{q} \succeq_g \mathbf{z}
                     #     \}) \cup \{\mathbf{q}\}.
                     idx3 = []
-                    for j in range(len(P)):
+                    # for j in range(len(P)):
+                    for j, _ in enumerate(P):
                         g_z4 = _PEP_bi_objective(y, yt, P[j])
                         if _PEP_weakly_dominate(g_q, g_z4):
                             idx3.append(j)

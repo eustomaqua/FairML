@@ -74,7 +74,8 @@ class PlotD_Measures(GraphSetup):
             curr = new_data[sa][idx]
             del fgn, curr
 
-        num_s, num_e, num_v, _ = new_data.shape
+        # num_s, num_e, num_v, _ = new_data.shape
+        num_s, num_e, _, _ = new_data.shape
         alt_data = np.concatenate([
             new_data[i] for i in range(num_s)], axis=2)
         alt_data = np.concatenate([
@@ -703,7 +704,8 @@ class Renew_PlotF_Prunings(PlotF_Prunings):
 
 
 class Renew_GatherF_Prunings(GatherF_Prunings):
-    def renew_schedule_msgraph(self, res_data, res_all, optional_data,
+    def renew_schedule_msgraph(self,
+                               res_data, res_all, optional_data,
                                figname='', jt=False, logger=None):
         idx = list(range(56, 112)) + list(range(168, 224)) + list(
             range(280, 336)) + list(range(336, 339))

@@ -267,7 +267,7 @@ class OracleGatheredDrawing(object):
         for name_ens in AVAILABLE_ABBR_ENSEM:
             used_tc = time.time()
 
-            nb_cls, nb_pru = self.get_hyper_params(name_ens)
+            _, nb_pru = self.get_hyper_params(name_ens)  # nb_cls,
             iterator = self.get_iterator(name_ens)
             filename = iterator.get_raw_filename(
                 trial_type=self._trial_type)
@@ -334,7 +334,8 @@ class OracleGatheredDrawing(object):
         return dframe
 
     def merge_complex(self, dframe, tag_col, nb_set, index):
-        avg, _, _, raw = pd_concat_divide_raw(
+        # avg, _, _, raw = pd_concat_divide_raw(
+        _, _, _, raw = pd_concat_divide_raw(
             dframe, tag_col, nb_set, index)
         return raw  # or `avg`/`raw`
 

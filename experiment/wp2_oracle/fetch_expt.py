@@ -86,7 +86,10 @@ class IndividualSetup:
         self._member = value
 
     def calculate_fair_measure_in_groups(self, y, hx, pos=1,
-                                         ind_priv=list()):
+                                         # ind_priv=list()):
+                                         ind_priv=tuple()):
+        if not isinstance(ind_priv, list):
+            ind_priv = list(ind_priv)
         # pos : dataset.positive_label
         # priv: dataset.get_positive_class_val('numerical-binsensitive')
         # sens: an element in `belongs_priv` or `belongs_priv_with_joint`

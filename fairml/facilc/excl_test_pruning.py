@@ -5,7 +5,6 @@
 # from __future__ import print_function
 
 
-import pdb
 import numpy as np
 from fairml.widget.utils_const import check_equal, synthetic_set
 

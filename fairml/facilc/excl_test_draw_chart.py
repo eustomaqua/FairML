@@ -7,8 +7,8 @@ from fairml.facilc.draw_chart import (
     analogous_confusion, multiple_scatter_alternative,
     analogous_confusion_alternative, single_hist_chart,
     lines_with_std_3d, lines_with_std_2d, discrete_bar_comparison,
-    PLT_LOCATION, PLT_FRAMEBOX)
-from fairml.facilc.draw_chart import _setup_config, _setup_figshow
+    PLT_LOCATION, PLT_FRAMEBOX, _line_std_drawer)
+# from fairml.facilc.draw_chart import _setup_config, _setup_figshow
 
 sz = 21
 # df = pd.DataFrame({'X': X, 'Y': Ys[0]})
@@ -83,8 +83,8 @@ def test_analogous_confu():
 
 def test_hist_chart():
     # from prgm.nucleus.utils_chart import (
-    from fairml.facilc.draw_chart import (
-        _line_std_drawer, _line_std_colors)
+    # from fairml.facilc.draw_chart import (
+    #     _line_std_drawer, _line_std_colors)
 
     Ys = np.random.rand(sz, 4).tolist()
     Y_avg = np.mean(Ys, axis=0)
@@ -112,13 +112,16 @@ def test_cfalab_bar():
     _mx = 5  # _max
     IndexSlices = np.random.randint(_mx, size=[4, _mx])
     SubIndices = np.random.randint(_mx, size=[2, _mx])
-    fn = 'chart_g0'
 
-    d1 = discrete_bar_comparison(IndexSlices, SubIndices, fn)
-    d2 = discrete_bar_comparison(
+    fn = 'chart_g0'
+    # d1, d2 =
+    discrete_bar_comparison(IndexSlices, SubIndices, fn)
+    discrete_bar_comparison(
         IndexSlices, SubIndices, fn, split=False)
+
     fn = fn.replace('g0', 'h0')
-    d3 = discrete_bar_comparison(
+    # d3, d4 =
+    discrete_bar_comparison(
         IndexSlices, SubIndices, fn, density=True)
-    d4 = discrete_bar_comparison(
+    discrete_bar_comparison(
         IndexSlices, SubIndices, fn, density=True, split=False)

@@ -203,9 +203,8 @@ def visualization(data_set, model, curr_data, curr_label=None,
 def visualization_parallel(train_set, test_set, model,
                            curr_X_trn, curr_X_tst,
                            curr_y_trn=None, curr_y_tst=None,
-                           # sen_att=['sex', 'race'],
-                           sen_att=('sex', 'race'),
-                           sen_num=[2, 8],
+                           # sen_att=['sex','race'], sen_num=[2,8],
+                           sen_att=('sex', 'race'), sen_num=(2, 8),
                            figname='visualization'):
     sen_att = list(sen_att)
 

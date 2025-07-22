@@ -74,7 +74,9 @@ def marginalised_confusion(Cij, loc=1):
     return Cm  # np.ndarray
 
 
-def marginalised_pd_mat(y, hx, pos=1, idx_priv=list()):
+def marginalised_pd_mat(y, hx, pos=1, idx_priv=tuple()):
+    if not isinstance(idx_priv, list):  # list()
+        idx_priv = list(idx_priv)
     # y : not pd.DataFrame, is pd.core.series.Series
     # hx: not pd.DataFrame, is np.ndarray
     # tmp = y.to_numpy().tolist() + hx.tolist()

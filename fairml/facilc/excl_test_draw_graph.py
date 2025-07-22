@@ -13,7 +13,7 @@ from fairml.facilc.draw_graph import (
     bar_chart_with_error, multiple_hist_chart,
     twinx_hist_chart, twinx_bars_chart, line_chart,
     baseline_subchart, histogram_chart, sns_corr_chart)
-from fairml.facilc.draw_graph import _setup_config, _setup_figshow
+# from fairml.facilc.draw_graph import _setup_config, _setup_figshow
 
 sz = 21
 X = np.random.randint(100, size=sz).astype('float')
@@ -84,7 +84,7 @@ def test_backslash():
         "Alg #" + str(i + 1) for i in range(nb_cmp)]
     pickup_pru = list(range(nb_cmp))
     acc, tim = .3, 4.1
-    nb_cls, nb_pru = 11, 5
+    nb_cls = 11  # nb_cls, nb_pru = 11, 5
 
     greedy = np.random.rand(nb_set, nb_cmp) * acc + (1 - acc)
     ddismi = np.random.rand(nb_set, nb_cmp) * acc + (1 - acc)
@@ -138,7 +138,7 @@ def test_linechart():
 def test_histchart():
     # from prgm.nucleus.utils_graph import _hist_calc_XY
     from fairml.facilc.draw_graph import _hist_calc_XY
-    nb, st = 50, 100
+    nb = 50  # nb, st = 50, 100
     figname = 'chart_c4'
 
     # X = np.random.rand(nb, 1) * 70
