@@ -73,8 +73,8 @@ class PlotC_TheoremsLemma(GraphSetup):
             self.verify_theorem34(nvt, k)
 
     def verify_theorem31(self, df, kw):
-        tag_trn = ['AI', 'AJ', 'AK']
-        tag_tst = ['AW', 'AX', 'AY']
+        ''' tag_trn = ['AI', 'AJ', 'AK']
+        tag_tst = ['AW', 'AX', 'AY'] '''
         annots = (
             r"$2\mathbb{E}_\rho[\mathcal{L}_{bias}(f)]$",
             r"$\mathcal{L}_{bias}(\mathbf{wv}_\rho)$"
@@ -84,8 +84,8 @@ class PlotC_TheoremsLemma(GraphSetup):
             df, 'AK', 'AW', figname + '', annots=annots)
 
     def verify_theorem33(self, df, kw):
-        tag_trn = ['AI', 'AL', 'AM']
-        tag_tst = ['AW', 'AZ', 'BA']
+        ''' tag_trn = ['AI', 'AL', 'AM']
+        tag_tst = ['AW', 'AZ', 'BA'] '''
         annots = (
             r"$4\mathbb{E}_{\rho^2}[\mathcal{L}_{bias}(f,f^\prime)]$",
             r"$\mathcal{L}_{bias}(\mathbf{wv}_\rho)$"
@@ -95,8 +95,8 @@ class PlotC_TheoremsLemma(GraphSetup):
             df, 'AM', 'AW', figname + '', annots=annots)
 
     def verify_lemma32(self, df, kw):
-        tag_trn = ['AN', 'AL']
-        tag_tst = ['BB', 'AZ']
+        ''' tag_trn = ['AN', 'AL']
+        tag_tst = ['BB', 'AZ'] '''
         annots = (
             r"$\mathbb{E}_{\rho^2}[\mathcal{L}_{bias}(f,f^\prime)]$",
             r"$\mathbb{E}_\mathcal{D}[\mathbb{E}_\rho[\ell_{bias}(f,\mathbf{x})]^2]$"
@@ -107,8 +107,8 @@ class PlotC_TheoremsLemma(GraphSetup):
             df, 'AL', 'BB', figname + '_bak', annots=annots)
 
     def verify_theorem34(self, df, kw):
-        tag_trn = ['AI', 'AJ', 'AL', 'AO']  # 'Y','X'
-        tag_tst = ['AW', 'AX', 'AZ', 'BC']  # 'Y','X'
+        ''' tag_trn = ['AI', 'AJ', 'AL', 'AO']  # 'Y','X'
+        tag_tst = ['AW', 'AX', 'AZ', 'BC']  # 'Y','X' '''
         annots = (
             r"$\mathrm{RHS}$ in Theorem 3.4",  # $\mathbf{RHS}$
             r"$\mathcal{L}_{bias}(\mathbf{wv}_\rho)$"
@@ -148,8 +148,8 @@ class PlotC_Revised_TheoremsLemma(GraphSetup):
 
     def verify_bounds(self, df, kw):
         import matplotlib.pyplot as plt
-        tag_trn = ['AI', 'AK', 'AM', 'AO']
-        tag_tst = ['AW', 'AY', 'BA', 'BC']
+        ''' tag_trn = ['AI', 'AK', 'AM', 'AO']
+        tag_tst = ['AW', 'AY', 'BA', 'BC'] '''
 
         annots = (
             r"$\mathcal{L}_{bias}(\mathbf{wv}_\rho)$",
@@ -220,8 +220,8 @@ class PlotK_PACGeneralisation(GraphSetup):
     #   pass
 
     def verify_theorem36(self, df, kw, verbose=False):
-        lim_XY = ['M', 'N', 'P', 'Q']
-        ens_XY = ['T', 'U', 'W', 'X']
+        ''' lim_XY = ['M', 'N', 'P', 'Q']
+        ens_XY = ['T', 'U', 'W', 'X'] '''
         annots = (
             r"$\mathrm{RHS}$ in Theorem 3.6",
             r"$\mathcal{L}_{bias}(\mathbf{wv}_\rho)$",
@@ -829,9 +829,11 @@ class PlotH_ImprovePruning(GraphSetup):
         if not partition:
             return
 
+        '''
         for k, v in raw_dframe.items():
             # tdf = v.iloc[ind][tag_col]
             tdf = v.loc[ind][tag_col]
+        '''
 
     def compare_Chronos_cost(self, df, kw, rel_id,
                              category=None, ind_ens=False):

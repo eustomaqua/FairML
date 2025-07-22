@@ -624,7 +624,7 @@ def test_twostage_previous():
 def test_contrastive():
     from fairml.facilc.ensem_prulatest import contrastive_pruning_lately
     from fairml.widget.utils_remark import LATEST_NAME_PRUNE
-    from copy import deepcopy
+    # from copy import deepcopy
     L, R, alpha = 3, 2, 0.5
     # argv = {'indices': indices}
     # argc = {"indices": indices, "X_trn": X_trn, "X_val": X_val}

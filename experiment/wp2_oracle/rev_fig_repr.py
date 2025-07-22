@@ -28,6 +28,7 @@ from fairml.facilc.draw_addtl import (
     FairGBM_tradeoff_v3)
 from experiment.wp2_oracle.fvote_draw import PlotC_TheoremsLemma
 from experiment.wp2_oracle.fetch_data import DataSetup, GraphSetup
+from experiment.wp2_oracle.fvote_addtl import _little_helper
 
 
 # =====================================
@@ -322,6 +323,7 @@ class GatherE_Measures(PlotE_Measures):
         return
 
 
+"""
 def _little_helper(name, sensitive_attributes=list()):
     name_ens_set = ['Bagging', 'AdaBoostM1', 'SAMME']
     if "Entire" in name:
@@ -342,6 +344,7 @@ def _little_helper(name, sensitive_attributes=list()):
     name = name.replace(" (fnr)", "")
     name = name.replace("LightGBM", "lightGBM")
     return name
+"""
 
 
 class PlotF_Prunings(GraphSetup):
@@ -971,16 +974,18 @@ class FVre_Drawing(DataSetup):
                 "fvote", self._figname + ".txt")
             self._iterator.schedule_mspaint(
                 res_data, res_all, optional_data,
-                self._figname, jt=False, logger=logger)
+                # self._figname, jt=False, logger=logger)
+                self._figname, False, logger)
             self._iterator.renew_schedule_msgraph(
                 res_data, res_all, optional_data, self._figname,
-                jt=False, logger=logger)
+                False, logger)  # jt=False, logger=logger)
+            rm_ehandler(logger, formatter, fileHandler)
         else:
             self._iterator.schedule_mspaint(
                 res_data, res_all, optional_data, self._figname)
         del res_data, res_all, optional_data
-        if self._trial_type.endswith('expt6'):
-            rm_ehandler(logger, formatter, fileHandler)
+        # if self._trial_type.endswith('expt6'):
+        #     rm_ehandler(logger, formatter, fileHandler)
 
         # END
         tim_elapsed = time.time() - since

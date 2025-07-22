@@ -89,7 +89,8 @@ class LawSchoolData:
         return train_set, test_set
 
     def adversarial(self, data_frame, ratio=.7,
-                    sen_att=['sex', 'race']):
+                    sen_att=('sex', 'race')):
+        sen_att = list(sen_att)
         unpriv_dict = [data_frame[sa].unique() for sa in sen_att]
 
         disturbed_data = data_frame.copy()
@@ -202,9 +203,11 @@ def visualization(data_set, model, curr_data, curr_label=None,
 def visualization_parallel(train_set, test_set, model,
                            curr_X_trn, curr_X_tst,
                            curr_y_trn=None, curr_y_tst=None,
-                           sen_att=['sex', 'race'],
+                           # sen_att=['sex', 'race'],
+                           sen_att=('sex', 'race'),
                            sen_num=[2, 8],
                            figname='visualization'):
+    sen_att = list(sen_att)
 
     fit_trn = train_set.copy()
     fit_tst = test_set.copy()
@@ -561,8 +564,9 @@ def main_model_infer_K(train_set, test_set, logger=None,
 # Fair Add model
 
 
-def _fairly_add_step1_dat_apart(data_set, sen_att=["race", "sex"],
+def _fairly_add_step1_dat_apart(data_set, sen_att=("race", "sex"),
                                 logger=None):  # dat_partition
+    sen_att = list(sen_att)
     race_sex_tensor = torch.tensor(
         data_set[sen_att].values, dtype=torch.float32)
     gpa_tensor = torch.tensor(

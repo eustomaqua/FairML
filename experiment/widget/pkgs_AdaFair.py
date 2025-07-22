@@ -35,11 +35,11 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
-import sklearn
+# import sklearn
 from sklearn.base import is_classifier, ClassifierMixin, is_regressor
 from sklearn.ensemble import BaseEnsemble
 ## from sklearn.ensemble.forest import BaseForest
-from sklearn.ensemble._forest import BaseEnsemble
+from sklearn.ensemble._forest import BaseForest  # BaseEnsemble
 # from sklearn.externals import six
 
 from fairml.widget.utils_const import check_zero

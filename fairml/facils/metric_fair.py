@@ -255,7 +255,9 @@ C_{ij}
 
 
 def marginalised_np_mat(y, y_hat, pos_label=1,
-                        priv_idx=list()):
+                        priv_idx=tuple()):
+    if not isinstance(priv_idx, list):
+        priv_idx = list(priv_idx)  # default:list()
     if isinstance(y, list) or isinstance(y_hat, list):
         y, y_hat = np.array(y), np.array(y_hat)
 

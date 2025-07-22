@@ -35,6 +35,7 @@ jobs:
             export CODACY_PROJECT_TOKEN=082ca48f7f2e46649be75c2a495cfc66
             bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.xml
             # bash <(curl -Ls https://coverage.codacy.com/get.sh)
+            rm chart*.pdf && rm cheers*.pdf && rm fairgbm*.pdf
 
       - persist_to_workspace:
           root: ~/project

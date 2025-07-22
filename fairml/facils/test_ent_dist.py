@@ -1,7 +1,6 @@
 # coding: utf-8
 
 
-import pdb
 import numpy as np
 from fairml.widget.utils_const import check_equal, synthetic_dat
 

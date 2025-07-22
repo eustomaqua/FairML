@@ -826,7 +826,8 @@ def POAF_PEP(y, yt, yq, wgt, lam, nb_pru):
 
 
 def Ranking_based_criterion(y, hx, f_qtb, lam, criteria="DR",
-                            pos=1, idx_priv=list()):
+                            # pos=1, idx_priv=list()):
+                            pos=1, idx_priv=tuple()):
     if criteria == "DR":
         l_fair = hat_L_fair(hx, f_qtb)
         l_acc_ = hat_L_loss(hx, y)
@@ -850,7 +851,9 @@ def Ranking_based_criterion(y, hx, f_qtb, lam, criteria="DR",
 
 
 def Ranking_based_fairness_Pruning(y, yt, yq, nb_pru, lam,
-                                   criteria="DR", pos=1, idx_priv=list()):
+                                   criteria="DR", pos=1,
+                                   # idx_priv=list()):
+                                   idx_priv=tuple()):
     nb_cls = len(yt)  # len(wgt)
     rank_val = list(map(Ranking_based_criterion,
                         [y] * nb_cls, yt, yq,

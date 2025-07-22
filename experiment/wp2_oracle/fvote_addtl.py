@@ -368,7 +368,9 @@ class GatherE_Measures(PlotE_Measures):
         return
 
 
-def _little_helper(name, sensitive_attributes=list()):
+def _little_helper(name, sensitive_attributes=tuple()):
+    if not isinstance(sensitive_attributes, list):  # list()
+        sensitive_attributes = list(sensitive_attributes)
     name_ens_set = ['Bagging', 'AdaBoostM1', 'SAMME']
     if "Entire" in name:
         return name.replace(" & Entire", "")
@@ -1235,13 +1237,15 @@ class FairVoteDrawing(DataSetup):
                 "fvote", self._figname + ".txt")
             self._iterator.schedule_mspaint(
                 res_data, res_all, optional_data,
-                self._figname, jt=False, logger=logger)
+                # self._figname, jt=False, logger=logger)
+                self._figname, False, logger)
+            rm_ehandler(logger, formatter, fileHandler)
         else:
             self._iterator.schedule_mspaint(
                 res_data, res_all, optional_data, self._figname)
         del res_data, res_all, optional_data
-        if self._trial_type.endswith('expt6'):
-            rm_ehandler(logger, formatter, fileHandler)
+        # if self._trial_type.endswith('expt6'):
+        #     rm_ehandler(logger, formatter, fileHandler)
 
         # END
         tim_elapsed = time.time() - since

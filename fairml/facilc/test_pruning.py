@@ -5,6 +5,7 @@
 # from __future__ import print_function
 
 
+# import pdb
 import numpy as np
 from fairml.widget.utils_const import check_equal, synthetic_set
 
@@ -796,7 +797,7 @@ def test_compared_utus():
             flag = contrastive_pruning_according_validation(
                 name_pru, nb_cls, nb_pru, y_trn, y_insp, epsilon, rho,
                 [], y_pred, coef, clfs)
-        ys_cast = []
+        # ys_cast = []
         assert len(opt_coef) == len(opt_clfs) == sum(P) == len(seq)
         assert 1 <= len(seq) < nb_cls
 

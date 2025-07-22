@@ -34,6 +34,7 @@ def test_ensem_voting():
     h3 = weighted_voting(y, yt, wgh)
     h4 = weighted_voting(y, yt, [1. / 4 for _ in range(4)])
     assert np.equal(h1, h4).all()
+    assert len(h1) == len(h2) == len(h3) == len(h4)
 
     h1 = tie_with_weight_plurality(y, yt, None)
     h3 = tie_with_weight_plurality(y, yt, wgh)
