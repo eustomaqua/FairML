@@ -466,6 +466,7 @@ if trial_type[-5:] in ('expt4', 'expt6',
     if not trial_type.endswith('expt6'):
         sys.exit()
 
+    del case
     case = FVre_Drawing(
         trial_type, nb_cls, nb_pru, nb_iter, args.ratio,
         args.lam, screen=screen, logged=logged, **kwargs)
@@ -474,6 +475,7 @@ if trial_type[-5:] in ('expt4', 'expt6',
         case.trial_one_process(prefix)
     else:
         case.trial_gather_process(prefix)
+    del case, prefix
     sys.exit()  # 'expt5'
 
 

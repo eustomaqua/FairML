@@ -57,7 +57,8 @@ class PlotA_Measures(GraphSetup):
         # new_data.shape: (#sen_att, #name_ens, #eval, #iter)
         new_data = self.prepare_graph(np.array(res_data))[:, :, 30:, :]
 
-        data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
+        _, _, nb_cls, _, nb_iter, _ = res_all[0]
+        # data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
         sensitive_attributes = res_all[1]
         ensemble_methods = res_all[-1]
         idx = [0, 1, 2, 3, 4, 6]
@@ -67,8 +68,10 @@ class PlotA_Measures(GraphSetup):
             # .shape: (#name_ens, #eval, #iter)
             fgn = "{}_{}_".format(figname, sens_attr)
             curr = new_data[sa][idx]  # shape (#ens',30,5)
-            self.plot_multiple_hist_chart(curr, ensemble_methods, "acc", fgn)
-            self.plot_multiple_hist_chart(curr, ensemble_methods, "fair", fgn)
+            self.plot_multiple_hist_chart(curr, ensemble_methods,
+                                          "acc", fgn)
+            self.plot_multiple_hist_chart(curr, ensemble_methods,
+                                          "fair", fgn)
             del curr, fgn
 
     def plot_multiple_hist_chart(self, curr, ens, mark="acc", fgn=""):
@@ -1177,14 +1180,15 @@ class FairVoteDrawing(DataSetup):
                 "fvote", self._figname + ".txt")
             self._iterator.schedule_mspaint(
                 res_data, res_all, self._figname, False, logger)
+            rm_ehandler(logger, formatter, fileHandler)
         else:
             self._iterator.schedule_mspaint(res_data, res_all,
                                             self._figname)
         json_rf.close()  # file to read
         del json_rf, content, json_reader
         del res_all, res_data
-        if self._trial_type.endswith('expt6'):
-            rm_ehandler(logger, formatter, fileHandler)
+        # if self._trial_type.endswith('expt6'):
+        #     rm_ehandler(logger, formatter, fileHandler)
 
         # END
         tim_elapsed = time.time() - since

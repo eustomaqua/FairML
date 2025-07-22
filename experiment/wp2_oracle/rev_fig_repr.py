@@ -174,6 +174,9 @@ class GatherD_Measures(PlotD_Measures):
 
 
 class PlotE_Measures(GraphSetup):
+    def __init__(self):
+        pass
+
     def prepare_graph(self, res_data):
         new_data = np.zeros_like(res_data).transpose(1, 2, 3, 0)
         nb_iter, nb_attr, nb_ens, nb_eval = np.shape(res_data)
@@ -361,7 +364,8 @@ class PlotF_Prunings(GraphSetup):
             range(280, 336)) + list(range(336, 339))
         new_data = self.prepare_graph(new_data)[:, idx, :]
 
-        data_name, binary, nb_cls, nb_pru, nb_iter, _ = res_all[0]
+        # data_name, binary, nb_cls, nb_pru, nb_iter, _ = res_all[0]
+        data_name, _, nb_cls, nb_pru, nb_iter, _ = res_all[0]
         sensitive_attributes = res_all[1]
         name_ens_set, name_pru_set = res_all[3], res_all[4]  # -4/-3
         domestic_key = ['{} & {}'.format(
@@ -651,7 +655,7 @@ class GatherF_Prunings(PlotF_Prunings):
 
                 Ys_i += 1
         # mode = "ascend" if pt_i >= 39 else "descend"
-        rank, idx_bar = Friedman_init(Ys_avg, mode=mode)
+        _, idx_bar = Friedman_init(Ys_avg, mode=mode)  # rank,
         fgn += "_{}{}".format(pt_i, self._tag[pt_i][:3])
         if pt_i in [0, 54]:
             Friedman_chart(idx_bar, re_key, fgn + "_fried5",
@@ -913,6 +917,7 @@ class FVre_Drawing(DataSetup):
             self._iterator.schedule_mspaint(
                 res_data, res_all, self._figname, False, logger)
             # pdb.set_trace()
+            rm_ehandler(logger, formatter, fileHandler)
         else:
             self._iterator.schedule_mspaint(res_data, res_all,
                                             self._figname)
@@ -921,8 +926,8 @@ class FVre_Drawing(DataSetup):
         json_rf.close()  # file to read
         del json_rf, content, json_reader
         del res_all, res_data  # , new_data
-        if self._trial_type.endswith('expt6'):
-            rm_ehandler(logger, formatter, fileHandler)
+        # if self._trial_type.endswith('expt6'):
+        #     rm_ehandler(logger, formatter, fileHandler)
         # END
         return
 
@@ -958,7 +963,7 @@ class FVre_Drawing(DataSetup):
         if self._trial_type.endswith('expt5'):
             self._iterator.schedule_mspaint(
                 res_data, res_all, optional_data,
-                self._figname, jt=True)
+                self._figname, True)  # jt=True)
         elif self._trial_type.endswith('expt6'):
             if os.path.exists(self._figname + ".txt"):
                 os.remove(self._figname + ".txt")

@@ -95,6 +95,7 @@ def test_re():
         scale_normalize_helper, scale_normalize_dataset)
 
     X = np.concatenate([X_trn, X_val, X_tst], axis=0).tolist()
+    assert np.shape(X) == (nb_spl * 3, nb_feat)
     for nb_iter in [2, 3, 5]:
         split_idx = manual_repetitive(nb_iter, y)
         assert all([len(i) == nb_spl * 3 for i in split_idx])

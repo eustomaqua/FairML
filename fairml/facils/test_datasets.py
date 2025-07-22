@@ -16,7 +16,7 @@ def excl_test_datasets():
 
     df = dt.load_raw_dataset()
     ans = preprocess(dt, df)
-
+    assert isinstance(ans, dict)
     # pdb.set_trace()
     return
 
@@ -24,7 +24,7 @@ def excl_test_datasets():
 def excl_test_preprocessing():
     from fairml.datasets import preprocess, DATASETS
     from fairml.preprocessing import (
-        adversarial, transform_X_and_y, transform_unpriv_tag)
+        adversarial)  # ,transform_X_and_y,transform_unpriv_tag)
 
     for dt in DATASETS:
         df = dt.load_raw_dataset()

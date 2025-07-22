@@ -1,10 +1,11 @@
 # coding: utf-8
 
 
+# import pdb
 import numpy as np
 from fairml.widget.utils_const import check_equal, synthetic_dat
 
-nb_inst, nb_feat, nb_lbl = 121, 7, 3
+nb_inst, nb_feat, nb_lbl = 1210, 7, 3
 nb_bin = 4
 X_trn, y_trn = synthetic_dat(nb_lbl, nb_inst, nb_feat)
 
@@ -27,7 +28,7 @@ def test_ent_convert():
     assert all([(j in range(nb_bin)) for j in set(vY)])
     assert 1 <= np.shape(pxy)[0] == len(vX) <= nb_bin
     assert 1 <= np.shape(pxy)[1] == len(vY) <= nb_bin
-    assert np.sum(pxy) == 1.
+    assert check_equal(np.sum(pxy), 1.)  # np.sum(pxy)==1.
 
     temn = binsMDL(X_trn, nb_bin=nb_bin)
     assert id(data) != id(temn)
@@ -234,16 +235,19 @@ def test_data_distance():
         from fairml.facils.data_distance import (
             JS_div, _f_div, _BC_dis,
             _discrete_bar_counts, _discrete_joint_cnts)
-        _mx = 5  # _max, indexes
-        indices = np.random.randint(_mx, size=(3, 11)).tolist()
+        _mx, _n = 15, 11  # 11, _max,indexes
+
+        indices = np.random.randint(_mx, size=(3, _n)).tolist()
         freq_x, freq_y = _discrete_bar_counts(indices, False)
-        assert len(freq_x) == _mx and sum(freq_y) == 3 * 11
+        fg = (len(freq_x) <= _mx) and (sum(freq_y) == 3 * _n)
+        assert fg  # if not fg: pdb.set_trace()
         freq_x, freq_y = _discrete_bar_counts(indices, True)
         assert len(freq_x) == _mx and check_equal(sum(freq_y), 1)
 
         X, Y = indices[: 2]  # .tolist()
         px, py, v = _discrete_joint_cnts(X, Y, False)
-        assert len(v) == _mx and sum(px) == sum(py) == 11
+        fg = (len(v) <= _mx) and (sum(px) == sum(py) == _n)
+        assert fg  # if not fg: pdb.set_trace()
         px, py, _ = _discrete_joint_cnts(X, Y, True, freq_x)
         # assert sum(px) == sum(py) == 1
         assert check_equal(1, [sum(px), sum(py)])

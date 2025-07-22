@@ -743,7 +743,7 @@ class PartC_FairMeasure(PartB_FairMeasure):
         ut = time.time()
         # def achieve_ensemble_from_train_set():
         name_cls = INDIVIDUALS[self._abbr_cls]
-        coef, clfs, indices = EnsembleAlgorithm(
+        coef, clfs, _ = EnsembleAlgorithm(  # ,indices
             self._name_ens, name_cls, nb_cls, X_trn, y_trn)
         # def achieve_ensemble_from_train_set():
         ut = time.time() - ut

@@ -144,6 +144,7 @@ class PlotC_Revised_TheoremsLemma(GraphSetup):
         nvt = [v.loc[ind][tag_col] for v in raw_dframe.values()]
         dframe = pd.concat(nvt)  # TODO
         del nvt
+        del dframe
 
     def verify_bounds(self, df, kw):
         import matplotlib.pyplot as plt
@@ -522,7 +523,9 @@ class PlotH_ImprovePruning(GraphSetup):
         A1_data, A2_data, Jt_data = pd_concat_sens_raw(
             raw_dframe, tag_col, nb_set, index)
         new_avg = pd.concat([A1_data[0], A2_data[0], Jt_data[0]])
+        '''
         new_raw = pd.concat([A1_data[3], A2_data[3], Jt_data[3]])
+        '''
         tmp = _get_tmp_name_ens(self._name_ens)
         fn = '_'.join([self._figname, tmp])
         self.compare_aggregated_fair(new_avg, fn + "_whole_avg")

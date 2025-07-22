@@ -4,6 +4,8 @@ import numpy as np
 # import numba
 from fairml.widget.utils_const import (
     judge_transform_need, check_zero, DTY_INT)
+from experiment.wp2_oracle.fetch_data import (
+    calc_confusion, calc_PR)
 
 
 def calc_PRF1_multi_lists(y, hx):

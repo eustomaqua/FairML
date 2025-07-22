@@ -27,6 +27,7 @@ def test_ensem_voting():
     f1 = plurality_voting(y_trn, y_insp)
     f2 = majority_voting(y_trn, y_insp)
     f3 = weighted_voting(y_trn, y_insp, coef)
+    assert len(f1) == len(f2) == len(f3)  # useless
 
     h1 = plurality_voting(y, yt)
     h2 = majority_voting(y, yt)

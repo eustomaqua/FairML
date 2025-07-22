@@ -139,7 +139,7 @@ def _discrete_bar_counts(indexes, density=True):
         # idx_tmp = idx_tmp.reshape(-1)
         idx_tmp = np.reshape(idx_tmp, -1)
     mn, mx = min(idx_tmp), max(idx_tmp)
-    freq_x = list(range(mn, mx + 1))
+    opt_y = list(range(mn, mx + 1))  # freq_x
     freq_y = [0] * (mx + 1 - mn)
     for i in idx_tmp:
         freq_y[i - mn] += 1
@@ -147,7 +147,7 @@ def _discrete_bar_counts(indexes, density=True):
     assert sum(freq_y) == sm
     if density:
         freq_y = [float(i) / sm for i in freq_y]
-    return freq_x, freq_y
+    return opt_y, freq_y  # return freq_x,freq_y
 
 
 def _discrete_joint_cnts(X, Y, density=True, v=None):
