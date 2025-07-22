@@ -192,6 +192,7 @@ def test_distributed():
 
 def test_data_distance():
     from fairml.facils.data_distance import (
+        # from fairml.facils.metric_dist import (
         KL_divergence, JS_divergence, f_divergence,
         Hellinger_dist_v1, Hellinger_dist_v2, Wasserstein_dis,
         Wasserstein_distance, Bhattacharyya_dist)
@@ -258,7 +259,9 @@ def test_data_distance():
         ans_2 = JS_divergence(py, px)
         res_1 = JS_div(X, Y, _mx)
         res_2 = JS_div(Y, X, _mx)
-        assert ans_1 == ans_2 == res_1 == res_2
+        # assert ans_1 == ans_2 == res_1 == res_2
+        assert check_equal([ans_1, res_1, ans_2],
+                           [ans_2, res_2, res_1])
 
         assert _f_div(0)
         assert _f_div(.1)

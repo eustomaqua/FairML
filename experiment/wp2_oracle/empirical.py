@@ -19,7 +19,7 @@ from fairml.discriminative_risk import (
     hat_L_objt, cal_L_obj_v1, cal_L_obj_v2)
 from fairml.dr_pareto_optimal import (
     Pareto_Optimal_EPAF_Pruning, Centralised_EPAF_Pruning,
-    Distributed_EPAF_Pruning, POAF_PEP, _POAF_calc_eval)
+    Distributed_EPAF_Pruning, POAF_PEP, _POAF_calc_eval,)
 from fairml.dr_pareto_optimal import _bi_objectives  # as _POAF_calc_eval
 
 from experiment.wp2_oracle.fetch_expt import EnsembleSetup

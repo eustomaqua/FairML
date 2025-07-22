@@ -13,8 +13,8 @@ from fairml.preprocessing import (
     adversarial, transform_X_and_y, transform_unpriv_tag,
     transform_perturbed)
 from fairml.facils.data_classify import EnsembleAlgorithm
-from fairml.facils.utils_wpclf import FAIR_INDIVIDUALS as INDIVIDUALS
-# from fairml.widget.utils_wpclf import INDIVIDUALS
+# from fairml.facils.utils_wpclf import FAIR_INDIVIDUALS as INDIVIDUALS
+from experiment.widget.utils_wpclf import FAIR_INDIVIDUALS as INDIVIDUALS
 # from fairml.facils.metrics_cont import (
 #     calc_accuracy, calc_Acc, calc_PR, calc_F1, calc_4Rate,
 #     calc_confusion)

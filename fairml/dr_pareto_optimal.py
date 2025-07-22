@@ -1,8 +1,8 @@
 # coding: utf-8
 #
 # TARGET:
-#   5) Oracle bounds regarding fairness for majority vote
-#      charcs/PAC-Bayesian bounds
+#   Oracle bounds regarding fairness for majority vote
+#   PAC bounds
 #
 
 

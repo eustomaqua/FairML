@@ -517,7 +517,7 @@ python wp1_main_plot.py --draw -exp mCV_expt6 --gather --nb-pru 7
 python wp1_main_plot.py -exp mCV_expt8 --gather
 python wp1_main_plot.py -exp mCV_expt8 --gather --tab
 python wp1_main_plot.py -exp mCV_expt3 --gather
-python wp1_main_plot.py -exp mCV_expt11 --gatherx
+python wp1_main_plot.py -exp mCV_expt11 --gather
 python wp1_main_plot.py -exp mCV_expt8 --name-ens Bagging
 python wp1_main_plot.py -exp mCV_expt8 --name-ens AdaBoostM1 --nb-cls 11 --nb-pru 5
 python wp1_main_plot.py -exp mCV_expt8 --name-ens SAMME --nb-cls 11 --nb-pru 5

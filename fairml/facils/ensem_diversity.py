@@ -22,6 +22,25 @@ from fairml.widget.metric_cont import (
 # ==================================
 
 
+"""
+# ----------------------------------
+# OEP, SEP
+# ----------------------------------
+#
+# generate $\mathbf{s'}$ by flipping each bit of $\mathbf{s}$
+# with prob.$\frac{1}{n}$
+#
+def _PEP_flipping_uniformly(s):
+    n = len(s)
+    pr = np.random.uniform(size=n)  # \in [0, 1]
+    pr = (pr < 1. / n)  # <=
+    # s', sprime
+    sp = [1 - s[i] if pr[i] else s[i] for i in range(n)]
+    del n, pr
+    return deepcopy(sp)
+"""
+
+
 # ----------------------------------
 # Data Set
 # ----------------------------------
