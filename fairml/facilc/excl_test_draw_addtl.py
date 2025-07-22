@@ -3,7 +3,13 @@
 # import pdb
 import numpy as np
 import pandas as pd
-from fairml.facilc.draw_addtl import *
+from fairml.facilc.draw_addtl import (
+    multiple_lines_with_errorbar, box_plot, scatter_k_cv_with_real,
+    boxplot_k_cv_with_real, approximated_dist_comparison,
+    multiple_scatter_comparison, scatter_with_marginal_distrib,
+    line_reg_with_marginal_distr, single_line_reg_with_distr,
+    lineplot_with_uncertainty, multi_lin_reg_with_distr,
+    FairGBM_tradeoff_v3, FairGBM_tradeoff_v2)
 
 
 # -----------------------
@@ -96,9 +102,9 @@ def excl_test_fairmanf_2nd():
     scatter_k_cv_with_real(X, Ys, z, tidy_cv=False)
     scatter_k_cv_with_real(X, Ys, z, figname='hyperpm_effect_p')
 
-    from prgm.nucleus.oracle_graph import boxplot_k_cv_with_real
+    # from prgm.nucleus.oracle_graph import boxplot_k_cv_with_real
     boxplot_k_cv_with_real(X, Ys, z)
-    from prgm.nucleus.oracle_graph import box_plot
+    # from prgm.nucleus.oracle_graph import box_plot
     box_plot(Ys.T, X, 'Approximated', 'pm', figname='hyperpm_lam')
 
 
@@ -112,7 +118,7 @@ def excl_test_fairmanf_1st():
     picked_keys = ['att#' + str(i + 1) for i in range(nb_att)]
     approximated_dist_comparison(X, Ys, picked_keys)
 
-    from prgm.nucleus.oracle_graph import multiple_scatter_comparison
+    # from prgm.nucleus.oracle_graph import multiple_scatter_comparison
     z = np.random.rand(nb_att, nb_iter) * 10
     multiple_scatter_comparison(X, Ys, z, picked_keys)
 
@@ -130,7 +136,7 @@ def excl_test_fairmanf_exp2a():
     from prgm.nucleus.oracle_graph import line_reg_with_marginal_distr
     from prgm.nucleus.oracle_graph import single_line_reg_with_distr
     '''
-    from fairml.facilc.draw_addtl import _uncertainty_plotting
+    # from fairml.facilc.draw_addtl import _uncertainty_plotting
     num, bl = 100, 4
 
     dat_acc = np.random.rand(num) * .1 + .7

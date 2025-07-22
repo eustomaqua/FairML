@@ -1,8 +1,13 @@
 # coding: utf-8
 
-# import numpy as np
+import numpy as np
 # from prgm.nucleus.utils_chart import *
-from fairml.facilc.draw_chart import *
+from fairml.facilc.draw_chart import (
+    multi_scatter_hor, multi_scatter_vrt, multiple_scatter_chart,
+    analogous_confusion, multiple_scatter_alternative,
+    analogous_confusion_alternative, single_hist_chart,
+    lines_with_std_3d, lines_with_std_2d, discrete_bar_comparison,
+    PLT_LOCATION, PLT_FRAMEBOX)
 from fairml.facilc.draw_chart import _setup_config, _setup_figshow
 
 sz = 21

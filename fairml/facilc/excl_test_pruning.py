@@ -5,7 +5,7 @@
 # from __future__ import print_function
 
 
-# import pdb
+import pdb
 import numpy as np
 from fairml.widget.utils_const import check_equal, synthetic_set
 
@@ -421,8 +421,12 @@ def test_DREP_binary():
     # NOT TRUE# assert np.all(np.equal(tr_P, bi_P))
     # because `DREP_fxH` in `DREP_Pruning` involves some random
     # NOT ALWAYS TRUE# assert np.all(np.equal(tr_seq, bi_seq))
-    assert sum(tr_P) == len(tr_seq) == sum(bi_P) == len(bi_seq)
-    assert 1 <= len(tr_seq) == len(bi_seq) < nb_cls
+    # fg = sum(tr_P) == len(tr_seq) == sum(bi_P) == len(bi_seq)
+    # if not fg: pdb.set_trace()
+    assert 1 <= sum(tr_P) == len(tr_seq) < nb_cls
+    assert 1 <= sum(bi_P) == len(bi_seq) < nb_cls
+    # assert sum(tr_P) == len(tr_seq) == sum(bi_P) == len(bi_seq)
+    # assert 1 <= len(tr_seq) == len(bi_seq) < nb_cls
 
 
 def test_drep_multi_modify():

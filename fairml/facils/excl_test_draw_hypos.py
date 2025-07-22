@@ -1,12 +1,16 @@
 # coding: utf-8
 
+import numpy as np
 from fairml.widget.utils_const import check_equal
 # from prgm.nucleus.utils_hypos import *
 # from prgm.nucleus.utils_hypos import (
-from fairml.facils.draw_hypos import *
 from fairml.facils.draw_hypos import (
     _regulate_vals, _regulate_sign,
-    _Friedman_sequential, _Friedman_successive)
+    _Friedman_sequential, _Friedman_successive,
+    binomial_test, t_test, scipy_ttest_for1, scipy_ttest_for2,
+    paired_5x2cv_test, paired_t_tests, scipy_ttest_pair,
+    McNemar_test, Friedman_init, Friedman_test, Nememyi_posthoc_test,
+    cmp_paired_avg, cmp_paired_wtl, comp_t_init, comp_t_prep)
 
 accs = [0.7, 0.8, 0.6, 0.85, 0.65]
 errs = _regulate_vals(accs, 'acc')

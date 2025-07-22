@@ -3,8 +3,16 @@
 
 
 # coding: utf-8
+import numpy as np
+import pandas as pd
+
 # from prgm.nucleus.utils_graph import *
-from fairml.facilc.draw_graph import *
+from fairml.facilc.draw_graph import (
+    scatter_and_corr, sns_scatter_corr, Friedman_chart,
+    stat_chart_stack, stat_chart_group, visual_confusion_mat,
+    bar_chart_with_error, multiple_hist_chart,
+    twinx_hist_chart, twinx_bars_chart, line_chart,
+    baseline_subchart, histogram_chart, sns_corr_chart)
 from fairml.facilc.draw_graph import _setup_config, _setup_figshow
 
 sz = 21
@@ -162,7 +170,6 @@ def test_histchart():
 
 def test_multi_hists():
     # from prgm.nucleus.utils_graph import multiple_hist_chart
-    from fairml.facilc.draw_graph import multiple_hist_chart
     nb_pru, nb_fair = 10, 4
 
     Ys_avg = np.random.rand(nb_pru, nb_fair) * 50
