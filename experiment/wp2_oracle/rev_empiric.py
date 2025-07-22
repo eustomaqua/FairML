@@ -40,7 +40,7 @@ from fairml.discriminative_risk import (
 # from archv.fair.oracle_fetch import EnsembleSetup
 
 from fairml.facils.utils_wpclf import (
-    FAIR_INDIVIDUALS, TREE_ENSEMBLES, HOMO_ENSEMBLES)  # ,ALG_NAMES)
+    FAIR_INDIVIDUALS)  # ,TREE_ENSEMBLES,HOMO_ENSEMBLES)#,ALG_NAMES)
 from fairml.dr_pareto_optimal import (
     Pareto_Optimal_EPAF_Pruning, POAF_PEP,  # POAF_PEP(alternative)
     Centralised_EPAF_Pruning, Distributed_EPAF_Pruning,

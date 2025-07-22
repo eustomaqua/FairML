@@ -4,7 +4,6 @@
 
 import json
 import os
-import pdb
 import time
 import numpy as np
 
@@ -126,7 +125,7 @@ class PlotD_Measures(GraphSetup):
             idx = [i + 13 for i in idx]
         elif mark.endswith("abs_"):
             idx = [i + 26 for i in idx]
-        mode = "ascend" if mark == "fair" else "descend"
+        # mode = "ascend" if mark == "fair" else "descend"
 
         new_curr = curr[:, idx, :]
         Ys_avg = new_curr.mean(axis=2).T
@@ -730,8 +729,8 @@ class Renew_GatherF_Prunings(GatherF_Prunings):
                            pt_i, fgn='', ddof=0, logger=None):
         Ys_avg, Ys_std = np.zeros((9, 7)), np.zeros((9, 7))
         Ys_i, reorder = 0, [4, 5, 6, 0, 1, 2, 3]
-        rez = 2 if pt_i in [0, 13, 26] else 4
-        mode = 'ascend' if pt_i >= 39 else 'descend'
+        # rez = 2 if pt_i in [0, 13, 26] else 4
+        # mode = 'ascend' if pt_i >= 39 else 'descend'
         Ys_entire = np.zeros((9, 7, 5))
         for i in optional_data:
             ret_key, ret_r, ret_c, sen_att = self.merge_sub_data(

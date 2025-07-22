@@ -22,7 +22,7 @@ from fairml.datasets import preprocess
 from fairml.preprocessing import (
     adversarial, transform_X_and_y, transform_unpriv_tag,
     transform_perturbed)
-from experiment.wp2_oracle.fetch_data import ExperimentSetup
+from experiment.wp2_oracle.fetch_expt import ExperimentSetup
 # from experiment.wp2_oracle.empirical import (
 #     PartC_TheoremsLemma, PartK_PACGeneralisation,
 #     PartH_ImprovedPruning, PartJ_LambdaEffect)

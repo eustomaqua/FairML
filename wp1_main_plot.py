@@ -6,7 +6,7 @@
 
 import argparse
 import logging
-import json
+# import json
 import os
 import sys
 import time
@@ -16,12 +16,11 @@ import pandas as pd
 from fairml.widget.utils_saver import (get_elogger, rm_ehandler,
                                        elegant_print)
 from fairml.widget.utils_timer import elegant_dated, elegant_durat
-from fairml.widget.utils_const import (_get_tmp_document,
-                                       _get_tmp_name_ens)
+from fairml.widget.utils_const import _get_tmp_document
 from fairml.widget.utils_remark import AVAILABLE_ABBR_ENSEM
 
 from experiment.wp2_oracle.fetch_data import (
-    DataSetup, CURR_EXPT_DIR, pd_concat_divide_raw)
+    pd_concat_divide_raw)  # DataSetup, CURR_EXPT_DIR,
 # from experiment.wp2_oracle.fvote_addtl import (
 #     PlotD_Measures, GatherD_Measures, GatherF_Prunings,
 #     PlotF_Prunings, GatherE_Measures, PlotE_Measures,

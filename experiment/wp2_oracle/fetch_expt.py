@@ -20,7 +20,7 @@ from fairml.facils.utils_wpclf import FAIR_INDIVIDUALS as INDIVIDUALS
 #     calc_confusion)
 from experiment.wp2_oracle.fetch_data import (
     calc_accuracy, calc_Acc, calc_PR, calc_F1, calc_4Rate,
-    calc_confusion)
+    calc_confusion, DataSetup)
 
 from fairml.facils.metric_fair import marginalised_pd_mat
 # from fairml.facils.fairness_group import marginalised_pd_mat

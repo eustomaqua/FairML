@@ -9,7 +9,7 @@ import numpy as np
 # import pandas as pd
 import time
 
-from fairml.widget.utils_const import check_zero, unique_column
+from fairml.widget.utils_const import unique_column
 # from fairml.widget.utils_saver import elegant_print
 
 from fairml.discriminative_risk import (

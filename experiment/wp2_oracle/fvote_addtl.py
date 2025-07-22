@@ -5,7 +5,7 @@ import json
 import os
 import time
 import numpy as np
-from fairml.widget.utils_const import DTY_FLT
+from fairml.widget.utils_const import DTY_FLT, _get_tmp_name_ens
 from fairml.widget.utils_saver import (
     elegant_print, get_elogger, rm_ehandler)
 from fairml.widget.utils_timer import elegant_durat
