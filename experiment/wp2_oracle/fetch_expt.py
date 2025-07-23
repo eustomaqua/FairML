@@ -291,8 +291,8 @@ class EnsembleSetup(IndividualSetup):
     def prepare_trial(self):
         return [], [], []
 
-    def schedule_content(self):
-        raise NotImplementedError
+    # def schedule_content(self):
+    #     raise NotImplementedError
 
 
 # Experimental design

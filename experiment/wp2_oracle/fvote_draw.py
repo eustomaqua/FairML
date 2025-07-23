@@ -137,7 +137,7 @@ class PlotC_Revised_TheoremsLemma(GraphSetup):
                          trial_type, figname)
 
     def schedule_mspaint(self, raw_dframe, partition=False):
-        _, id_set, index = self.recap_sub_data(raw_dframe)  # nb_set,
+        _, _, index = self.recap_sub_data(raw_dframe)  # nb_set,id_set
         tag_col = self.prepare_graph()
         ind = np.concatenate(index, axis=0)
 
@@ -196,7 +196,7 @@ class PlotK_PACGeneralisation(GraphSetup):
         return [[tag_col[j] for j in i] for i in idv_XY]
 
     def schedule_mspaint(self, raw_dframe, partition=False):
-        nb_set, id_set, index = self.recap_sub_data(raw_dframe)
+        _, _, index = self.recap_sub_data(raw_dframe)  # nb_set,id_set,
         tag_col = self.prepare_graph()
         index = np.concatenate(index, axis=0)
 
@@ -441,14 +441,15 @@ class PlotH_ImprovePruning(GraphSetup):
         # aka. def plot_for_sec33()
         tmp = _get_tmp_name_ens(self._name_ens)
         fn = '_'.join([self._figname, tmp])
-        new_avg, _, new_var, new_raw = pd_concat_divide_raw(
-            raw_dframe, tag_col, nb_set, index)  # _:new_std
+        new_avg, _, _, new_raw = pd_concat_divide_raw(
+            raw_dframe, tag_col, nb_set, index)  # _:new_std,new_var,
         self.verify_aggregated_rank(new_avg, fn + "_whole_avg")
 
         if not partition:
             return
         for k, v in raw_dframe.items():
-            avg, _, _, raw = pd_concat_divide_sht(
+            # avg, _, _, raw = pd_concat_divide_sht(
+            _, _, _, raw = pd_concat_divide_sht(
                 v, tag_col, nb_set, index)
             self.verify_aggregated_rank(raw, fn + "_split_raw_" + k)
 
@@ -908,7 +909,7 @@ class PlotHGather_ImprovePruning(PlotH_ImprovePruning):
                          trial_type, figname, logger)
 
     def schedule_mspaint(self, raw_dframe, tag_col):
-        nb_set, id_set, index = self.recap_sub_data(raw_dframe[0])
+        nb_set, _, index = self.recap_sub_data(raw_dframe[0])  # id_set,
         # nm_set = ['ricci', 'german', 'adult', 'ppr', 'ppvr']
         '''
         self.plot_for_sec33_prus(raw_dframe, tag_col, nb_set, index)
@@ -1383,7 +1384,8 @@ class PlotD_ImprovePruning(GraphSetup):
     def schedule_mspaint(self, raw_dframe, partition=False):
         nb_set, id_set, index = self.recap_sub_data(raw_dframe)
         tag_col = self.prepare_graph()
-        avg, _, _, raw = pd_concat_divide_raw(
+        # avg, _, _, raw = pd_concat_divide_raw(
+        _, _, _, raw = pd_concat_divide_raw(
             raw_dframe, tag_col, nb_set, index)
         # self.verify_aggregated_rank(avg, "whole_avg")
         self.verify_aggregated_rank(raw, "whole_raw")
@@ -1393,7 +1395,9 @@ class PlotD_ImprovePruning(GraphSetup):
         tmp = _get_tmp_name_ens(self._name_ens)
 
         for k, v in raw_dframe.items():
-            avg, _, _, raw = pd_concat_divide_sht(v, tag_col, nb_set, index)
+            # avg, _, _, raw = pd_concat_divide_sht(
+            _, _, _, raw = pd_concat_divide_sht(
+                v, tag_col, nb_set, index)
             # self.verify_aggregated_rank(avg, "split_avg_" + tmp + k)
             self.verify_aggregated_rank(raw, "split_raw_" + tmp + k)
 
@@ -1646,9 +1650,9 @@ class PlotJ_LambdaEffect(GraphSetup):
         multiple_line_chart(X, Ys, annots, annotY, figname=nkw)
 
     def verify_lam_effect_fair(self, df, kw, tag_col, rel_id=None):
-        tag_trn, tag_tst = self.pick_up_pru_idx(tag_col, 2 * rel_id)
+        _, tag_tst = self.pick_up_pru_idx(tag_col, 2 * rel_id)  # tag_trn,
         U_g1 = df[tag_tst].astype(DTY_FLT).values
-        tag_trn, tag_tst = self.pick_up_pru_idx(tag_col, 2 * rel_id + 1)
+        _, tag_tst = self.pick_up_pru_idx(tag_col, 2 * rel_id + 1)
         U_g0 = df[tag_tst].astype(DTY_FLT).values
 
         X = np.linspace(0, 1, self._nb_lam).tolist()

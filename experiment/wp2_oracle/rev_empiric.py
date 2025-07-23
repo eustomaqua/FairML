@@ -8,7 +8,8 @@ from sklearn.ensemble import (
 # import lightgbm
 from lightgbm import LGBMClassifier
 from fairgbm import FairGBMClassifier
-from fairml.widget.pkgs_AdaFair import AdaFair
+# from fairml.widget.pkgs_AdaFair import AdaFair
+from experiment.widget.pkgs_AdaFair import AdaFair
 
 from fairml.widget.metric_cont import contg_tab_mu_type2 \
     as contingency_table
@@ -39,8 +40,9 @@ from fairml.discriminative_risk import (
     hat_L_fair, hat_L_loss)  # E_rho_L_fair_f,E_rho_L_loss_f
 # from archv.fair.oracle_fetch import EnsembleSetup
 
-from fairml.facils.utils_wpclf import (
-    FAIR_INDIVIDUALS)  # ,TREE_ENSEMBLES,HOMO_ENSEMBLES)#,ALG_NAMES)
+from experiment.widget.utils_wpclf import FAIR_INDIVIDUALS
+# from fairml.facils.utils_wpclf import (
+#     FAIR_INDIVIDUALS)  # ,TREE_ENSEMBLES,HOMO_ENSEMBLES)#,ALG_NAMES)
 from fairml.dr_pareto_optimal import (
     Pareto_Optimal_EPAF_Pruning, POAF_PEP,  # POAF_PEP(alternative)
     Centralised_EPAF_Pruning, Distributed_EPAF_Pruning,
@@ -480,8 +482,8 @@ class PartD_FairMeasure(PartA_FairMeasure):
 
     def sub_count_together(self, y, y_hat, y_qtb,
                            non_sa, positive_label):
-        g1_Cij, g0_Cij, gones_Cm, gzero_Cm = \
-            marginalised_pd_mat(y, y_hat, positive_label, non_sa)
+        _, _, gones_Cm, gzero_Cm = marginalised_pd_mat(
+            y, y_hat, positive_label, non_sa)  # g1_Cij, g0_Cij,
 
         tmp_0 = unpriv_unaware(gones_Cm, gzero_Cm)
         tmp_1 = unpriv_group_one(gones_Cm, gzero_Cm)
@@ -1213,7 +1215,7 @@ class PartF_FairPruning(PartE_FairPruning):
                               positive_label, lam=.5):
         ut = time.time()
         name_cls = INDIVIDUALS[abbr_cls]
-        coef, clfs, indices = EnsembleAlgorithm(
+        coef, clfs, _ = EnsembleAlgorithm(  # ,indices
             name_ens, name_cls, nb_cls, X_trn, y_trn)
         ut = time.time() - ut
 

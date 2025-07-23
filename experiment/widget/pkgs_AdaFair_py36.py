@@ -175,7 +175,9 @@ class BaseWeightBoosting(six.with_metaclass(ABCMeta, BaseEnsemble)):
 
         for iboost in range(self.n_estimators):
             # Boosting step
-            sample_weight, alpha, error, fairness, balanced_error, cumulative_error = self._boost(
+            # sample_weight, alpha, error, fairness, balanced_error, cumulative_error = self._boost(
+            (sample_weight, _, error, fairness,
+             balanced_error, cumulative_error) = self._boost(
                 iboost,
                 X, y,
                 sample_weight,
@@ -831,7 +833,9 @@ class AdaFair(BaseWeightBoosting, ClassifierMixin):
             TNR = (float(tn)) / (tn + fp)
             test_cumulative_balanced_error = 1 - (TPR + TNR) / 2
             test_cumulative_error = 1 - (float(tp) + float(tn)) / (tp + tn + fp + fn)
-            test_fairness = self.measure_fairness_for_visualization(self.X_test, self.y_test, self.classes_.take(np.argmax(self.predictions_array_test, axis=1)))
+            test_fairness = self.measure_fairness_for_visualization(
+                self.X_test, self.y_test, self.classes_.take(np.argmax(
+                    self.predictions_array_test, axis=1)))
             self.performance.append((cumulative_balanced_error, cumulative_error, fairness, test_cumulative_balanced_error, test_cumulative_error, test_fairness))
             self.objective.append(cumulative_error * (1 - self.c) + cumulative_balanced_error * self.c + fairness)
             print(iboost)

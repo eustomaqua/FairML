@@ -6,6 +6,7 @@
 # from __future__ import print_function
 
 
+# import pdb
 import numpy as np
 from fairml.widget.utils_const import synthetic_set, synthetic_dat
 
@@ -23,8 +24,8 @@ bi_ha, bi_hb = bi_yt[ki], bi_yt[kj]
 mu_ha, mu_hb = mu_yt[ki], mu_yt[kj]
 
 # or: Sp, Sq
-Sm = np.random.randint(
-    2, size=nb_cls, dtype='bool').tolist()
+Sm = np.random.randint(2, size=nb_cls, dtype='bool').tolist()
+Sm[np.random.choice(range(nb_cls))] = True
 Sn = list(range(nb_cls))
 np.random.shuffle(Sn)
 Sn = Sn[: nb_pru]
@@ -308,6 +309,7 @@ def test_MRMREP_fusion():
     # idx = sum(Sm)
     assert -1 <= tr_ci == bi_ci < nb_cls  # idx
     assert -1 <= mu_ci < nb_cls and isinstance(mu_ci, int)  # np.int64
+    # pdb.set_trace()  # tt = np.zeros_like(Sm, dtype='bool')
     assert Sm[tr_ci] and Sm[bi_ci] and Sm[mu_ci]
 
     tr_ci = _subroute_MRMREP_init(tr_y, tr_yt, alpha)
@@ -653,9 +655,9 @@ def test_contrastive():
         bi_ytrn, bi_yval, bi_P, bi_seq = contrastive_pruning_lately(
             name_pru, nb_cls, nb_pru, bi_y, [], bi_yt, [],
             alpha, L, R, **kwargs)
-        mu_ytrn, mu_yval, mu_P, mu_seq = contrastive_pruning_lately(
+        _, mu_yval, mu_P, mu_seq = contrastive_pruning_lately(
             name_pru, nb_cls, nb_pru, mu_y, [], mu_yt, [],
-            alpha, L, R, **kwargs)
+            alpha, L, R, **kwargs)  # mu_ytrn,
         assert np.all(np.equal(tr_P, bi_P))  # TODO: BUG?
         assert np.all(np.equal(tr_seq, bi_seq))
         assert sum(tr_P) == len(tr_seq) == sum(bi_P) == len(bi_seq)
@@ -682,17 +684,19 @@ def test_compared_utus():
             kwargs["X_trn"] = X_trn
             kwargs["X_val"] = X_val
 
-        opt_coef, opt_clfs, ys_insp, ys_cast, ys_pred, ut, us, \
-            tr_P, tr_seq = contrastive_pruning_lately_validate(
-                name_pru, nb_cls, nb_pru, tr_y, [], tr_yt, [],
-                tr_ycast, coef, clfs, alpha, L, R, **kwargs)
+        (_, _, ys_insp, ys_cast, ys_pred, ut,  # opt_coef,opt_clfs,
+         us, tr_P, tr_seq) = contrastive_pruning_lately_validate(
+            name_pru, nb_cls, nb_pru, tr_y, [], tr_yt, [],
+            tr_ycast, coef, clfs, alpha, L, R, **kwargs)
         assert ys_cast == []
+        assert sum(tr_P) == len(tr_seq)
 
         _, _, _, _, _, ut, us, bi_P, \
             bi_seq = contrastive_pruning_lately_validate(
                 name_pru, nb_cls, nb_pru, bi_y, [], bi_yt, [],
                 bi_ycast, coef, clfs, alpha, L, R, **kwargs)
         assert np.all(np.equal(tr_seq, bi_seq))  # TODO: BUG?
+        assert sum(bi_P) == len(bi_seq)
 
         _, _, _, _, _, ut, us, mu_P, \
             mu_seq = contrastive_pruning_lately_validate(

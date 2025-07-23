@@ -302,8 +302,8 @@ def model_Unaware_or_Full(train_set, test_set, picked_cols,
     train_X, train_y, test_X, test_y = _unaw_ful_no1_partition(
         train_set, test_set, picked_cols)
     curr_model, loss_fn = train_LinearModel(train_X, train_y)
-    y_pred, loss = _unaw_ful_no2_evaluate(test_X, test_y, curr_model,
-                                          loss_fn, picked, logger)
+    y_pred, _ = _unaw_ful_no2_evaluate(  # y_pred,loss=
+        test_X, test_y, curr_model, loss_fn, picked, logger)
     visualization_parallel(train_set, test_set, curr_model,
                            train_X, test_X,
                            figname='{}_{}'.format(figname, picked))

@@ -134,7 +134,7 @@ def test_subsubsec_244():
 
 
 def test_paired_t():
-    import numpy as np
+    # import numpy as np
     # from fairml.widget.utils_const import check_equal
     # nb_inst, ep_a, ep_b = 21, .7, .3
     k, ep_a, ep_b = 5, .7, .3  # nb_cv

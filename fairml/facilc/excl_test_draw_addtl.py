@@ -243,6 +243,7 @@ def excl_test_fairmanf_exp2b():
     #     scatter_with_marginal_distrib, lineplot_with_uncertainty)
     num, bl = 100, 4
     df, _, tag_Ys, picked_keys, col_X, col_Y = generate_dfs(num, bl)
+    assert isinstance(tag_Ys, list)
 
     scatter_with_marginal_distrib(
         df, col_X, col_Y, tag_Ys, picked_keys, figname='chart_sd1')

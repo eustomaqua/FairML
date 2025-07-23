@@ -57,7 +57,7 @@ class PlotA_Measures(GraphSetup):
         # new_data.shape: (#sen_att, #name_ens, #eval, #iter)
         new_data = self.prepare_graph(np.array(res_data))[:, :, 30:, :]
 
-        _, _, nb_cls, _, nb_iter, _ = res_all[0]
+        _, _, _, _, nb_iter, _ = res_all[0]  # ,nb_cls,
         # data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
         sensitive_attributes = res_all[1]
         ensemble_methods = res_all[-1]
@@ -103,12 +103,13 @@ class PlotD_Measures(PlotA_Measures):
         new_data = np.array(res_data)
         new_data = self.prepare_graph(new_data)[:, :, 56:, :]
 
-        data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
+        # data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
+        _, binary, nb_cls, _, nb_iter, _ = res_all[0]
         sensitive_attributes = res_all[1]
         ensemble_methods = res_all[-1]
-        ensemble_methods = [
-            i.replace('FPR', 'fpr').replace('FNR', 'fnr') 
-            if 'FairGBM' in i else i for i in ensemble_methods]
+        ensemble_methods = [i.replace(
+            'FPR', 'fpr').replace('FNR', 'fnr') if (
+            'FairGBM' in i) else i for i in ensemble_methods]
         idx = [0, 1, 2, 3, 4, 6]
         ensemble_methods = [ensemble_methods[i] for i in idx]
 
@@ -259,7 +260,7 @@ class PlotE_Measures(PlotD_Measures):
             test_J = new_data[:, :, attr_J, :].astype(DTY_FLT)
         # test_*.shape: (1|2,7,56,5)= (#sen_att,#name_ens,#eval',#iter)
 
-        num_s, num_e, num_v, _ = new_data.shape
+        num_s, num_e, _, _ = new_data.shape  # num_v=.shape[2]
         test_A = np.concatenate([  # (7, 56, 5* 1|2)
             test_A[i] for i in range(num_s)], axis=2)
         test_A = np.concatenate([  # (56, 5* 1|2 *7)
@@ -414,7 +415,8 @@ class PlotF_Prunings(PlotD_Measures):
             range(280, 336)) + list(range(336, 339))  # three times
         new_data = self.prepare_graph(new_data)[:, idx, :]
 
-        data_name, binary, nb_cls, nb_pru, nb_iter, _ = res_all[0]
+        # data_name, binary, nb_cls, nb_pru, nb_iter, _ = res_all[0]
+        data_name, _, nb_cls, nb_pru, nb_iter, _ = res_all[0]
         sensitive_attributes = res_all[1]
         name_ens_set, name_pru_set = res_all[3], res_all[4]  # -4/-3
         domestic_key = ['{} & {}'.format(

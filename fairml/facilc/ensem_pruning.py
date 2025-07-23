@@ -1508,7 +1508,7 @@ def PEP_PEP(y, yt, nb_cls, rho):
         #   #
         if not flag1:
             # 7. P= (P-\{
-            #               \mathbf{z} \in P | 
+            #               \mathbf{z} \in P |
             #               \mathbf{s}' \succeq_s \mathbf{z}
             #    \}) \cup \{\mathbf{s}'\}.
             idx1 = []
@@ -1592,7 +1592,7 @@ def PEP_PEP_modify(y, yt, nb_cls, rho):
                 break
         if not flag1:
             idx1 = []
-            for i in range(len(P)):
+            for i, _ in enumerate(P):  # for i in range(len(P)):
                 g_z1 = _PEP_bi_objective(y, yt, P[i])
                 if _PEP_weakly_dominate(g_sp, g_z1):
                     idx1.append(i)

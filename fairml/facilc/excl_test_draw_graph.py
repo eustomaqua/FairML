@@ -145,7 +145,7 @@ def test_histchart():
     # Y = np.random.rand(nb, 4) * 5 + X  # or X.T
     X = np.random.rand(nb) * 170
     Y = np.random.rand(nb, 4) * 35 + np.reshape(-1, 1)
-    X_avg, Y_avg, Y_std, ind = _hist_calc_XY(X, Y)
+    _, Y_avg, Y_std, ind = _hist_calc_XY(X, Y)  # X_avg,
 
     # histogram_hor(X, Y, figname)
     # histogram_vrt(X, Y, figname)

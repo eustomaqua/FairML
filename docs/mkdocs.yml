@@ -48,6 +48,7 @@ theme:
     - navigation.instant.prefetch
     # - navigation.tabs
     # - header.autohide
+    - content.code.copy
   # logo: ../docs/logo.svg  # material/library, assets/logo.png
   # logo: ../docs/github-brands-solid.svg  # pagelines-brands-solid.svg
   logo: pagelines-brands-solid.svg
@@ -68,6 +69,15 @@ theme:
 #   analytics:
 #     gtag: G-ABC123
 
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
 
 plugins:
   - search
@@ -75,8 +85,10 @@ plugins:
 
 nav:
   - Project description: index.md
-  - Getting started: getting-started.md
-  - General APIs: general-api.md
-  - Documentation: ml-document.md
+  - Requirements: getting-started.md  # Getting started
+  - WP1&2 documentation: wp2-oracle.md
+  - WP3 documentation: wp3-causal.md
+#   - General APIs: general-api.md    # API Docs
+#   - Documentation: ml-document.md
 #   - Document
 #   - About

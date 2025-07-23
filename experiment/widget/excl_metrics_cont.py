@@ -19,7 +19,7 @@ def calc_PRF1_multi_lists(y, hx):
     FN_list = []
 
     for pos in vY:
-        TP, FP, FN, TN = calc_confusion(y, hx, pos)
+        TP, FP, FN, _ = calc_confusion(y, hx, pos)  # ,TN
         P, R, _ = calc_PR(TP, FP, FN)  # _:F1
 
         TP_list.append(TP)
@@ -88,7 +88,7 @@ def contingency_tab_binary(ha, hb):
             "The shapes of two individual classifiers are different.")
 
     tem = np.concatenate([ha, hb]).tolist()
-    vY, dY = judge_transform_need(tem)
+    _, dY = judge_transform_need(tem)  # vY,
     if dY > 2:
         raise AssertionError(
             "`contingency_table` works for binary classification only.")

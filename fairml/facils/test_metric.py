@@ -2,7 +2,7 @@
 
 import sklearn.metrics as metrics
 import numpy as np
-# import pdb
+import pdb
 from fairml.widget.utils_const import (
     check_equal, synthetic_dat, synthetic_clf)
 
@@ -120,8 +120,68 @@ y_non, _, _ = synthetic_set(nb_lbl, nb_spl, nb_clf)
 ht_bin = synthetic_clf(y_bin, nb_clf, err=.4)
 ht_non = synthetic_clf(y_non, nb_clf, err=.4)
 
+idx_priv = np.random.randint(2, size=nb_spl, dtype='bool')
+idx_Sjs = [idx_priv == 1, idx_priv == 0]
+A_j = np.random.randint(3, size=nb_spl, dtype='int')
+Sjs_bin = [idx_priv == 1, idx_priv != 1]
+Sjs_non = [idx_priv == 1, idx_priv == 0, idx_priv == 2]
+
 
 def test_group_fair():
+    from fairml.facils.metric_fair import (
+        # unpriv_grp_one, unpriv_grp_two, unpriv_grp_thr,
+        unpriv_group_one, unpriv_group_two, unpriv_group_thr,
+        marginalised_np_mat, unpriv_unaware, unpriv_manual,
+        calc_fair_group, StatsParity_sing,  # StatsParity_mult,
+        zero_division,  # alterGrps_sing, alterGroups_pl,
+        extGrp1_DP_sing,  # extGrp2_EO_sing, extGrp3_PQP_sing,
+        # extGrp1_DP_pl, extGrp2_EO_pl, extGrp3_PQP_pl,
+        DPext_alterSP,  # extDP_SPalter, 
+        marginalised_pd_mat, prev_unpriv_manual, prev_unpriv_unaware,
+        prev_unpriv_grp_one, prev_unpriv_grp_two, prev_unpriv_grp_thr)
+
+    def subroutine(y, hx, pos, A_j, Sjs_bin, Sjs_non):
+        vY, dY = judge_transform_need(y)
+        vY = vY[:: -1]
+        z, ht = np.array(y), np.array(hx)  # priv=Sjs_bin[0]
+        g1M, g0M = marginalised_np_mat(z, ht, pos, Sjs_non[0])
+        _, _, c1, c0 = marginalised_pd_mat(z, ht, pos, Sjs_non[0])
+
+        just_one = unpriv_group_one(g1M, g0M)
+        just_two = unpriv_group_two(g1M, g0M)
+        just_thr = unpriv_group_thr(g1M, g0M)
+        just_zero = unpriv_unaware(g1M, g0M)
+        just_four = unpriv_manual(g1M, g0M)
+        assert check_equal(just_one, prev_unpriv_grp_one(c1, c0))
+        assert check_equal(just_two, prev_unpriv_grp_two(c1, c0))
+        assert check_equal(just_thr, prev_unpriv_grp_thr(c1, c0))
+        assert check_equal(just_zero, prev_unpriv_unaware(c1, c0))
+        assert check_equal(just_four, prev_unpriv_manual(c1, c0))
+
+        assert zero_division(0., 0.) == 0.
+        assert zero_division(1., 0.) == 10
+        assert zero_division(1.5, 0.2) == 7.5
+        ans = calc_fair_group(*just_one)
+        res = StatsParity_sing(ht, Sjs_bin, pos)[0]
+        tmp_1 = extGrp1_DP_sing(z, ht, Sjs_bin, pos)[0]
+        assert check_equal(res, tmp_1[:-1])  # tmp[: -1])
+        res = StatsParity_sing(ht, Sjs_non, pos)[0]
+        tmp_2 = extGrp1_DP_sing(z, ht, Sjs_non, pos)[0]
+        assert check_equal(res, tmp_2[:-1])  # tmp[: -1])
+
+        # res = extDP_SPalter(z, ht, idx_Sjs, pos)[0]
+        tmp_1 = DPext_alterSP(z, ht, Sjs_bin, pos)[0]
+        tmp_2 = DPext_alterSP(z, ht, Sjs_non, pos)[0]
+        assert check_equal(ans, [
+            tmp_2[-1][0], tmp_1[-1][0], tmp_1[0], tmp_1[1], ])
+        # pdb.set_trace()
+    # subroutine(y_bin, ht_bin[0], 1, idx_priv)
+    # subroutine(y_non, ht_non[0], 1, idx_priv)
+    subroutine(y_bin, ht_bin[0], 1, A_j, Sjs_bin, Sjs_non)
+    return
+
+
+def test_group_prev():
     # from fairml.metrics.group_fair import (
     '''
     from fairml.facils.fairness_group import (
@@ -163,7 +223,7 @@ def test_group_fair():
         assert all([0 <= i <= 1 for i in just_zero + just_four])
         # pdb.set_trace()
 
-    idx_priv = np.random.randint(2, size=nb_spl, dtype='bool')
+    # idx_priv = np.random.randint(2, size=nb_spl, dtype='bool')
     subroutine(y_bin, 1, idx_priv)  # ht_bin[0],
     subroutine(y_non, 1, idx_priv)  # ht_non[0],
     return

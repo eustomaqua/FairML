@@ -60,12 +60,13 @@ class PlotD_Measures(GraphSetup):
         new_data = np.array(res_data)
         new_data = self.prepare_graph(new_data)[:, :, 56:, :]
 
-        data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
+        # data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
+        _, binary, nb_cls, _, nb_iter, _ = res_all[0]
         sensitive_attributes = res_all[1]
         ensemble_methods = res_all[-1]
-        ensemble_methods = [
-            i.replace('FPR', 'fpr').replace('FNR', 'fnr') 
-            if 'FairGBM' in i else i for i in ensemble_methods]
+        ensemble_methods = [i.replace(
+            'FPR', 'fpr').replace('FNR', 'fnr') if (
+            'FairGBM' in i) else i for i in ensemble_methods]
         idx = [0, 1, 2, 3, 4, 6]
         ensemble_methods = [ensemble_methods[i] for i in idx]
 
@@ -146,7 +147,7 @@ class GatherD_Measures(PlotD_Measures):
             res_data[i]))[:, :, 56:, :] for i in optional_data]
 
         alt_data = np.concatenate(new_data, axis=0)
-        num_s, num_e, num_v, _ = alt_data.shape
+        num_s, num_e, _, _ = alt_data.shape  # num_v =.shape[2]
         alt_data = np.concatenate([
             alt_data[i] for i in range(num_s)], axis=2)
         alt_data = np.concatenate([
@@ -218,7 +219,7 @@ class PlotE_Measures(GraphSetup):
             test_B = new_data[:, :, attr_B, :].astype(DTY_FLT)
             test_J = new_data[:, :, attr_J, :].astype(DTY_FLT)
 
-        num_s, num_e, num_v, _ = new_data.shape
+        num_s, num_e, _, _ = new_data.shape  # num_v =.shape[2]
         test_A = np.concatenate([
             test_A[i] for i in range(num_s)], axis=2)
         test_A = np.concatenate([
@@ -369,7 +370,7 @@ class PlotF_Prunings(GraphSetup):
         new_data = self.prepare_graph(new_data)[:, idx, :]
 
         # data_name, binary, nb_cls, nb_pru, nb_iter, _ = res_all[0]
-        data_name, _, nb_cls, nb_pru, nb_iter, _ = res_all[0]
+        data_name, _, _, nb_pru, nb_iter, _ = res_all[0]
         sensitive_attributes = res_all[1]
         name_ens_set, name_pru_set = res_all[3], res_all[4]  # -4/-3
         domestic_key = ['{} & {}'.format(
@@ -618,7 +619,7 @@ class GatherF_Prunings(PlotF_Prunings):
         for i in optional_data:
             ret_key, ret_r, ret_c, sens_attr = self.merge_sub_data(
                 res_all[i], logger=logger)
-            for si, sk in enumerate(sens_attr):
+            for _, sk in enumerate(sens_attr):  # for si,sk in
                 alt_data = new_data[i][:, ret_c[sk]]
                 alt_data = alt_data[ret_r[sk], :][:, pt_i]
                 alt_data = alt_data.astype(DTY_FLT)
@@ -718,8 +719,8 @@ class Renew_GatherF_Prunings(GatherF_Prunings):
         #       new_data, res_all, optional_data, i, figname, logger=logger)
         _, Ys_model, Ys_acc = self.renew_retrieve_dat(
             new_data, res_all, optional_data, 0)
-        _, _, Ys_f1s = self.renew_retrieve_dat(
-            new_data, res_all, optional_data, 3)
+        # _, _, Ys_f1s = self.renew_retrieve_dat(
+        #     new_data, res_all, optional_data, 3)
         _, _, Ys_DP = self.renew_retrieve_dat(
             new_data, res_all, optional_data, 50)
         _, _, Ys_EO = self.renew_retrieve_dat(
@@ -744,7 +745,7 @@ class Renew_GatherF_Prunings(GatherF_Prunings):
         for i in optional_data:
             ret_key, ret_r, ret_c, sen_att = self.merge_sub_data(
                 res_all[i], logger=logger)
-            for si, sk in enumerate(sen_att):
+            for _, sk in enumerate(sen_att):  # for si,sk in
                 alt_data = new_data[i][:, ret_c[sk]]
                 alt_data = alt_data[ret_r[sk], :][:, pt_i]
                 alt_data = alt_data.astype(DTY_FLT)[reorder, :]

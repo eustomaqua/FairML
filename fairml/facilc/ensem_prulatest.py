@@ -515,7 +515,7 @@ def _MRMREP_mutual_information_of_whole_subset(y, yt, S):
     #     I_Sk_L = [EntropyI(yt[j], y) for j in S]
     S = _judge_double_check_pruned_index(S)
     I_Sk_L = [EntropyI(yt[j], y) for j in S]
-    return np.mean(I_Sk_L)
+    return np.mean(I_Sk_L)  # return nan if S==\emptyset
 
 
 # Just using mutual information to measure classifier ability is
@@ -1097,7 +1097,7 @@ def Disc_ensemble_pruning(y, yt, nb_cls, nb_pru):
     #   #
     # Disc to choose
     y, yt = np.array(y), np.array(yt)  # DTY_FLT
-    for u in range(2, nb_pru + 1):
+    for _ in range(2, nb_pru + 1):  # for u in
         S_u = np.where(P)[0]  # pruned sub- # selected individuals
         L_u = np.where(np.logical_not(P))[0]  # left individuals
         term_left, term_right = [], []

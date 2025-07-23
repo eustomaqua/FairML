@@ -240,7 +240,7 @@ class PartD_ImprovedPruning(EnsembleSetup):
                           name_pru, positive_label,
                           X=None, indices=None):
         since = time.time()
-        ys_insp, P, seq = self.pruning_baseline(
+        ys_insp, P, _ = self.pruning_baseline(  # ,seq
             y_trn, y_insp, name_pru, self._epsilon, self._rho,
             self._alpha, self._L_steps, self._R_steps, X, indices)
         tim_elapsed = time.time() - since
@@ -843,7 +843,7 @@ class PartH_ImprovedPruning(PartG_ImprovedPruning):
                           name_pru, positive_label,
                           X=None, indices=None):
         since = time.time()
-        _, P, seq = self.pruning_baseline(
+        _, _, seq = self.pruning_baseline(  # _,P,seq=
             y_trn, y_insp, name_pru, self._epsilon, self._rho,
             self._alpha, self._L_steps, self._R_steps, X, indices)
         tim_elapsed = time.time() - since

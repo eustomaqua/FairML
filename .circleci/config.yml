@@ -36,6 +36,7 @@ jobs:
             bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.xml
             # bash <(curl -Ls https://coverage.codacy.com/get.sh)
             # rm chart*.pdf && rm cheers*.pdf && rm fairgbm*.pdf
+            # python -m pytest fairml/facils/excl_test*
 
       - persist_to_workspace:
           root: ~/project

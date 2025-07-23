@@ -21,12 +21,15 @@ from sklearn.ensemble import (
     # HistGradientBoostingClassifier,
     VotingClassifier, StackingClassifier)
 
-from lightgbm import LGBMClassifier
-from fairgbm import FairGBMClassifier
+import lightgbm
+import fairgbm
+# from lightgbm import LGBMClassifier
+# from fairgbm import FairGBMClassifier
 import sklearn
 skl_ver = sklearn.__version__
-if skl_ver.startswith('1.3.0'):
-    from fairml.widget.pkgs_AdaFair_py36 import AdaFair
+if skl_ver.startswith('1.3'):  # '1.3.0', '1.3.2'
+    # from fairml.widget.pkgs_AdaFair_py36 import AdaFair
+    from experiment.widget.pkgs_AdaFair_py36 import AdaFair
 elif skl_ver.startswith('1.5.1'):
     pass
 del skl_ver
@@ -66,6 +69,16 @@ CONCISE_INDIVIDUALS = {
 # -------------------------------------
 
 
+FAIR_TEMPORARY = {
+    'lightgbm': lightgbm.LGBMClassifier(),
+    'fairgbm': fairgbm.FairGBMClassifier(),
+    'AdaFair': AdaFair,
+}
+
+LGBMClassifier = lightgbm.LGBMClassifier
+FairGBMClassifier = fairgbm.FairGBMClassifier
+
+
 FAIR_INDIVIDUALS = {
     'DT': tree.DecisionTreeClassifier(),
     'NB': naive_bayes.GaussianNB(),
@@ -90,14 +103,14 @@ FAIR_INDIVIDUALS = {
 }
 
 TREE_ENSEMBLES = {
-    'RF': RandomForestClassifier,
-    'ET': ExtraTreesClassifier,
-    'GradBoost': GradientBoostingClassifier,
+    'RF': RandomForestClassifier(),
+    'ET': ExtraTreesClassifier(),
+    'GradBoost': GradientBoostingClassifier(),
 }
 
 HOMO_ENSEMBLES = {
-    'Bagging': BaggingClassifier,
-    'AdaBoost': AdaBoostClassifier,
+    'Bagging': BaggingClassifier(),
+    'AdaBoost': AdaBoostClassifier(),
 }  # homogeneous
 
 HETERO_ENSEMBLES = {

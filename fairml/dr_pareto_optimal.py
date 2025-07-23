@@ -407,7 +407,7 @@ def Pareto_Optimal_EPAF_Pruning(y, yt, yq, wgt, nb_pru, lam, dist=1):
     cal_H = _pareto_sub_moveout_v4(y, zt, zq, wgt, cal_R)
     if not cal_H:
         return np.where(bf_h).tolist()
-    idx_v, sub_obj = _find_argmin_h(y, zt, zq, wgt, cal_H, lam)
+    idx_v, _ = _find_argmin_h(y, zt, zq, wgt, cal_H, lam)  # ,sub_obj
     H = cal_H[idx_v]
     return np.where(H)[0].tolist()
 
@@ -468,7 +468,7 @@ def Centralised_EPAF_Pruning(y, yt, yq, wgt, nb_pru, lam):
 
     yt = np.array(yt)
     yq = np.array(yq)
-    for i in range(1, nb_pru):
+    for _ in range(1, nb_pru):  # for i in
         idx = _arg_min_p(y, yt, yq, wgt, H, lam)
 
         if idx > -1:

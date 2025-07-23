@@ -33,6 +33,8 @@ from fairml.facils.draw_hypos import (
 
 # mpl.use('Agg')  # set the 'backend'
 plt.rcParams['font.family'] = 'Times New Roman'
+plt.rcParams['font.family'] = 'Helvetica'  # 'Arial'
+
 # plt.rc('text', usetex=True)
 # plt.rcParams['font.sans-serif'] = ['SimHei']  # show chinese lbl
 plt.rcParams['axes.unicode_minus'] = False  # show minus notations
@@ -288,7 +290,7 @@ def scatter_id_chart(X, Y, figname, figsize='M-WS',
 
     ax = fig.gca()
     x_min, x_max = ax.get_xlim()
-    y_min, y_max = ax.get_ylim()
+    _, y_max = ax.get_ylim()  # y_min,
     if y_max - x_max >= abs(diff):
         # ax.set_xlim([x_min, x_max + 0.05])
         if diff > 0:
@@ -1065,7 +1067,7 @@ def twinx_hist_chart(Y1_avg, Y1_std, Y2_avg, Y2_std,
                      **_barh_kwargs)
         ps.append(pt)
 
-    ymin, ymax = ax1.get_ylim()
+    ymax = ax1.get_ylim()[1]  # ymin, ymax = ax1.get_ylim()
     ax1.set_ylim(0, ymax)
     # ymin, ymax = ax2.get_ylim()
     # ax2.set_ylim(0, ymax)
@@ -1371,7 +1373,7 @@ def histogram_vrt(ind, X_avg, Y_avg, Y_std,
     if remarks is not None:
         plt.legend(loc='upper right', frameon=False, labelspacing=.05)
 
-    x_min, x_max = ax.get_xlim()
+    x_max = ax.get_xlim()[1]  # x_min, x_max = ax.get_xlim()
     ax.set_xlim(0, x_max)
     ax.set_xlabel(annotX)
     ax.set_yticks(ind)

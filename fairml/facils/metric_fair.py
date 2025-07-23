@@ -7,6 +7,7 @@
 
 import numpy as np
 import numba
+# import pdb
 from fairml.widget.utils_timer import fantasy_timer
 from fairml.widget.utils_const import (
     check_zero, judge_transform_need)  # DTY_INT,
@@ -75,8 +76,8 @@ def marginalised_confusion(Cij, loc=1):
 
 
 def marginalised_pd_mat(y, hx, pos=1, idx_priv=tuple()):
-    if not isinstance(idx_priv, list):  # list()
-        idx_priv = list(idx_priv)
+    if not isinstance(idx_priv, (list, np.ndarray)):
+        idx_priv = np.array(idx_priv)  # list()
     # y : not pd.DataFrame, is pd.core.series.Series
     # hx: not pd.DataFrame, is np.ndarray
     # tmp = y.to_numpy().tolist() + hx.tolist()
@@ -258,8 +259,8 @@ C_{ij}
 
 def marginalised_np_mat(y, y_hat, pos_label=1,
                         priv_idx=tuple()):
-    if not isinstance(priv_idx, list):
-        priv_idx = list(priv_idx)  # default:list()
+    if not isinstance(priv_idx, (list, np.ndarray)):
+        priv_idx = np.array(priv_idx)  # default:list()
     if isinstance(y, list) or isinstance(y_hat, list):
         y, y_hat = np.array(y), np.array(y_hat)
 
@@ -310,7 +311,7 @@ def marginalised_np_gen(y, y_hat, A, priv_val=1,
 # 人口统计均等
 # aka. (TP+FP)/N = P[h(x)=1]
 
-def unpriv_grp_one(g1_Cm, g0_Cm):
+def unpriv_group_one(g1_Cm, g0_Cm):
     n1 = check_zero(sum(g1_Cm))
     n0 = check_zero(sum(g0_Cm))
     g1 = (g1_Cm[0] + g1_Cm[1]) / n1
@@ -323,7 +324,7 @@ def unpriv_grp_one(g1_Cm, g0_Cm):
 # aka. TP/(TP+FN) = recall
 #                 = P[h(x)=1, y=1 | y=1]
 
-def unpriv_grp_two(g1_Cm, g0_Cm):
+def unpriv_group_two(g1_Cm, g0_Cm):
     t1 = g1_Cm[0] + g1_Cm[2]
     t0 = g0_Cm[0] + g0_Cm[2]
     g1 = g1_Cm[0] / check_zero(t1)
@@ -337,7 +338,7 @@ def unpriv_grp_two(g1_Cm, g0_Cm):
 # aka. TP/(TP+FP) = precision
 #                 = P[h(x)=1, y=1 | h(x)=1]
 
-def unpriv_grp_thr(g1_Cm, g0_Cm):
+def unpriv_group_thr(g1_Cm, g0_Cm):
     t1 = g1_Cm[0] + g1_Cm[1]
     t0 = g0_Cm[0] + g0_Cm[1]
     g1 = g1_Cm[0] / check_zero(t1)
@@ -378,9 +379,24 @@ def unpriv_manual(g1_Cm, g0_Cm):
 
 
 @fantasy_timer
+def DPext_alterSP(y, hx, idx_Sjs, pos_label=1):
+    item = [np.mean(hx[idx] == pos_label) for idx in idx_Sjs]
+    item = np.nan_to_num(item).tolist()  # Don't use list()
+    n_aj = len(idx_Sjs)
+    intermediate = []
+    for i in range(n_aj - 1):
+        for j in range(i + 1, n_aj):
+            intermediate.append(abs(item[i] - item[j]))
+    # pdb.set_trace()
+    return max(intermediate), float(
+        np.mean(intermediate)), intermediate
+
+
+@fantasy_timer
 def StatsParity_sing(hx, idx_Sjs, pos=1):
     total = np.mean(hx == pos)
     item = [np.mean(hx[idx] == pos) for idx in idx_Sjs]
+    item = np.nan_to_num(item).tolist()  # for robustness
     elements = [float(np.abs(i - total)) for i in item]
     n_ai = len(idx_Sjs)
     return max(elements), sum(elements) / n_ai

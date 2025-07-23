@@ -2,6 +2,19 @@
 # Author: Yijun
 
 
+import itertools
+# import pandas as pd
+import numpy as np
+# from scipy import stats
+# from sklearn.metrics import confusion_matrix
+
+# import seaborn as sns
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+# from matplotlib import cm as mpl_cm
+# from matplotlib.collections import LineCollection
+
+
 # from fairml.facils.data_entropy import prob, jointProb
 from fairml.facils.data_distance import (
     Wasserstein_dis,
@@ -17,18 +30,6 @@ from fairml.facilc.draw_graph import (  # .draw.utils_graph
     _setup_figsize, _setup_figshow, _sns_line_err_bars,
     _setup_locater, _style_set_fig, _style_set_axis)
 
-
-import itertools
-# import pandas as pd
-import numpy as np
-# from scipy import stats
-# from sklearn.metrics import confusion_matrix
-
-# import seaborn as sns
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-# from matplotlib import cm as mpl_cm
-# from matplotlib.collections import LineCollection
 
 mpl.use('Agg')  # set the 'backend'
 # plt.switch_backend('agg')
@@ -467,7 +468,7 @@ def lines_with_std_3d(X, Ys, figname, figsize='L-WS',
     #     Ys.shape = (nb_alg, ?, nb_iter=5)
     #     baseline.shape = (nb_iter=5,)
     palette = plt.get_cmap("Set1")
-    font = {"family": "Times New Roman"}
+    font = {"family": plt.rcParams['font.family']}  # "Times New Roman"}
     # iters = X.copy()
     fig, axs = plt.subplots(figsize=_setup_config['L-NT'])
 
@@ -512,7 +513,7 @@ def lines_with_std_2d(X, Ys, figname, figsize='L-WS',
     # NB. X.shape = (?,)
     #     Ys.shape = (nb_alg, ?)
     palette = plt.get_cmap("Set1")
-    font = {"family": "Times New Roman"}
+    font = {"family": plt.rcParams['font.family']}  # "Times New Roman"}
     fig, axs = plt.subplots(figsize=_setup_config['L-NT'])
 
     for i, annot in enumerate(annotY):
@@ -586,7 +587,7 @@ def discrete_bar_comparison(IndexSlices, SubIndices,
         annotY = "Probability"
     fc_p, fc_q = 'r', 'b'
 
-    font = {"family": "Times New Roman"}
+    font = {"family": plt.rcParams['font.family']}  # "Times New Roman"}
     dist, dist_arr = _discrete_illustrate(IdxOrigin, IdxPruned)
     fig, axes = plt.subplots(1, 2, sharey=True,
                              # sharex=True,

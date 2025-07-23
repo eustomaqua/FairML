@@ -95,7 +95,7 @@ def test_KL_divergence():
         assert _KLD_vectors(tr_ha, tr_hb) != _KLD_vectors(tr_hb, tr_ha)
         assert _KLD_vectors(bi_ha, bi_hb) != _KLD_vectors(bi_hb, bi_ha)
     px, py = prob(mu_ha)[0], prob(mu_hb)[0]
-    assert (_KLD_vectors(mu_ha, mu_hb), _KLD_vectors(mu_hb, mu_ha))
+    # assert (_KLD_vectors(mu_ha, mu_hb), _KLD_vectors(mu_hb, mu_ha))
 
     tr_ans = _JU_set_of_vectors(tr_yt)
     bi_ans = _JU_set_of_vectors(bi_yt)
@@ -464,7 +464,7 @@ def test_drep_multi_modify():
     assert id(tr_seq) != id(bi_seq)
 
     bi_yo, bi_P, bi_seq = drep_prune(bi_y, bi_yt, nb_cls, rho)
-    mu_yo, mu_P, mu_seq = drep_prune(mu_y, mu_yt, nb_cls, rho)
+    _, mu_P, mu_seq = drep_prune(mu_y, mu_yt, nb_cls, rho)  # mu_yo,
     assert sum(tr_P) == len(tr_seq) == sum(bi_P) == len(bi_seq)
     assert 1 <= len(tr_seq) == len(bi_seq) < nb_cls
     assert 1 <= sum(mu_P) == len(mu_seq) < nb_cls
@@ -559,7 +559,7 @@ def test_pep_OEP_SEP():
     assert id(tr_seq) != id(bi_seq)
 
     bi_yo, bi_P, bi_seq = PEP_SEP(bi_y, bi_yt, nb_cls, rho)
-    mu_yo, mu_P, mu_seq = PEP_SEP(mu_y, mu_yt, nb_cls, rho)
+    _, mu_P, mu_seq = PEP_SEP(mu_y, mu_yt, nb_cls, rho)  # mu_yo,
     assert 1 <= sum(tr_P) == len(tr_seq) < nb_cls
     assert 1 <= sum(bi_P) == len(bi_seq) < nb_cls
     assert 1 <= sum(mu_P) == len(mu_seq) < nb_cls
@@ -638,7 +638,7 @@ def test_pep_VDS_PEP():
     assert id(tr_seq) != id(bi_seq)
 
     bi_yo, bi_P, bi_seq = PEP_PEP(bi_y, bi_yt, nb_cls, rho)
-    mu_yo, mu_P, mu_seq = PEP_PEP(mu_y, mu_yt, nb_cls, rho)
+    _, mu_P, mu_seq = PEP_PEP(mu_y, mu_yt, nb_cls, rho)  # mu_yo,
     assert 1 <= sum(tr_P) == len(tr_seq) < nb_cls
     assert 1 <= sum(bi_P) == len(bi_seq) < nb_cls
     assert 1 <= sum(mu_P) == len(mu_seq) < nb_cls
@@ -684,7 +684,7 @@ def test_pep_refine():
     rho = 0.3
     tr_yo, tr_P, tr_seq = pep_pep_integrate(tr_y, tr_yt, nb_cls, rho)
     bi_yo, bi_P, bi_seq = pep_pep_integrate(bi_y, bi_yt, nb_cls, rho)
-    mu_yo, mu_P, mu_seq = pep_pep_integrate(mu_y, mu_yt, nb_cls, rho)
+    _, mu_P, mu_seq = pep_pep_integrate(mu_y, mu_yt, nb_cls, rho)  # mu_yo,
     assert id(tr_yo) != id(bi_yo)
     assert id(tr_P) != id(bi_P)
     assert id(tr_seq) != id(bi_seq)
@@ -702,7 +702,7 @@ def test_pep_PEP_modify():
 
     tr_yo, tr_P, tr_seq = PEP_PEP_modify(tr_y, tr_yt, nb_cls, rho)
     bi_yo, bi_P, bi_seq = PEP_PEP_modify(bi_y, bi_yt, nb_cls, rho)
-    mu_yo, mu_P, mu_seq = PEP_PEP_modify(mu_y, mu_yt, nb_cls, rho)
+    _, mu_P, mu_seq = PEP_PEP_modify(mu_y, mu_yt, nb_cls, rho)  # mu_yo,
     assert id(tr_yo) != id(bi_yo)
     assert id(tr_P) != id(bi_P)
     assert id(tr_seq) != id(bi_seq)
@@ -712,7 +712,7 @@ def test_pep_PEP_modify():
 
     tr_yo, tr_P, tr_seq = pep_pep_re_modify(tr_y, tr_yt, nb_cls, rho)
     bi_yo, bi_P, bi_seq = pep_pep_re_modify(bi_y, bi_yt, nb_cls, rho)
-    mu_yo, mu_P, mu_seq = pep_pep_re_modify(mu_y, mu_yt, nb_cls, rho)
+    _, mu_P, mu_seq = pep_pep_re_modify(mu_y, mu_yt, nb_cls, rho)  # mu_yo,
     assert id(tr_yo) != id(bi_yo)
     assert id(tr_P) != id(bi_P)
     assert id(tr_seq) != id(bi_seq)
@@ -756,8 +756,8 @@ def test_contrastive():
 
         bi_yo, bi_P, bi_seq, bi_fg = contrastive_pruning_methods(
             name_pru, nb_cls, nb_pru, bi_y, bi_yt, epsilon, rho)
-        mu_yo, mu_P, mu_seq, mu_fg = contrastive_pruning_methods(
-            name_pru, nb_cls, nb_pru, mu_y, mu_yt, epsilon, rho)
+        _, mu_P, mu_seq, mu_fg = contrastive_pruning_methods(
+            name_pru, nb_cls, nb_pru, mu_y, mu_yt, epsilon, rho)  # mu_yo,
         assert 1 <= sum(tr_P) == len(tr_seq) < nb_cls
         assert 1 <= sum(bi_P) == len(bi_seq) < nb_cls
         assert 1 <= sum(mu_P) == len(mu_seq) < nb_cls
@@ -785,14 +785,14 @@ def test_compared_utus():
 
     y_trn, y_insp, coef = synthetic_set(nb_labl, nb_inst, nb_cls)
     y_val, y_cast, _ = synthetic_set(nb_labl, nb_inst, nb_cls)
-    y_tst, y_pred, _ = synthetic_set(nb_labl, nb_inst, nb_cls)
+    _, y_pred, _ = synthetic_set(nb_labl, nb_inst, nb_cls)  # y_tst,
     clfs = [tree.DecisionTreeClassifier() for _ in range(nb_cls)]
 
     for name_pru in AVAILABLE_NAME_PRUNE:
-        opt_coef, opt_clfs, ys_insp, ys_cast, ys_pred, ut, us, P, \
-            seq, flag = contrastive_pruning_according_validation(
-                name_pru, nb_cls, nb_pru, y_val, y_cast, epsilon, rho,
-                y_insp, y_pred, coef, clfs)
+        (opt_coef, opt_clfs, _, ys_cast, ys_pred, ut, us,  # ys_insp,
+         P, seq, flag) = contrastive_pruning_according_validation(
+            name_pru, nb_cls, nb_pru, y_val, y_cast, epsilon, rho,
+            y_insp, y_pred, coef, clfs)
         assert len(opt_coef) == len(opt_clfs) == sum(P) == len(seq)
         assert 1 <= len(seq) < nb_cls
 

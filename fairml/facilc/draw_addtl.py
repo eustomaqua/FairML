@@ -455,12 +455,14 @@ def _marginal_distrib_step3(grid, dfs_pl, columns, col_X, col_Y,
         ax3.scatter(x=df[col_X], y=df[col_Y], s=_curr_sz[i], alpha=1,
                     marker=_curr_mark[i], color=mycolor[i],
                     edgecolors='w', linewidths=.5, label=columns[i])
-    _curr_font = 'Times New Roman'  # 'SimSun'
+    # _curr_font = 'Times New Roman'  # 'SimSun'
+    _curr_font = plt.rcParams['font.family']
     legend_font = {'family': _curr_font, 'size': 8}
     _curr_nc = 1 if len(columns) <= 4 else 2
 
     loc_kws = {'loc': (.98, 1.01), 'frameon': False, 'ncol': _curr_nc
-               } if loc == None else {'loc': loc, 'frameon': True}
+               # } if loc == None else {'loc': loc, 'frameon': True}
+               } if loc is None else {'loc': loc, 'frameon': True}
     ax3.legend(
         prop=legend_font, labelspacing=.35,
         handleheight=1.2, handletextpad=0,
@@ -652,7 +654,7 @@ def _marginal_distr_step4(grid, dfs_pl, columns, col_X, col_Y,
             kws = {'color': mycolor[i], 'lw': .87, 'alpha': 1}
             _sns_line_err_bars(ax4, kws, tX, tY)
 
-    _curr_ft = 'Times New Roman'
+    _curr_ft = plt.rcParams['font.family']  # 'Times New Roman'
     legend_font = {'family': _curr_ft, 'size': 7}
     _curr_lc = (.98, 1.01) if distrib else PLT_LOCATION
     _curr_nc = 1 if len(columns) <= curr_legend_nb_split else 2
@@ -809,7 +811,7 @@ def single_line_reg_with_distr(X, Y, annots=('X', 'Y', 'Z'),
     ax4.spines[:].set_linewidth(.4)
     ax4.tick_params(width=.6, length=2.5, labelsize=8)
     # ax4.grid(linewidth=.6, ls='-.', alpha=.4)
-    _curr_ft = 'Times New Roman'
+    _curr_ft = plt.rcParams['font.family']  # 'Times New Roman'
     legend_font = {'family': _curr_ft, 'size': 8}
 
     R = np.corrcoef(X, Y)[1, 0]
@@ -1095,7 +1097,7 @@ def multi_lin_reg_with_distr(Xs, Ys, Zs, annots=('X', 'Y', 'Z'),
     ax4 = plt.subplot(grid[1: 6, 0: 5])
     ax4.spines[:].set_linewidth(.4)
     ax4.tick_params(width=.6, length=2.5, labelsize=8)
-    _curr_ft = 'Times New Roman'
+    _curr_ft = plt.rcParams['font.family']  # 'Times New Roman'
     legend_font = {'family': _curr_ft, 'size': 8}
 
     annotZ = r'$\hat{\mathbf{D}}_\cdot=\mathbf{D}_\cdot$'
@@ -1150,7 +1152,7 @@ def multi_lin_reg_without_distr(X, Ys, Zs, annots=('X', 'Y', 'Z'),
     ax4 = plt.subplot(grid[1: 6, 0: 5])
     ax4.spines[:].set_linewidth(.4)
     ax4.tick_params(width=.6, length=2.5, labelsize=8)
-    _curr_ft = 'Times New Roman'
+    _curr_ft = plt.rcParams['font.family']  # 'Times New Roman'
     legend_font = {'family': _curr_ft, 'size': 8}
 
     myclr = _pl_myclr
@@ -1277,7 +1279,7 @@ def hyper_params_lin_reg(X, Ys, tag_Ys, picked_keys,
                       'loc': 'upper right'}  # 'loc': 'best'}
     elif snspec in ['sty4']:
         _curr_fram = {'loc': 'best', 'frameon': True, 'framealpha': .5}
-    _curr_ft = 'Times New Roman'
+    _curr_ft = plt.rcParams['font.family']  # 'Times New Roman'
     legend_font = {'family': _curr_ft, 'size': 8}
     ax4.legend(prop=legend_font, labelspacing=.35, **_curr_fram)
     if sci_format_y:

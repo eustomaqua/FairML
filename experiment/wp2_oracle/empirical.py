@@ -879,8 +879,8 @@ class PartE_ImprovedFairness(EnsembleSetup):
         ptb_priv[i]   : np.ndarray of boolean, shape=(nb_y,)
         lam           : scalar
         """
-        g1_Cij, g0_Cij, gones_Cm, gzero_Cm = \
-            marginalised_pd_mat(y, hx, pos_val, idx_priv)
+        _, _, gones_Cm, gzero_Cm = marginalised_pd_mat(
+            y, hx, pos_val, idx_priv)  # g1_Cij, g0_Cij,
         cmp_fair = []
         cmp_fair.extend(unpriv_unaware(gones_Cm, gzero_Cm))
         cmp_fair.extend(unpriv_group_one(gones_Cm, gzero_Cm))

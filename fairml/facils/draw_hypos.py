@@ -78,7 +78,7 @@ def binomial_test(err, m, epsilon, alpha=.05):
     # H0: <= epsilon_0
     # m: number of instances in the test set
 
-    var_epsilon = max([err])  # not `max(errs)`
+    # var_epsilon = max([err])  # not `max(errs)`
 
     tau_bin = 0.0
     start = math.ceil(epsilon * m + 1)
@@ -142,7 +142,7 @@ def paired_t_tests(valA, valB, k, alpha=.05):
 
     delta = [A - B for A, B in zip(valA, valB)]
 
-    mu, sig2, sigma = _avg_and_stdev(delta, k)
+    mu, _, sigma = _avg_and_stdev(delta, k)  # ,sig2,
     sigma = check_zero(sigma)
 
     tau_t = math.sqrt(k) * mu
