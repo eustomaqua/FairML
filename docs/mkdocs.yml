@@ -18,17 +18,18 @@ theme:
   palette:
     - media: "(prefers-color-scheme)"
       # scheme: default
-      # primary: indigo # teal, light blue
+      # primary: indigo  # teal, light blue
       # accent: indigo
       toggle:
         icon: material/link
         name: Switch to light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: indigo
+      primary: teal  # indigo
       accent: indigo
       toggle:
         icon: material/toggle-switch
+        # icon: material/eye  # weather-sunny, brightness-7
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
@@ -36,10 +37,11 @@ theme:
       accent: indigo
       toggle:
         icon: material/toggle-switch-off
+        # icon: material/eye-outline  # weather-night, brightness-4
         name: Switch to system preference
   font:
-    text: Poppins Medium  # Georgia, Poppins, Roboto, Verdana
-    code: Roboto Mono
+    text: Helvetica  # Georgia, Poppins Medium, Roboto, Verdana
+    code: Arial  # Poppins, Roboto Mono, Helvetica
   features:
     - search.suggest
     - search.highlight
@@ -69,14 +71,24 @@ theme:
 #   analytics:
 #     gtag: G-ABC123
 
+extra_javascript:
+  - 'javascripts/mathjax.js'
+  - 'javascripts/MathJax_sing_file_main.js'
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+  # - 'javascripts/MathJax-2.7.5/MathJax.js'
+  # - 'javascripts/MathJax-2.7.5/extensions/MathMenu.js'
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
+  # - pymdownx.arithmatex:
+  #   generic: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+  # - codehilite(linenums=true)    # 显示行号
+  # - codehilite(guess_lang=true)  # 开启猜测，若不指定语言则自动高亮
 
 
 plugins:
@@ -87,7 +99,7 @@ nav:
   - Project description: index.md
   - Requirements: getting-started.md  # Getting started
   - WP1&2 examples: wp2-oracle.md
-  - WP3 documentation: wp3-causal.md
+  - WP3 examples: wp3-causal.md
 #   - General APIs: general-api.md    # API Docs
 #   - Documentation: ml-document.md
 #   - Document

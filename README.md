@@ -27,3 +27,17 @@ This research is funded by the European Union (MSCA, FairML, project no. 1011067
 
 Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or the European Research Executive Agency. Neither the European Union nor the granting authority can be held responsible for them.
 -->
+
+<!--
+https://mkdoc-material.llango.com/setup/changing-the-colors/
+https://squidfunk.github.io/mkdocs-material/reference/math/
+https://stackoverflow.com/questions/52624102/local-mathjax-with-mkdocs?rq=2
+https://yangzhang.site/Note/mkdocs/about_math/
+https://blog.csdn.net/ZHAOJUNWEI08/article/details/136300485
+https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/#custom-colors
+https://squidfunk.github.io/mkdocs-material/setup/adding-a-git-repository/
+https://one-pig1.github.io/mkdocs/mkdocs/syntax/highlight_code/
+https://blog.csdn.net/m0_63203517/article/details/131946304
+https://cncfstack.com/p/material-for-mkdocs/practices/zh/setup/changing-the-fonts/
+
+-->

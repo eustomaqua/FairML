@@ -1549,7 +1549,7 @@ def PEP_PEP(y, yt, nb_cls, rho):
                 del g_z3, z3
                 if not flag3:
                     # 11. P=(P- \{
-                    #               \mathbf{z} \in P | 
+                    #               \mathbf{z} \in P |
                     #               \mathbf{q} \succeq_g \mathbf{z}
                     #     \}) \cup \{\mathbf{q}\}.
                     idx3 = []
@@ -1623,7 +1623,8 @@ def PEP_PEP_modify(y, yt, nb_cls, rho):
                         break
                 if not flag3:
                     idx3 = []
-                    for j in range(len(P)):
+                    # for j in range(len(P)):
+                    for j, _ in enumerate(P):
                         g_z3 = _PEP_bi_objective(y, yt, P[j])
                         if _PEP_weakly_dominate(g_q, g_z3):
                             idx3.append(j)

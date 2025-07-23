@@ -174,7 +174,7 @@ def _get_tmp_document(name_ens, nb_cls):
 
 
 # -----------------------
-# Synthetic data
+# Synthetic data (simulator.py)
 #
 #   nb_lbl: number of labels/classes
 #   nb_spl: number of instances

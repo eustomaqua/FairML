@@ -1,6 +1,5 @@
 # **FairML** documentation
 
-
 Welcome to the **FairML**'s documentation.
 
 ***FairML** (Theory of Fair Machine Learning)* is a project funded by the European Union, to support Yijun's Marie Skłodowska-Curie Postdoctoral Fellowship from Aug 2024 to Jul 2026. The project information can be found [here](https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/how-to-participate/org-details/999999999/project/101106768/program/43108390/details) and on the [CORDIS](https://cordis.europa.eu/project/id/101106768) website.
@@ -20,4 +19,3 @@ This research is funded by the European Union (MSCA, FairML, project no. 1011067
 <!--
 This is an official released library for the project [FairML](https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/how-to-participate/org-details/999999999/project/101106768/program/43108390/details>), funded by the European Union.
 -->
-

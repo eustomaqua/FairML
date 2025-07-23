@@ -6,6 +6,7 @@
 
 import numpy as np
 # import numba
+import pdb
 
 
 # =====================================
@@ -280,6 +281,71 @@ def ED_Erho_I_loss(yt, y, wgt):
 #
 
 
+def perturb_numpy_ver(X, sen_att, priv_val, ratio=.5):
+    """ params
+    X       : a np.ndarray
+    sen_att : list, column index of sensitive attribute(s)
+    priv_val: list, privileged value for each sen-att
+    """
+    unpriv_dict = [list(set(X[:, sa])) for sa in sen_att]
+    for sa_list, pv in zip(unpriv_dict, priv_val):
+        if pv in sa_list:
+            sa_list.remove(pv)
+
+    X_qtb = X.copy()
+    num, dim = len(X_qtb), len(sen_att)
+
+    for i in range(num):
+        prng = np.random.rand(dim)
+        prng = prng <= ratio
+
+        for j, sa, pv, un in zip(range(
+                dim), sen_att, priv_val, unpriv_dict):
+            if not prng[j]:
+                continue
+
+            if X_qtb[i, sa] != pv:
+                X_qtb[i, sa] = pv
+            else:
+                X_qtb[i, sa] = np.random.choice(un) 
+
+    return X_qtb  # np.ndarray
+
+
+def perturb_pandas_ver(X, sen_att, priv_val, ratio=.5):
+    """ params
+    X       : a pd.DataFrame
+    sen_att : list, column name(s) of sensitive attribute(s)
+    priv_val: list, privileged value for each sen-att
+    """
+    unpriv_dict = [X[sa].unique().tolist() for sa in sen_att]
+    for sa_list, pv in zip(unpriv_dict, priv_val):
+        if pv in sa_list:
+            sa_list.remove(pv)
+
+    X_qtb = X.copy()
+    num, dim = len(X_qtb), len(sen_att)
+    if dim > 1:
+        new_attr_name = '-'.join(sen_att)
+
+    for i, ti in enumerate(X.index):
+        prng = np.random.rand(dim)
+        prng = prng <= ratio
+
+        for j, sa, pv, un in zip(range(
+                dim), sen_att, priv_val, unpriv_dict):
+            if not prng[j]:
+                continue
+
+            if X_qtb.iloc[i][sa] != pv:
+                X_qtb.loc[ti, sa] = pv
+            else:
+                X_qtb.loc[ti, sa] = np.random.choice(un)
+
+    return X_qtb  # pd.DataFrame
+
+
+'''
 def disturb_slightly(X, sen=None, ratio=.4):
     if (not sen) or (not isinstance(sen, list)):
         return X
@@ -303,6 +369,7 @@ def disturb_predicts(X, sen, clf, ratio=.4):
     yt = clf.predict(X).tolist()
     yp = clf.predict(Xp).tolist()
     return yt, yp
+'''
 
 
 # -------------------------------------

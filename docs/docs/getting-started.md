@@ -1,50 +1,57 @@
 # Set up the executing environment
 
-
 We developed [FairML](https://github.com/eustomaqua/FairML) with `Python 3.8` and released the code to help you reproduce our work. Note that the experimental parts must be run on the `Ubuntu` operating system due to FairGBM (one baseline method that we used for comparison).
 
 
 ## Configuration
 
-### Executing via Docker
+### Initialization via Docker
 
+*(1) design an image using the `Dockerfile` file*
 ```shell
-$ # docker --version
-$ # docker pull continuumio/miniconda3
+# docker --version
+# docker pull continuumio/miniconda3
 
-$ cd ~/GitH*/FairML
-$ # touch Dockerfile
-$ # vim Dockerfile             # i  # Esc :wq
-$ docker build -t fairgbm .    # <image-name>
-$ docker images                # docker images -f dangling=true
-$ docker run -it fairgbm /bin/bash
+cd ~/GitH*/FairML
+# touch Dockerfile
+# vim Dockerfile               # i  # Esc :wq
+docker build -t fairgbm .  # <image-name>
+docker images                # docker images -f dangling=true
+docker run -it fairgbm /bin/bash
+```
 
+*(2) enter the image and install Miniconda3 (with root access)*
+```shell
+cd home
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 
-# cd home
-# wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-# bash ./Miniconda3-latest-Linux-x86_64.sh
+bash ./Miniconda3-latest-Linux-x86_64.sh
+# Do you accept the license terms? [yes|no]
+# >>> yes
+# Miniconda3 will now be installed into this location:
+# [/root/miniconda3] >>> /home/miniconda3
+# You can undo this by running `conda init --reverse $SHELL`? [yes|no]
+# [no] >>> no
 
-Do you accept the license terms? [yes|no]
->>> yes
-Miniconda3 will now be installed into this location:
-[/root/miniconda3] >>> /home/miniconda3
-You can undo this by running `conda init --reverse $SHELL`? [yes|no]
-[no] >>> no
+vim ~/.bashrc
+# export PATH=/home/miniconda3/bin:$PATH  # added by Anaconda3 installer
 
+source ~/.bashrc
+conda env list
+exit
+```
 
-# vim ~/.bashrc
-export PATH=/home/miniconda3/bin:$PATH  # added by Anaconda3 installer
+*(3) create and delete an environment for reproduction (see [Requirements](#Requirements))*
 
-# source ~/.bashrc
-# conda env list
-# exit
-$ docker ps -a                  # docker container ps|list
-$ docker rm <container-id>
-$ docker image rm <image-name>  # docker rmi <image-id>
+*(4) exit from docker and delete the image*
+```shell
+docker ps -a                                  # docker container ps|list
+docker rm <container-id>
+docker image rm <image-name>  # docker rmi <image-id>
 ```
 
 
-### Executing on the server
+### Initialization on the server
 
 ```shell
 $ ssh hendrix
@@ -67,7 +74,7 @@ $ # singularity instance list
 $ # singularity cache list -v
 $ # singularity cache clean
 $ # singularity exec enfair.sif /bin/echo Hello World!
-$ singularity shell enfair.sif              # singularity run *.sif
+$ singularity shell enfair.sif                      # singularity run *.sif
 
 $ rm enfair.sif
 $ yes | rm -r miniconda3
@@ -77,28 +84,28 @@ logout
 ```
 
 
-## Requirements
+## **Requirements**
 
 
 ### Python packages
 
 ```shell
-$ # Install Anaconda/miniconda if you didn't
-$ # To create a virtual environment
-$ conda create -n test python=3.8
-$ conda env list
-$ source activate test
-$
-$ # To install packages
-$ pip list && cd ~/FairML
-$ pip install -U pip
-$ pip install -r requirements.txt
-$ python -m pytest
-$
-$ # To delete the virtual environment
-$ conda deactivate && cd ..
-$ yes | rm -r FairML
-$ conda remove -n test --all
+# Install Anaconda/miniconda if you didn't
+# To create a virtual environment
+conda create -n test python=3.8
+conda env list
+source activate test
+
+# To install packages
+pip list && cd ~/FairML
+pip install -U pip
+pip install -r requirements.txt
+python -m pytest
+
+# To delete the virtual environment
+conda deactivate && cd ..
+yes | rm -r FairML
+conda remove -n test --all
 ```
 
 
@@ -126,7 +133,7 @@ $ docker stop <container-id>
 ### Executing on the server
 
 ```shell
-$ rsync -r FairML hendrix:/home/qgl539/GitH/  # copy to server
+$ rsync -r FairML hendrix:/home/qgl539/GitH/   # copy to server
 $ ssh hendrix
 $ screen                                      # screen -r <pts-id>
 $ srun -p gpu --pty --time=23:30:00 --gres gpu:0 bash
@@ -143,10 +150,10 @@ Singularity> source activate ensem
 
 (base) Singularity> exit
 [qgl539@hendrixgpu04fl Singdocker]$ exit
-[qgl539@hendrixgate01fl ~]$ exit    # exit screen
+[qgl539@hendrixgate01fl ~]$ exit      # exit screen
 [qgl539@hendrixgate01fl ~]$ logout  # Connection to hendrixgate closed.
-$ rsync -r hendrix:/home/qgl539/tmp.tar.gz .  # copy from server
-$ tar -xzvf tmp.tar.gz                        # decompression
+$ rsync -r hendrix:/home/qgl539/tmp.tar.gz .    # copy from server
+$ tar -xzvf tmp.tar.gz                                         # decompression
 $ rm tmp.tar.gz
 ```
 
@@ -154,13 +161,13 @@ $ rm tmp.tar.gz
 ## Documentation
 
 ```shell
-$ # pip install mkdocs  # 1.6.1
-$ # pip install mkdocs-material
-$ # cd ~/GitH/FairML
-$ # mkdocs new docs
-$ # cd docs
-$ # mkdocs build
+# pip install mkdocs  # 1.6.1
+# pip install mkdocs-material
+# cd ~/GitH/FairML
+# mkdocs new docs
+# cd docs
+# mkdocs build
 
-$ cd FairML/docs
-$ mkdocs serve
+cd FairML/docs
+mkdocs serve
 ```
