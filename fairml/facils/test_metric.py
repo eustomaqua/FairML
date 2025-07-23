@@ -141,7 +141,7 @@ def test_group_fair():
         prev_unpriv_grp_one, prev_unpriv_grp_two, prev_unpriv_grp_thr)
 
     def subroutine(y, hx, pos, A_j, Sjs_bin, Sjs_non):
-        vY, dY = judge_transform_need(y)
+        vY, _ = judge_transform_need(y)  # ,dY
         vY = vY[:: -1]
         z, ht = np.array(y), np.array(hx)  # priv=Sjs_bin[0]
         g1M, g0M = marginalised_np_mat(z, ht, pos, Sjs_non[0])

@@ -91,6 +91,37 @@ def fantasy_durat_minor(tim_elapsed, verbose=False):
     return format_text
 
 
+def fantasy_durat_major(tim_elapsed, abbreviation=True):
+    unit_sec = "''" if abbreviation else " sec"
+    unit_min = "'" if abbreviation else " min"
+    format_text = "{:.2f}{}".format(tim_elapsed, unit_sec)
+    if tim_elapsed < 60:
+        return format_text
+    second = tim_elapsed % 60
+    minute = tim_elapsed // 60
+    format_text = "{:.2f}{}".format(second, unit_sec)
+    if minute < 60:
+        return "{:.0f}{} {}".format(minute, unit_min, format_text)
+    tim_elapsed = minute
+    minute = tim_elapsed % 60
+    hours_ = tim_elapsed // 60
+    format_text = "{:.0f}{} {}".format(minute, unit_min, format_text)
+    if hours_ < 24:
+        return "{:.0f} hr {}".format(hours_, format_text)
+    tim_elapsed = hours_
+    hours_ = tim_elapsed % 24
+    days__ = tim_elapsed // 24
+    format_text = "{:.0f} hr {}".format(hours_, format_text)
+    if days__ < 30:
+        return "{:.0f} d {}".format(days__, format_text)
+    tim_elapsed = days__  # mo/mos/mth
+    days__ = tim_elapsed % 30
+    month_ = tim_elapsed // 30
+    format_text = "{:.0f} d {}".format(days__, format_text)
+    return "{:.0f} mo {}".format(month_, format_text)
+
+
+"""
 def fantasy_durat_major(tim_elapsed, verbose=False,
                         abbreviation=True):
     unit_sec = "''" if abbreviation else " sec"
@@ -124,6 +155,7 @@ def fantasy_durat_major(tim_elapsed, verbose=False,
     month_ = tim_elapsed // 30
     format_text = "{:.0f} d {}".format(days__, format_text)
     return "{:.0f} mo {}".format(month_, format_text)
+"""
 
 
 def fantasy_durat(tim_elapsed, verbose=True, abbreviation=False):
@@ -132,7 +164,8 @@ def fantasy_durat(tim_elapsed, verbose=True, abbreviation=False):
         return fantasy_durat_minor(tim_elapsed, verbose)
 
     return "{}\n\t i.e.,\t {}\n\t i.e.,\t {:.8f} minutes".format(
-        fantasy_durat_major(tim_elapsed, verbose, abbreviation),
+        # fantasy_durat_major(tim_elapsed, verbose, abbreviation),
+        fantasy_durat_major(tim_elapsed, abbreviation),
         elegant_durat_core(tim_elapsed, verbose),
         tim_elapsed / 60)
 

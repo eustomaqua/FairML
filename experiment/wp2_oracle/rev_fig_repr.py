@@ -61,7 +61,7 @@ class PlotD_Measures(GraphSetup):
         new_data = self.prepare_graph(new_data)[:, :, 56:, :]
 
         # data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
-        _, binary, nb_cls, _, nb_iter, _ = res_all[0]
+        _, _, nb_cls, _, nb_iter, _ = res_all[0]
         sensitive_attributes = res_all[1]
         ensemble_methods = res_all[-1]
         ensemble_methods = [i.replace(
@@ -197,7 +197,8 @@ class PlotE_Measures(GraphSetup):
             range(168, 224)) + list(range(280, 336)) + [337 - 1, ]
         new_data = self.prepare_graph(new_data)[:, :, idx, :]
 
-        data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
+        # data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
+        _, binary, nb_cls, _, nb_iter, _ = res_all[0]
         ensemble_methods = res_all[-1]
         ensemble_methods = [
             i.replace('FPR', 'fpr').replace('FNR', 'fnr')
@@ -270,7 +271,7 @@ class GatherE_Measures(PlotE_Measures):
         idx = list(range(56, 112)) + list(range(
             168, 224)) + list(range(280, 336)) + [337 - 1, ]
         new_data = self.prepare_graph(np.array(res_data))[:, :, idx, :]
-        num_s, num_e, num_v, _ = new_data.shape
+        num_s, num_e, _, _ = new_data.shape  # num_v =.shape[2]
         sensitive_attributes = res_all[1]
 
         attr_A = list(range(56))
@@ -370,7 +371,7 @@ class PlotF_Prunings(GraphSetup):
         new_data = self.prepare_graph(new_data)[:, idx, :]
 
         # data_name, binary, nb_cls, nb_pru, nb_iter, _ = res_all[0]
-        data_name, _, _, nb_pru, nb_iter, _ = res_all[0]
+        data_name, _, _, _, nb_iter, _ = res_all[0]
         sensitive_attributes = res_all[1]
         name_ens_set, name_pru_set = res_all[3], res_all[4]  # -4/-3
         domestic_key = ['{} & {}'.format(

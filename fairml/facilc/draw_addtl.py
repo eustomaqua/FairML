@@ -906,6 +906,7 @@ def _uncertainty_read_in(dfs_pl, col_X, col_Y, num_gap=1000,
     for df in dfs_pl:  # for i, df in enumerate(dfs_pl):
         Ys = []
         for alpha in X:
+            '''
             if (alpha_loc == 'b4') and (not alpha_rev):
                 tmp = df[col_X] * alpha + (1. - alpha) * df[col_Y]
             elif (alpha_loc == 'af') and (not alpha_rev):
@@ -913,6 +914,17 @@ def _uncertainty_read_in(dfs_pl, col_X, col_Y, num_gap=1000,
             elif (alpha_loc == 'b4') and alpha_rev:  # reverse
                 tmp = (1 - df[col_X]) * alpha + (1. - alpha) * df[col_Y]
             elif (alpha_loc == 'af') and alpha_rev:  # reverse
+                tmp = (1 - df[col_X]) * (1. - alpha) + alpha * df[col_Y]
+            '''
+
+            # assert alpha_loc in ('b4', 'af')
+            if (not alpha_rev) and (alpha_loc == 'b4'):
+                tmp = df[col_X] * alpha + (1. - alpha) * df[col_Y]
+            elif not alpha_rev:           # (alpha_loc == 'af') and
+                tmp = df[col_X] * (1. - alpha) + alpha * df[col_Y]
+            elif alpha_loc == 'b4':     # and alpha_rev:  # reverse
+                tmp = (1 - df[col_X]) * alpha + (1. - alpha) * df[col_Y]
+            else:  # if (alpha_loc=='af') and alpha_rev:  # reverse
                 tmp = (1 - df[col_X]) * (1. - alpha) + alpha * df[col_Y]
             Ys.append(tmp.values)  # (#num,)
         baseline_Ys.append(Ys)   # (num_gap, #num)
@@ -928,10 +940,13 @@ def _uncertainty_plotting(X, Ys, picked_keys, annotY=None, ddof=0,
                           alpha_loc='b4|af', cmap_name='husl',
                           figsize='M-WS', figname='lwu',
                           alpha_clarity=.3):
+    '''
     _curr_sty = ['-.', '-.', '-.', '--', '-', '-']
     if len(picked_keys) > 6:
         # _curr_sty = ['-.', '-.', '-.', '--', '-', '-', ':', '-', ':']
         _curr_sty.extend([':', '-', ':'])
+    '''
+    _curr_sty = ['-.', '-.', '-.', '--', '-', '-'] + [':', '-', ':']
 
     # X                                     # (#gap,)
     Ys_avg = np.mean(Ys, axis=2)            # (#baseline, #gap)
@@ -969,6 +984,18 @@ def _uncertainty_plotting(X, Ys, picked_keys, annotY=None, ddof=0,
             annotY = r'$\alpha·${} $+($1$-\alpha)·$ fairness'.format(annotY)
         elif alpha_loc == 'af':
             annotY = r'$($1$-\alpha)·${} $+\alpha·$ fairness'.format(annotY)
+
+    '''
+    assert alpha_loc in ('b4', 'af')
+    if (annotY is None) and (alpha_loc == 'b4'):
+        annotY = r'$\alpha·$ performance $+(1-\alpha)·$ fairness'
+    elif annotY is None:  # and (alpha_loc == 'af'):
+        annotY = r'$(1-\alpha)·$ performance $+\alpha·$ fairness'
+    elif alpha_loc == 'b4':
+        annotY = r'$\alpha·${} $+($1$-\alpha)·$ fairness'.format(annotY)
+    else:  # alpha_loc == 'af':
+        annotY = r'$($1$-\alpha)·${} $+\alpha·$ fairness'.format(annotY)
+    '''
     ax.set_ylabel(annotY, fontsize=9)
     ax.autoscale_view()
     fig = _setup_figsize(fig, figsize)

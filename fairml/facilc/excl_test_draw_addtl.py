@@ -314,6 +314,7 @@ def excl_test_fairmanf_ext_plt3():
     #     single_line_reg_with_distr, multi_lin_reg_with_distr)
     num, bl = 100, 4
     df, _, tag_Ys, picked_keys, col_X, col_Y = generate_dfs(num, bl)
+    assert isinstance(tag_Ys, list) and len(tag_Ys) == 3
 
     tX = df['acc'].values.astype('float')
     tY = df['fair'].values.astype('float')

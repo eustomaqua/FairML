@@ -791,7 +791,7 @@ class AdaFair(BaseWeightBoosting, ClassifierMixin):
             cumulative_error = 1 - float(tp + tn) / check_zero(tp + tn + fp + fn)
 
         if not iboost == self.n_estimators - 1:
-            for idx, row in enumerate(sample_weight):
+            for idx, _ in enumerate(sample_weight):  # for idx,row in
                 if y[idx] == 1 and y_predict[idx] != 1:
                     # if X[idx][self.saIndex] == self.saValue:
                     # sa_tmp = (X[idx][self.saIndex] == self.saValue) if isinstance(

@@ -57,7 +57,6 @@ class PlotA_Measures(GraphSetup):
         # new_data.shape: (#sen_att, #name_ens, #eval, #iter)
         new_data = self.prepare_graph(np.array(res_data))[:, :, 30:, :]
 
-        _, _, _, _, nb_iter, _ = res_all[0]  # ,nb_cls,
         # data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
         sensitive_attributes = res_all[1]
         ensemble_methods = res_all[-1]
@@ -104,7 +103,7 @@ class PlotD_Measures(PlotA_Measures):
         new_data = self.prepare_graph(new_data)[:, :, 56:, :]
 
         # data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
-        _, binary, nb_cls, _, nb_iter, _ = res_all[0]
+        _, _, nb_cls, _, nb_iter, _ = res_all[0]
         sensitive_attributes = res_all[1]
         ensemble_methods = res_all[-1]
         ensemble_methods = [i.replace(
@@ -165,6 +164,7 @@ class PlotD_Measures(PlotA_Measures):
             idx = [50, 51, 52, 54]
             key = ["DP", "EO", "PQP", "DR"]  # or "FQ (ours)"
 
+        '''
         if mark.endswith("norm"):
             pass
         elif mark.endswith("advr"):
@@ -172,6 +172,12 @@ class PlotD_Measures(PlotA_Measures):
         elif mark.endswith("abs_"):
             idx = [i + 26 for i in idx]
         # mode = "ascend" if mark == "fair" else "descend"
+        '''
+        if mark.endswith("advr"):
+            idx = [i + 13 for i in idx]
+        elif mark.endswith("abs_"):
+            idx = [i + 26 for i in idx]
+        # elif mark.endswith("norm"): pass
 
         new_curr = curr[:, idx, :]  # .shape (#alg,#eval,#iter)
         Ys_avg = new_curr.mean(axis=2).T  # .shape (#eval,#alg)
@@ -236,7 +242,8 @@ class PlotE_Measures(PlotD_Measures):
         # idx = attr_A + attr_B + attr_J + [337 - 1, ]
         new_data = self.prepare_graph(new_data)[:, :, idx, :]
 
-        data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
+        # data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
+        _, binary, nb_cls, _, nb_iter, _ = res_all[0]
         ensemble_methods = res_all[-1]
         ensemble_methods = [
             i.replace('FPR', 'fpr').replace('FNR', 'fnr')
@@ -416,7 +423,7 @@ class PlotF_Prunings(PlotD_Measures):
         new_data = self.prepare_graph(new_data)[:, idx, :]
 
         # data_name, binary, nb_cls, nb_pru, nb_iter, _ = res_all[0]
-        data_name, _, nb_cls, nb_pru, nb_iter, _ = res_all[0]
+        data_name, _, _, nb_pru, nb_iter, _ = res_all[0]
         sensitive_attributes = res_all[1]
         name_ens_set, name_pru_set = res_all[3], res_all[4]  # -4/-3
         domestic_key = ['{} & {}'.format(
@@ -766,7 +773,8 @@ class PlotB_Measures(GraphSetup):
         # new_data.shape (#att=1/3, #bag=12, 1+1+#pru=8, #iter=5, 60)
         new_data = self.prepare_graph(res_data)[:, :, :, 30:, :]
 
-        data_name, binary, nb_cls, nb_pru, nb_iter, _ = res_all[0]
+        # data_name, binary, nb_cls, nb_pru, nb_iter, _ = res_all[0]
+        data_name, _, nb_cls, nb_pru, nb_iter, _ = res_all[0]
         sensitive_attributes = res_all[1]
         name_ens_set, abbr_cls_set = res_all[3], res_all[4]
         rank_pru_set = res_all[-1]  # name_pru based on ranking

@@ -831,6 +831,7 @@ def contrastive_diversity_whole_multi(name_div, y, yt):
 # ----------------------------------
 
 
+'''
 def div_inst_item_cont_tab(ha, hb, vY, dY, change="mu"):
     if (change == "bi") or (dY == 2):  # dY == 2
         ha = ha * 2 - 1  # ha = [i * 2 - 1 for i in ha]
@@ -850,6 +851,27 @@ def div_inst_item_cont_tab(ha, hb, vY, dY, change="mu"):
         return Cij.copy()
     raise ValueError(
         "Check `change`, it should belong to {tr,bi,mu}.")
+'''
+
+
+def div_inst_item_cont_tab(ha, hb, vY, dY, change="mu"):
+    assert change in ('tr', 'bi', 'mu'), "ValueError, check `change`."
+    if (change == 'mu') or (dY >= 3):
+        Cij = np.zeros(shape=(dY, dY), dtype=DTY_INT)
+        for i in range(dY):
+            for j in range(dY):
+                Cij[i, j] = np.sum(
+                    np.equal(ha, vY[i]) & np.equal(hb, vY[j]))
+        return Cij  # Cij.copy()  # contg_tab_mu_type3(ha, hb, vY)
+    if (change == "bi") or (dY == 2):  # dY == 2
+        ha = ha * 2 - 1  # ha = [i * 2 - 1 for i in ha]
+        hb = hb * 2 - 1  # hb = [i * 2 - 1 for i in hb]
+    # if (change in ["bi", "tr"]) or (dY in [1, 2]):
+    a = np.sum(np.equal(ha, 1) & np.equal(hb, 1))
+    b = np.sum(np.equal(ha, 1) & np.equal(hb, -1))
+    c = np.sum(np.equal(ha, -1) & np.equal(hb, 1))
+    d = np.sum(np.equal(ha, -1) & np.equal(hb, -1))
+    return a, b, c, d
 
 
 def div_inst_item_pairwise(name_div, h, ha, hb, vY, dY):
@@ -885,7 +907,8 @@ def div_inst_item_mubi(name_div, h, ha, hb, vY, dY):
     # elif change == "mu":
     Cij = div_inst_item_cont_tab(ha, hb, vY, dY, change="mu")
     m = 1  # m = len(h)
-    #   #   #
+
+    '''
     if name_div == "QStat":
         axd = np.prod([Cij[i][i] for i in range(dY)])
         bxc = np.prod([Cij[i][dY - 1 - i] for i in range(dY)])
@@ -909,7 +932,32 @@ def div_inst_item_mubi(name_div, h, ha, hb, vY, dY):
     elif name_div == "DoubF":
         e = np.sum(np.not_equal(ha, h) & np.not_equal(hb, h))
         return float(e) / m
-    #   #
+    '''
+
+    Cij_ixi = [Cij[i, i] for i in range(dY)]  # np.diag(Cij)
+    Cij_minus = [Cij[i, dY - 1 - i] for i in range(dY)]
+    if name_div == "QStat":
+        axd = np.prod(Cij_ixi)
+        bxc = np.prod(Cij_minus)
+        return (axd - bxc) / check_zero(axd + bxc)
+    elif name_div == "KStat":
+        Theta_1 = np.sum(Cij_ixi) / float(m)
+        Theta_2 = np.sum(Cij, axis=1) * np.sum(Cij, axis=0)
+        Theta_2 = np.sum(Theta_2) / float(m ** 2)
+        return (Theta_1 - Theta_2) / check_zero(1. - Theta_2)
+    elif name_div == "Disag":
+        return np.sum(np.not_equal(ha, hb)) / float(m)
+    elif name_div == "Corre":
+        axd = np.prod(Cij_ixi)
+        bxc = np.prod(Cij_minus)
+        denominator = np.multiply(
+            np.sum(Cij, axis=1), np.sum(Cij, axis=0))
+        denominator = np.sqrt(np.prod(denominator))
+        return (axd - bxc) / check_zero(denominator)
+    elif name_div == "DoubF":
+        e = np.sum(np.not_equal(ha, h) & np.not_equal(hb, h))
+        return float(e) / m
+
     # if name_div not in PAIRWISE:  # i.e., PAIRWISE.keys()
     raise ValueError(
         "Check `name_div`, it should be a pairwise measure.")

@@ -92,6 +92,7 @@ def get_accuracy_of_multiclass(y, yt, coef=None):
 # -------------------------------------
 
 
+"""
 def tie_with_weight_plurality(y, yt, coef=None, nc=1):
     if nc == 2:
         y = [2 * i - 1 for i in y]
@@ -117,6 +118,29 @@ def tie_with_weight_plurality(y, yt, coef=None, nc=1):
     else:
         fens = weighted_voting(y, yt, coef)
     return fens
+"""
+
+
+def tie_with_weight_plurality(y, yt, coef=None, nc=1):
+    if nc > 2:
+        if coef is None:
+            fens = plurality_voting(y, yt)
+        else:
+            fens = weighted_voting(y, yt, coef)
+        return fens
+    if nc == 2:
+        y = [2 * i - 1 for i in y]
+        yt = [[2 * i - 1 for i in fx] for fx in yt]
+    if coef is None:
+        fens = np.sum(yt, axis=0).tolist()  # .mean()
+    else:
+        weig = np.array([coef]).T
+        yt = np.array(yt)
+        fens = np.sum(weig * yt, axis=0)
+    ans = np.sign(fens)
+    if nc == 2:
+        ans = (ans + 1.) / 2.
+    return ans.tolist()
 
 
 # ----------------------------------------

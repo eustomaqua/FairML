@@ -1108,7 +1108,7 @@ def twinx_bars_chart(Y1_avg, Y1_std, Y2_avg, Y2_std,
                 yerr=Y2_std[:, k], color=_barh_fcolor[k],
                 hatch='//', **_barh_kwargs)
 
-    ymin, ymax = ax1.get_ylim()
+    ymax = ax.get_ylim()[1]  # ymin, ymax = ax1.get_ylim()
     ax1.set_ylim(0, ymax)
     # ymin, ymax = ax2.get_ylim()
     # ax2.set_ylim(0, ymax)
@@ -1329,7 +1329,7 @@ def histogram_hor(ind, X_avg, Y_avg, Y_std,
     if remarks is not None:
         plt.legend(loc='upper right', frameon=False, labelspacing=.05)
 
-    y_min, y_max = ax.get_ylim()
+    y_max = ax.get_ylim()[1]  # y_min, y_max = ax.get_ylim()
     ax.set_ylim(0, y_max)
     ax.set_ylabel(annotX)
     ax.set_xticks(ind)

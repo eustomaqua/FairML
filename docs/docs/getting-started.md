@@ -1,4 +1,4 @@
-# Set up the environment
+# Set up the executing environment
 
 
 We developed [FairML](https://github.com/eustomaqua/FairML) with `Python 3.8` and released the code to help you reproduce our work. Note that the experimental parts must be run on the `Ubuntu` operating system due to FairGBM (one baseline method that we used for comparison).
@@ -148,4 +148,19 @@ Singularity> source activate ensem
 $ rsync -r hendrix:/home/qgl539/tmp.tar.gz .  # copy from server
 $ tar -xzvf tmp.tar.gz                        # decompression
 $ rm tmp.tar.gz
+```
+
+
+## Documentation
+
+```shell
+$ # pip install mkdocs  # 1.6.1
+$ # pip install mkdocs-material
+$ # cd ~/GitH/FairML
+$ # mkdocs new docs
+$ # cd docs
+$ # mkdocs build
+
+$ cd FairML/docs
+$ mkdocs serve
 ```

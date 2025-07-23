@@ -86,7 +86,7 @@ plugins:
 nav:
   - Project description: index.md
   - Requirements: getting-started.md  # Getting started
-  - WP1&2 documentation: wp2-oracle.md
+  - WP1&2 examples: wp2-oracle.md
   - WP3 documentation: wp3-causal.md
 #   - General APIs: general-api.md    # API Docs
 #   - Documentation: ml-document.md

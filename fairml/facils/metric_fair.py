@@ -278,7 +278,8 @@ def marginalised_np_mat(y, y_hat, pos_label=1,
 
 def marginalised_np_gen(y, y_hat, A, priv_val=1,
                         pos_label=1):
-    if 0 in A and len(set(A)) == 2:
+    # if 0 in A and len(set(A)) == 2:
+    if (0 in A) and (len(set(A)) == 2):
         vA = list(set(A))[:: -1]
         idx = vA.index(priv_val)
         g_y = [y[A == i] for i in vA]

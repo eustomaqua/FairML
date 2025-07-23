@@ -413,7 +413,7 @@ class PlotH_ImprovePruning(GraphSetup):
 
     def schedule_mspaint(self, raw_dframe, partition=False,
                          verbose=False):
-        nb_set, id_set, index = self.recap_sub_data(raw_dframe)
+        nb_set, _, index = self.recap_sub_data(raw_dframe)  # id_set,
         tag_col = self.prepare_graph()
         tag_col.remove('AI')
         for k in [
@@ -441,8 +441,9 @@ class PlotH_ImprovePruning(GraphSetup):
         # aka. def plot_for_sec33()
         tmp = _get_tmp_name_ens(self._name_ens)
         fn = '_'.join([self._figname, tmp])
-        new_avg, _, _, new_raw = pd_concat_divide_raw(
-            raw_dframe, tag_col, nb_set, index)  # _:new_std,new_var,
+        new_avg, _, _, _ = pd_concat_divide_raw(
+            raw_dframe, tag_col, nb_set,
+            index)  # _:new_std,new_var,new_raw
         self.verify_aggregated_rank(new_avg, fn + "_whole_avg")
 
         if not partition:
@@ -1815,11 +1816,11 @@ class PlotJGather_LambdaEffect(PlotJ_LambdaEffect):
         multiple_line_chart(X, Ys, annots, annotY, mkrs, kw)
 
     def merge_plot_fair(self, rdf, tag_col, ind, kw, rel_id=None):
-        tag_trn, tag_tst = self.pick_up_pru_idx(tag_col, 2 * rel_id)
+        # tag_trn, tag_tst = self.pick_up_pru_idx(tag_col, 2 * rel_id)
         U_g1 = pd.concat([v.loc[ind][tag_col] for v in rdf.values()])
         U_g1 = U_g1.astype(DTY_FLT).values
 
-        tag_trn, tag_tst = self.pick_up_pru_idx(tag_col, 2 * rel_id + 1)
+        # tag_trn, tag_tst = self.pick_up_pru_idx(tag_col, 2 * rel_id + 1)
         U_g0 = pd.concat([v.loc[ind][tag_col] for v in rdf.values()])
         U_g0 = U_g0.astype(DTY_FLT).values
 
