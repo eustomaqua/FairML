@@ -84,7 +84,7 @@ logout
 ```
 
 
-## **Requirements**
+## Requirements
 
 
 ### Python packages

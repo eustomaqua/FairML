@@ -6,7 +6,6 @@
 
 import numpy as np
 # import numba
-import pdb
 
 
 # =====================================
@@ -324,9 +323,12 @@ def perturb_pandas_ver(X, sen_att, priv_val, ratio=.5):
             sa_list.remove(pv)
 
     X_qtb = X.copy()
+    '''
     num, dim = len(X_qtb), len(sen_att)
     if dim > 1:
         new_attr_name = '-'.join(sen_att)
+    '''
+    dim = len(sen_att)
 
     for i, ti in enumerate(X.index):
         prng = np.random.rand(dim)
