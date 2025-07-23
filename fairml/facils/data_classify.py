@@ -294,7 +294,7 @@ def BoostingEnsemble_multiclass(X_trn, y_trn, name_cls, nb_cls,
     _, dY = judge_transform_need(y_trn)  # _:vY
     if dY == 1:
         dY = 2  # \mathcal{Y} = \{-1,+1\}
-    #   #   #
+
     clfs, nb_trn = [], len(y_trn)  # init started
     weight = np.zeros((nb_cls, nb_trn), dtype=DTY_FLT)
     em, alpha, indices = [0.] * nb_cls, [0.] * nb_cls, []
@@ -313,8 +313,11 @@ def BoostingEnsemble_multiclass(X_trn, y_trn, name_cls, nb_cls,
             i_tr = np.not_equal(inspect, y_trn)  # inspect != y_trn
             em[k] = np.sum(weight[k] * i_tr)
             # If $\epsilon_t > 0.5$, the break
-            if (em[k] >= 0.) and (em[k] <= 0.5):
+            ''' if (em[k] >= 0.) and (em[k] <= 0.5):
+                break '''
+            if 0. <= em[k] <= 0.5:
                 break
+
             nb_cnt -= 1
             del wX, wy
         # 21 is the maximum number of running times
@@ -326,8 +329,10 @@ def BoostingEnsemble_multiclass(X_trn, y_trn, name_cls, nb_cls,
             check_zero((1. - em[k]) / check_zero(em[k])))
         if name_ens == 'SAMME':
             alpha[k] += np.log(dY - 1)
-        if np.isnan(alpha[k]):
-            alpha[k] = 0.  # for robustness
+        ''' if np.isnan(alpha[k]):
+            alpha[k] = 0.  # for robustness '''
+        alpha[k] = float(np.nan_to_num(alpha[k]))
+
         # Update the distribution, where Z_t is a normalization factor
         i_tr = np.equal(inspect, y_trn) * 2 - 1
         if (k + 1) < nb_cls:

@@ -832,12 +832,20 @@ def visual_confusion_mat(y, hx, label_vals,
                                   range(cm.shape[1])):
         tmp = "white" if cm[i, j] > thresh else "black"
 
+        '''
         if normalize:
             plt.text(j, i, "{:0.4f}".format(cm[i, j]),
                      horizontalalignment="center", color=tmp)
         else:
             plt.text(j, i, "{:,}".format(cm[i, j]),
                      horizontalalignment="center", color=tmp)
+        '''
+
+        tmp_annot = "{:0.4f}".format(cm[
+            i, j]) if normalize else "{:,}".format(cm[i, j])
+        plt.text(j, i, tmp_annot, horizontalalignment="center",
+                 color=tmp)
+        del tmp_annot
 
     # 'accuracy={:0.4f}; misclass={:0.4f}'.format(accuracy, misclass)
     key = 'accuracy={:.2f}%; misclass={:.2f}%'.format(
@@ -1108,7 +1116,7 @@ def twinx_bars_chart(Y1_avg, Y1_std, Y2_avg, Y2_std,
                 yerr=Y2_std[:, k], color=_barh_fcolor[k],
                 hatch='//', **_barh_kwargs)
 
-    ymax = ax.get_ylim()[1]  # ymin, ymax = ax1.get_ylim()
+    ymax = ax1.get_ylim()[1]  # ymin, ymax = ax1.get_ylim()
     ax1.set_ylim(0, ymax)
     # ymin, ymax = ax2.get_ylim()
     # ax2.set_ylim(0, ymax)

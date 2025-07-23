@@ -195,15 +195,22 @@ def _neighbour_sets(bf_h, nb_cls):
     idx_in_H = np.where(bf_h)[0].tolist()
     idx_not_ = np.where(np.logical_not(bf_h))[0].tolist()
 
+    N_neg, N_pos = [], []
+    for i in bf_h:
+        if i:
+            N_neg.append(deepcopy(bf_h))
+        else:
+            N_pos.append(deepcopy(bf_h))
+
     # mathcal{N}_-(H)
-    N_neg = [deepcopy(bf_h) for i in bf_h if i]
+    # N_neg = [deepcopy(bf_h) for i in bf_h if i]
     if len(idx_in_H) <= 1:
         N_neg = []
     for hs, k in zip(N_neg, idx_in_H):
         hs[k] = False  # 0
 
     # mathcal{N}_+(H)
-    N_pos = [deepcopy(bf_h) for i in bf_h if not i]
+    # N_pos = [deepcopy(bf_h) for i in bf_h if not i]
     if len(idx_in_H) >= nb_cls:
         N_pos = []
     for hs, k in zip(N_pos, idx_not_):

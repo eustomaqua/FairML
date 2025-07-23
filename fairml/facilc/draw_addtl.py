@@ -1049,34 +1049,39 @@ def _subproc_pl_lin_reg(ax4, X, Y, Z, annotZ, snspec, clr='navy',
     regr = np.polyfit(X, Y, deg=1)
     estimated = np.polyval(regr, X)
     # Z = sorted(X)
+    '''
     if not reverse:
         key = '{} {}'.format(key, Z)  # Z, key)
     elif reverse:
         key = '{:9s} {}'.format(Z, key)
+    '''
+    key = '{} {}'.format(key, Z) if (
+        not reverse) else '{:9s} {}'.format(Z, key)
 
     if snspec == 'sty3a':
-        ax4.scatter(x=X, y=Y, alpha=1, edgecolors='w', linewidths=.4,
-                    color=clr)
+        ax4.scatter(x=X, y=Y, alpha=1, edgecolors='w',
+                    linewidths=.4, color=clr)
         plt.plot(X, estimated, '-', lw=1, label=key, color=clr)
         # plt.plot(Z, Z, 'k--', lw=1, label=annotZ)
     elif snspec == 'sty3b':
-        ax4.scatter(x=X, y=Y, alpha=1, edgecolors='w', linewidths=.4, label=key,
-                    color=clr)
+        ax4.scatter(x=X, y=Y, alpha=1, edgecolors='w',
+                    linewidths=.4, label=key, color=clr)
         plt.plot(X, estimated, '-', lw=1, color=clr)
     elif snspec == 'sty4':
-        ax4.scatter(x=X, y=Y, alpha=1, edgecolors='w', linewidths=.2,
-                    s=27, label=Z, color=clr)
+        ax4.scatter(x=X, y=Y, alpha=1, edgecolors='w',
+                    linewidths=.2, s=27, label=Z, color=clr)
     elif snspec == 'sty6':
-        ax4.scatter(x=X, y=Y, alpha=1, edgecolors='w', linewidths=.4,
-                    label=Z, color=clr)
+        ax4.scatter(x=X, y=Y, alpha=1, edgecolors='w',
+                    linewidths=.4, label=Z, color=clr)
 
     elif snspec == 'sty5a':
-        ax4.scatter(x=X, y=Y, s=sz, marker=mk,
-                    alpha=1, edgecolors='w', linewidths=.5, color=clr)
-        ax4.plot(X, estimated, '-', lw=1, label=key if corr else Z, color=clr)
+        ax4.scatter(x=X, y=Y, s=sz, marker=mk, alpha=1,
+                    edgecolors='w', linewidths=.5, color=clr)
+        ax4.plot(X, estimated, '-', lw=1,
+                 label=key if corr else Z, color=clr)
     elif snspec == 'sty5b':
-        ax4.scatter(x=X, y=Y, s=sz, marker=mk,
-                    alpha=1, edgecolors='w', linewidths=.5, color=clr,
+        ax4.scatter(x=X, y=Y, s=sz, marker=mk, alpha=1,
+                    edgecolors='w', linewidths=.5, color=clr,
                     label=key if corr else Z)
         ax4.plot(X, estimated, '-', lw=1, color=clr)
 

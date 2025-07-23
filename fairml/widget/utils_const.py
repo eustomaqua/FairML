@@ -79,12 +79,11 @@ def check_equal(tmp_a, tmp_b, diff=CONST_DIFF):
     flag_b = isinstance(tmp_b, (list, tuple, np.ndarray))
     if not (flag_a or flag_b):
         return True if abs(tmp_a - tmp_b) < diff else False
-    if flag_a and isinstance(tmp_b, (int, float)):
+    if isinstance(tmp_b, (int, float)):    # flag_a and
         tmp = [abs(i - tmp_b) < diff for i in tmp_a]
-    elif flag_b and isinstance(tmp_a, (int, float)):
+    elif isinstance(tmp_a, (int, float)):  # flag_b and
         tmp = [abs(tmp_a - i) < diff for i in tmp_b]
-    elif flag_a and flag_b:
-        # tmp = [i == j for i, j in zip(tmp_a, tmp_b)]
+    else:                     # elif flag_a and flag_b:
         tmp = [abs(i - j) < diff for i, j in zip(tmp_a, tmp_b)]
     return all(tmp)
 

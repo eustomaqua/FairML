@@ -32,10 +32,10 @@ def test_timer():
 
         # print(fantasy_durat(pi, verb, False))
         print(fantasy_durat(pi, verb, True))
-        print(fantasy_durat_major(pi, verb, True))
+        print(fantasy_durat_major(pi, True))  # verb,True))
 
         print(elegant_durat(pi, verb))  # same
-        print(fantasy_durat_major(pi, verb, False))
+        print(fantasy_durat_major(pi, True))  # verb,False))
 
     tim = time.time()
     print(elegant_dated(tim, 'num'))

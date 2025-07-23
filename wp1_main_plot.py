@@ -377,8 +377,10 @@ class OracleGatheredDrawing(object):
             iterator = PlotD_ImprovePruning(None, None, None)
             iterator.verify_aggregated_rank(raw_dframe, "all")
 
+        '''
         elif self._trial_type.endswith('expt6'):
             pass
+        '''
         return
 
 

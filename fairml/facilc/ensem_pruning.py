@@ -955,6 +955,7 @@ def _DREP_sub_find_idx(tr_y, tr_yt, rho, P):
 def DREP_Pruning(y, yt, nb_cls, rho):
     vY = np.concatenate([[y], yt]).reshape(-1).tolist()
     vY, dY = judge_transform_need(vY)
+    '''
     if dY > 2:
         raise UserWarning("DREP only works for binary classification."
                           " Check np.unique(y) please.")
@@ -967,6 +968,16 @@ def DREP_Pruning(y, yt, nb_cls, rho):
         ## yt = np.array((np.array(yt) + 1) / 2, dtype=DTY_INT).tolist()
         tr_y, tr_yt = y, yt
     #   #   #
+    '''
+    if dY > 2:
+        raise UserWarning(
+            "DREP only works for binary classification."
+            " Check np.unique(y) please.")
+    tr_y, tr_yt = y, yt
+    if dY == 2:
+        tr_y = [i * 2 - 1 for i in y]
+        tr_yt = (np.array(yt) * 2 - 1).tolist()
+
     # 1. initialize H* <-- \emptyset
     # 2. h(x) <-- the classifier in H(original ensemble) with the lowest
     #    error on the training set
@@ -1737,7 +1748,8 @@ def pep_pep_re_modify(y, yt, nb_cls, rho):
         idx_eval = obj_eval.index(np.min(obj_eval))
         s_ef = P[idx_eval]  # eventually, finally
         del obj_eval, idx_eval
-        if (np.sum(s_ef) <= nb_pru) and (np.sum(s_ef) > 0):
+        # if (np.sum(s_ef) <= nb_pru) and (np.sum(s_ef) > 0):
+        if 0 < np.sum(s_ef) <= nb_pru:
             break
     if np.sum(s_ef) == 0:
         s_ef[np.random.randint(nb_cls)] = 1

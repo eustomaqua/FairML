@@ -656,6 +656,7 @@ def test_contrastive():
         _, _, mu_P, mu_seq = contrastive_pruning_lately(
             name_pru, nb_cls, nb_pru, mu_y, [], mu_yt, [],
             alpha, L, R, **kwargs)  # mu_ytrn,mu_yval,
+        assert sum(mu_P) == len(mu_seq)
         assert np.all(np.equal(tr_P, bi_P))  # TODO: BUG?
         assert np.all(np.equal(tr_seq, bi_seq))
         assert sum(tr_P) == len(tr_seq) == sum(bi_P) == len(bi_seq)
@@ -682,8 +683,8 @@ def test_compared_utus():
             kwargs["X_trn"] = X_trn
             kwargs["X_val"] = X_val
 
-        (_, _, _, ys_cast, _, ut,  # opt_coef,opt_clfs,ys_insp,,ys_pred,
-         us, tr_P, tr_seq) = contrastive_pruning_lately_validate(
+        (_, _, _, ys_cast, _,  # opt_coef,opt_clfs,ys_insp,,ys_pred,ut,
+         _, us, tr_P, tr_seq) = contrastive_pruning_lately_validate(
             name_pru, nb_cls, nb_pru, tr_y, [], tr_yt, [],
             tr_ycast, coef, clfs, alpha, L, R, **kwargs)
         assert ys_cast == []

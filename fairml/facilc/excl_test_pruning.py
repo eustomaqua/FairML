@@ -454,8 +454,9 @@ def test_drep_multi_modify():
     assert id(tr_fg) == id(bi_fg)  # ??
     # assert id(tr_fg) != id(bi_fg)  # ??
     bi_idx, bi_fg = _drep_multi_modify_findidx(bi_y, bi_yt, rho, P)
-    _, mu_fg = _drep_multi_modify_findidx(mu_y, mu_yt, rho, P)  # mu_idx,
+    mu_idx, mu_fg = _drep_multi_modify_findidx(mu_y, mu_yt, rho, P)
     assert tr_idx == bi_idx and tr_fg == bi_fg
+    assert -1 <= mu_idx < nb_cls and mu_fg
 
     tr_yo, tr_P, tr_seq = drep_prune(tr_y, tr_yt, nb_cls, rho)
     bi_yo, bi_P, bi_seq = drep_prune(tr_y, tr_yt, nb_cls, rho)
@@ -573,7 +574,7 @@ def test_pep_OEP_SEP():
     assert id(tr_seq) != id(bi_seq)
 
     bi_yo, bi_P, bi_seq = PEP_OEP(bi_y, bi_yt, nb_cls)
-    mu_yo, mu_P, mu_seq = PEP_OEP(mu_y, mu_yt, nb_cls)
+    _, mu_P, mu_seq = PEP_OEP(mu_y, mu_yt, nb_cls)  # mu_yo,
     assert 1 <= sum(tr_P) == len(tr_seq) < nb_cls
     assert 1 <= sum(bi_P) == len(bi_seq) < nb_cls
     assert 1 <= sum(mu_P) == len(mu_seq) < nb_cls
@@ -789,8 +790,8 @@ def test_compared_utus():
     clfs = [tree.DecisionTreeClassifier() for _ in range(nb_cls)]
 
     for name_pru in AVAILABLE_NAME_PRUNE:
-        (opt_coef, opt_clfs, _, _, ys_pred, ut, us,  # ys_insp,ys_cast,
-         P, seq, flag) = contrastive_pruning_according_validation(
+        (opt_coef, opt_clfs, _, _, _, ut,  # ys_insp,ys_cast,ys_pred,
+         us, P, seq, flag) = contrastive_pruning_according_validation(
             name_pru, nb_cls, nb_pru, y_val, y_cast, epsilon, rho,
             y_insp, y_pred, coef, clfs)
         assert len(opt_coef) == len(opt_clfs) == sum(P) == len(seq)

@@ -38,6 +38,11 @@ gc.enable()
 # Split situation 2
 # ----------------------------------
 
+
+# def _spl2_step1():
+#     pass
+
+
 def situation_split2(pr_trn, nb_iter, y_trn):
     vY = np.unique(y_trn).tolist()
     dY = len(vY)

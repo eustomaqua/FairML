@@ -10,7 +10,8 @@ from fairml.facils.draw_hypos import (
     binomial_test, t_test, scipy_ttest_for1, scipy_ttest_for2,
     paired_5x2cv_test, paired_t_tests, scipy_ttest_pair,
     McNemar_test, Friedman_init, Friedman_test, Nememyi_posthoc_test,
-    cmp_paired_avg, cmp_paired_wtl, comp_t_init, comp_t_prep)
+    cmp_paired_avg, cmp_paired_wtl, comp_t_init, comp_t_prep,
+    Pearson_correlation)
 
 accs = [0.7, 0.8, 0.6, 0.85, 0.65]
 errs = _regulate_vals(accs, 'acc')
@@ -184,3 +185,19 @@ def test_paired_t():
     res_p = cmp_paired_wtl(GA_p, GB_p, res_p[0], res_p[1], 'descend')
     res_e = cmp_paired_wtl(GA_e, GB_e, res_e[0], res_e[1])
     assert res_a == res_p == res_e
+
+
+def test_Pearson():
+    n = 11
+    X = np.random.rand(n)
+    Y = np.random.rand(n)
+    pear, cov = Pearson_correlation(X, Y)
+    corr = np.corrcoef(X, Y)
+    assert check_equal(pear, [corr[1, 0], corr[0, 1]])
+    corr = np.corrcoef(Y, X)
+    assert check_equal(pear, [corr[1, 0], corr[0, 1]])
+    corr = Pearson_correlation(Y, X)
+    assert check_equal(pear, corr[0])
+    assert check_equal(cov, corr[1])
+    # pdb.set_trace()
+    return

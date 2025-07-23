@@ -327,7 +327,7 @@ class PlotH_ImprovePruning(GraphSetup):
         #   0-4: La(MV), Lf(MV), 'Lo(MV)', E[La(f)], E[Lf(f,fp)]
         #   5-9: 'E[Lf(f)]', Acc, P, R, F1
 
-        if rel_id == -2 or rel_id == -1:
+        if rel_id in (-2, -1):  # rel_id==-2 or rel_id==-1:
             ind_trn = [i * num_gap + 2 * rel_id for i in range(num_len)]
             ind_tst = []
             ind_trn = [3 + 2 + i for i in ind_trn]
@@ -767,10 +767,15 @@ class PlotH_ImprovePruning(GraphSetup):
                                 rotate=15)
             return
 
+        assert 1 <= rel_jt <= 3
+        if rel_set == 0:
+            assert rel_jt == 1
+        '''
         if rel_set == 0:
             assert rel_jt == 1
         else:
             assert 1 <= rel_jt <= 3
+        '''
         ind_sens = np.add(ind, rel_jt).tolist()
         Ys_avg = np.zeros((len(name_pru), 4))
         Ys_std = np.zeros((len(name_pru), 4))
@@ -1383,7 +1388,7 @@ class PlotD_ImprovePruning(GraphSetup):
         return tag_trn, tag_tst  # idx_trn, idx_tst
 
     def schedule_mspaint(self, raw_dframe, partition=False):
-        nb_set, id_set, index = self.recap_sub_data(raw_dframe)
+        nb_set, _, index = self.recap_sub_data(raw_dframe)  # ,id_set,
         tag_col = self.prepare_graph()
         # avg, _, _, raw = pd_concat_divide_raw(
         _, _, _, raw = pd_concat_divide_raw(

@@ -686,4 +686,29 @@ def comp_t_prep(valA, valB, alpha=.05, method="manual"):
 
 
 # -------------------------------------
+# 皮尔逊相关系数
+# Pearson_correlation_coefficient
+# https://blog.csdn.net/huangfei711/article/details/78456165
+# https://www.cnblogs.com/BlogNetSpace/p/18265455
+
+
+def Pearson_correlation(X, Y):
+    # or np.corrcoef(X, Y)[1, 0]
+    # or np.corrcoef(Y, X)[1, 0]
+
+    # Covariance 协方差
+    Xi_bar = np.array(X) - np.mean(X)
+    Yi_bar = np.array(Y) - np.mean(Y)
+    tmp = np.multiply(Xi_bar, Yi_bar)  # =Xi_bar*Yi_bar
+    n = len(tmp)
+    cov = float(np.sum(tmp)) / (n - 1.)
+
+    numerator = float(np.sum(tmp))     # ↓ denominator
+    denom_X = np.sum(Xi_bar * Xi_bar)  # sum(Xi_bar**2)
+    denom_Y = np.sum(Yi_bar * Yi_bar)  # sum(Yi_bar**2)
+    denominator = np.sqrt(denom_X) * np.sqrt(denom_Y)
+    denominator = check_zero(float(denominator))
+    return numerator / denominator, cov
+
+
 # -------------------------------------

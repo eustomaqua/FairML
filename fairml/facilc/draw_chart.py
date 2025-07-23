@@ -25,7 +25,7 @@ from fairml.facils.data_distance import (
 # from fairml.facilc.draw_hypos import (  # .draw.utils_hypos
 #     Friedman_test, Nememyi_posthoc_test)
 from fairml.facilc.draw_graph import (  # .draw.utils_graph
-    PLT_FRAMEBOX, PLT_LOCATION, DTY_PLT, PLT_AX_STYLE,
+    PLT_FRAMEBOX, PLT_LOCATION, DTY_PLT,  # PLT_AX_STYLE,
     _setup_config, _barh_kwargs, _barh_fcolor,
     _setup_figsize, _setup_figshow, _sns_line_err_bars,
     _setup_locater, _style_set_fig, _style_set_axis)
@@ -79,8 +79,21 @@ _nat_sci_cs = [
 ]
 
 
+def _sub_spread_COR(Xs, Ys, annotZs):
+    # Correlation
+    Rs = [np.corrcoef(X, Y)[1, 0] for X, Y in zip(Xs, Ys)]
+    keys = ["Correlation = {:.4f} ({:s})".format(
+        r, Z) for r, Z in zip(Rs, annotZs)]
+    # Regression
+    regr = [np.polyfit(X, Y, deg=1) for X, Y in zip(Xs, Ys)]
+    estimated = [np.polyval(r, X) for r, X in zip(regr, Xs)]
+    # num_z = len(annotZs)  # equal to len(Xs)==len(Ys)
+    return keys, estimated  # , num_z
+
+
 def multi_scatter_hor(X, Ys, annots, annotZs, figname,
                       figsize, identity, base, locate):
+    '''
     # Correlation
     Rs = [np.corrcoef(X, Y)[1, 0] for Y in Ys]
     # key = ["{:3s} = {:.4f}".format(Z, r) for r, Z in zip()]
@@ -90,8 +103,10 @@ def multi_scatter_hor(X, Ys, annots, annotZs, figname,
     # Regression
     regr = [np.polyfit(X, Y, deg=1) for Y in Ys]
     estimated = [np.polyval(r, X) for r in regr]
+    '''
     num_z = len(annotZs)  # equal to len(Xs)==len(Ys)
-    #   #
+    key, estimated = _sub_spread_COR([X] * num_z, Ys, annotZs)
+
     fig = plt.figure(figsize=_setup_config['L-NT'])
     if identity:
         for i in range(num_z):
@@ -103,14 +118,14 @@ def multi_scatter_hor(X, Ys, annots, annotZs, figname,
         plt.plot(ZX, ZX, "k--", lw=1, label=r"$f(x)=x$")
     else:
         for i in range(num_z):
-            plt.scatter(X, Ys[i], c=_nat_sci_cs[i], label=key[i], s=10)
+            plt.scatter(X, Ys[i], c=_nat_sci_cs[i], label=key[i],
+                        s=10)
             plt.plot(X, estimated[i], c=_nat_sci_cs[i], lw=1.5)
-    #   #
     axs = plt.gca()
     for i in range(num_z):
         _sns_line_err_bars(axs, {  # "alpha": .2
-            "color": _nat_sci_cs[i], "alpha": .3, "lw": 1}, X, Ys[i])
-    #     #
+            "color": _nat_sci_cs[i], "alpha": .3,
+            "lw": 1}, X, Ys[i])
     if base is not None:
         _setup_locater(fig, base)
     plt.xlabel(annots[0])
@@ -126,6 +141,7 @@ def multi_scatter_hor(X, Ys, annots, annotZs, figname,
 
 def multi_scatter_vrt(X, Ys, annots, annotZs, figname,
                       figsize, identity, base, locate):
+    '''
     # Correlation
     Rs = [np.corrcoef(Y, X)[1, 0] for Y in Ys]
     key = ["Correlation = {:.4f} ({:s})".format(
@@ -133,8 +149,10 @@ def multi_scatter_vrt(X, Ys, annots, annotZs, figname,
     # Regression
     regr = [np.polyfit(Y, X, deg=1) for Y in Ys]
     estimated = [np.polyval(r, Y) for r, Y in zip(regr, Ys)]
+    '''
     num_z = len(annotZs)
-    #   #
+    key, estimated = _sub_spread_COR(Ys, [X] * num_z, annotZs)
+
     fig = plt.figure(figsize=_setup_config['L-NT'])
     if identity:
         for i in range(num_z):
@@ -145,13 +163,14 @@ def multi_scatter_vrt(X, Ys, annots, annotZs, figname,
         plt.plot(ZX, ZX, "k--", lw=1, label=r"$f(x)=x$")
     else:
         for i in range(num_z):
-            plt.scatter(Ys[i], X, c=_nat_sci_cs[i], label=key[i], s=10)
+            plt.scatter(Ys[i], X, c=_nat_sci_cs[i], label=key[i],
+                        s=10)
             plt.plot(Ys[i], estimated[i], c=_nat_sci_cs[i], lw=1)
-    #   #
     axs = plt.gca()
     for i in range(num_z):
         _sns_line_err_bars(axs, {
-            "color": _nat_sci_cs[i], "alpha": .3, "lw": 1}, Ys[i], X)
+            "color": _nat_sci_cs[i], "alpha": .3,
+            "lw": 1}, Ys[i], X)
     if base is not None:
         _setup_locater(fig, base)
     # axs.set_aspect(1)
@@ -244,6 +263,16 @@ def analogous_confusion_extended(Mat_A, Mat_B, key_A, key_B,
     return
 
 
+# def _alter_sub_Pearson_cor(x, ys, annotZs):
+#     # Correlation & Regression
+#     Rs = [np.corrcoef(x, y)[1, 0] for y in ys]
+#     key = ["Correlation = {:.4f} ({:s})".format(
+#         r, Z) for r, Z in zip(Rs, annotZs)]
+#     regr = [np.polyfit(x, y, deg=1) for y in ys]
+#     estimated = [np.polyval(r, x) for r in regr]
+#     return key, estimated
+
+
 def _alternative_multi_scatter_hor(X, Ys, sens,
                                    annots, annotZs,
                                    figname, identity,
@@ -255,12 +284,16 @@ def _alternative_multi_scatter_hor(X, Ys, sens,
                            figsize=_multi_figsize[sa_len])
     for k, (x, ys, sa) in enumerate(zip(X, Ys, sens)):
 
+        '''
         # Correlation & Regression
         Rs = [np.corrcoef(x, y)[1, 0] for y in ys]
         key = ["Correlation = {:.4f} ({:s})".format(
             r, Z) for r, Z in zip(Rs, annotZs)]
         regr = [np.polyfit(x, y, deg=1) for y in ys]
         estimated = [np.polyval(r, x) for r in regr]
+        '''
+        # key, estimated = _alter_sub_Pearson_cor(x, ys, annotZs)
+        key, estimated = _sub_spread_COR([x] * num_z, ys, annotZs)
 
         for i in range(num_z):
             ax[k].scatter(
@@ -278,8 +311,9 @@ def _alternative_multi_scatter_hor(X, Ys, sens,
         ax[k].set_ylabel(annots[1])
         ax[k].legend(loc=locate, frameon=box, framealpha=.67,
                      labelspacing=.07, prop={'size': 9}, **kwargs)
-        if PLT_AX_STYLE:
-            _style_set_axis(ax[k], invt)
+        # if PLT_AX_STYLE:
+        #     _style_set_axis(ax[k], invt)
+        _style_set_axis(ax[k], invt)
     fig.tight_layout()
     _setup_figshow(fig, figname)
     plt.close(fig)
@@ -297,12 +331,15 @@ def _alternative_multi_scatter_vrt(X, Ys, sens,
                            figsize=_multi_figsize[sa_len])
     for k, (x, ys, sa) in enumerate(zip(X, Ys, sens)):
 
+        '''
         # Correlation & Regression
         Rs = [np.corrcoef(y, x)[1, 0] for y in ys]
         key = ["Correlation = {:.4f} ({:s})".format(
             r, Z) for r, Z in zip(Rs, annotZs)]
         regr = [np.polyfit(y, x, deg=1) for y in ys]
         estimated = [np.polyval(r, y) for r, y in zip(regr, ys)]
+        '''
+        key, estimated = _sub_spread_COR(ys, [x] * num_z, annotZs)
 
         for i in range(num_z):
             ax[k].scatter(
@@ -322,8 +359,9 @@ def _alternative_multi_scatter_vrt(X, Ys, sens,
                      # handletextpad=.04,
                      # borderpad=.27)  # columnspacing=.07)
                      **kwargs)
-        if PLT_AX_STYLE:
-            _style_set_axis(ax[k], invt)
+        # if PLT_AX_STYLE:
+        #     _style_set_axis(ax[k], invt)
+        _style_set_axis(ax[k], invt)
     fig.tight_layout()
     _setup_figshow(fig, figname)
     plt.close(fig)
@@ -382,10 +420,15 @@ def analogous_confusion_alternative(Mat, sens,
                  ha="right", rotation_mode="anchor")
         # Rotate the tick labels and set their alignment.
         # ax[k].set_xlabel(sa.upper())  # Sensitive attributes
+
+        ax[k].set_xlabel("Attribute " + sa.upper() if (
+            sa.lower() != "joint") else sa.upper() + " Attribute")
+        '''
         if sa.lower() != "joint":
             ax[k].set_xlabel("Attribute " + sa.upper())
         else:
             ax[k].set_xlabel(sa.upper() + " Attribute")  # sa+
+        '''
         if normalize:
             cm = cm / cm.sum(axis=1)[:, np.newaxis]
         # thresh = cm.max() / 1.5 if normalize else cm.max() / 2

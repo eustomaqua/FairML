@@ -145,7 +145,7 @@ def test_histchart():
     # Y = np.random.rand(nb, 4) * 5 + X  # or X.T
     X = np.random.rand(nb) * 170
     Y = np.random.rand(nb, 4) * 35 + np.reshape(-1, 1)
-    _, Y_avg, Y_std, ind = _hist_calc_XY(X, Y)  # X_avg,
+    _, _, Y_std, ind = _hist_calc_XY(X, Y)  # X_avg,Y_avg,
 
     # histogram_hor(X, Y, figname)
     # histogram_vrt(X, Y, figname)
@@ -161,7 +161,7 @@ def test_histchart():
     # X_std = [X_avg, X_avg / 2]
     Z = np.random.rand(nb, 2) * 170
     Z = np.c_[X, X / 2]
-    X_avg, Y_avg, Y_std, ind = _hist_calc_XY(X, Y)
+    _, _, Y_std, ind = _hist_calc_XY(X, Y)  # X_avg,Y_avg,
     histogram_chart(Z, Y, figname, annotX='X',
                     annotY=annots, ind_hv='h')
     histogram_chart(Z, Y, figname, annotX='X',

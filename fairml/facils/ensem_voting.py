@@ -123,10 +123,8 @@ def tie_with_weight_plurality(y, yt, coef=None, nc=1):
 
 def tie_with_weight_plurality(y, yt, coef=None, nc=1):
     if nc > 2:
-        if coef is None:
-            fens = plurality_voting(y, yt)
-        else:
-            fens = weighted_voting(y, yt, coef)
+        fens = plurality_voting(y, yt) if (
+            coef is None) else weighted_voting(y, yt, coef)
         return fens
     if nc == 2:
         y = [2 * i - 1 for i in y]

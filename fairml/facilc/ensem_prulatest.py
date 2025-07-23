@@ -1369,7 +1369,8 @@ def _subroute_TwoStage_DistanceBased_inst(X_trn, X_val, OB_i):
             # ' ''
             tem = idx
             if not tem:
-                tem = np.random.randint(nb_trn, size=nb_trn).tolist()
+                tem = np.random.randint(
+                    nb_trn, size=nb_trn).tolist()
                 tem = list(set(range(nb_trn)) - set(tem))
             if tem:
                 tem = np.mean(X_trn[tem], axis=0)

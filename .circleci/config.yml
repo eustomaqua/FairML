@@ -26,7 +26,7 @@ jobs:
             pip install -r requirements.txt
             pip install carbontracker pytest
             pip install coverage coveralls pytest-xdist
-            coverage run -m pytest --ignore-glob="*/excl_test_*"
+            coverage run -m pytest --ignore-glob="*/excl_test_*,*/pkgs*"
             coverage report
             coverage html
             # rm *.png && rm *.csv && rm *.log
@@ -35,8 +35,8 @@ jobs:
             export CODACY_PROJECT_TOKEN=082ca48f7f2e46649be75c2a495cfc66
             bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.xml
             # bash <(curl -Ls https://coverage.codacy.com/get.sh)
-            # rm chart*.pdf && rm cheers*.pdf && rm fairgbm*.pdf
             # python -m pytest fairml/facils/excl_test*
+            # rm chart*.pdf && rm cheers*.pdf && rm fairgbm*.pdf
 
       - persist_to_workspace:
           root: ~/project
