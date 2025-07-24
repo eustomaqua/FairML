@@ -234,7 +234,8 @@ def test_orientation_ordering():
     mu_yo, mu_P, mu_seq, mu_fg = Orientation_Ordering_Pruning(mu_y, mu_yt)
     assert 1 <= sum(tr_P) == len(tr_seq) == sum(bi_P) == len(bi_seq) < nb_cls
     assert 1 <= sum(mu_P) == len(mu_seq) < nb_cls
-    assert np.all(np.equal(tr_P, bi_P)) and np.all(np.equal(tr_seq, bi_seq))
+    assert np.all(np.equal(tr_P, bi_P)) and np.all(
+        np.equal(tr_seq, bi_seq))
     assert len(set(map(id, [tr_yo, bi_yo, mu_yo]))) == 3
     assert len(set(map(id, [tr_P, bi_P, mu_P]))) == 3
     assert len(set(map(id, [tr_seq, bi_seq, mu_seq]))) == 3

@@ -3,7 +3,8 @@
 import numpy as np
 # from prgm.nucleus.utils_chart import *
 from fairml.facilc.draw_chart import (
-    multi_scatter_hor, multi_scatter_vrt, multiple_scatter_chart,
+    # multi_scatter_hor, multi_scatter_vrt, multiple_scatter_chart,
+    multiple_scatter_chart,
     analogous_confusion, multiple_scatter_alternative,
     analogous_confusion_alternative, single_hist_chart,
     lines_with_std_3d, lines_with_std_2d, discrete_bar_comparison,
@@ -34,9 +35,11 @@ def test_multi_scatter():
 
     # identity = False
     multiple_scatter_chart(
-        X, Ys, annots, annotZs, figname, ind_hv='h')
+        X, Ys, annots, annotZs, figname, ind_hv='h',
+        identity=identity)
     multiple_scatter_chart(
-        X, Ys, annots, annotZs, figname, ind_hv='v')
+        X, Ys, annots, annotZs, figname, ind_hv='v',
+        identity=identity)
 
 
 def test_mu_scatter_alter():
