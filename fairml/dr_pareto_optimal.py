@@ -94,8 +94,8 @@ def _bi_goals_whole(y, zt, zq, wgt, bf_h):
     yq = zq[bf_h].tolist()
     coef = np.array(wgt)[bf_h].tolist()
 
-    fens_t = weighted_voting(y, yt, coef)
-    fens_q = weighted_voting(y, yq, coef)
+    fens_t = weighted_voting(yt, coef)  # y,
+    fens_q = weighted_voting(yq, coef)  # y,
     sub_no1 = hat_L_fair(fens_t, fens_q)
     sub_no2 = hat_L_loss(fens_t, y)
     return (sub_no1, sub_no2)
@@ -652,8 +652,8 @@ def _POAF_bi_objects(y, zt, zq, wgt, s):
     yq = zq[bf_h].tolist()
     coef = np.array(wgt)[bf_h].tolist()
 
-    fens_t = weighted_voting(y, yt, coef)
-    fens_q = weighted_voting(y, yq, coef)
+    fens_t = weighted_voting(yt, coef)  # y,
+    fens_q = weighted_voting(yq, coef)  # y,
     sub_no1 = hat_L_loss(fens_t, y)
     sub_no2 = hat_L_fair(fens_t, fens_q)
     return (sub_no1, sub_no2)

@@ -217,6 +217,7 @@ class GatherD_Measures(PlotD_Measures):
         key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
         key = [r"$\Delta$(%s)" % i for i in key
                ] + ["DP", "EO", "PQP", "DR"]
+        key[3] = r"$\Delta(\mathrm{f}_1)$"  # r"$\Delta(f_1)$"
         fgn = figname + "_confusion"
         if verbose:
             analogous_confusion(Mat, key, fgn, normalize=False)

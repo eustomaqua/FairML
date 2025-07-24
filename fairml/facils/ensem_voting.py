@@ -20,11 +20,14 @@ gc.enable()
 # -------------------------------------
 
 
-def plurality_voting(y, yt):
-    # vY = np.c_[y.reshape(-1, 1), yt.T].T
-    # vY = np.concatenate(([y], yt))
-    vY = np.unique(y).tolist() + np.unique(yt).tolist()
-    vY = np.unique(vY)
+# def plurality_voting(y, yt):
+#     # vY = np.c_[y.reshape(-1, 1), yt.T].T
+#     # vY = np.concatenate(([y], yt))
+#     vY = np.unique(y).tolist() + np.unique(yt).tolist()
+#     vY = np.unique(vY)
+
+def plurality_voting(yt):
+    vY = np.unique(yt).tolist()
 
     vote = [np.sum(np.equal(yt, i), axis=0).tolist() for i in vY]
     loca = np.argmax(vote, axis=0)  # vote.argmax(axis=0)
@@ -34,8 +37,11 @@ def plurality_voting(y, yt):
     return deepcopy(fens)  # fens.copy()
 
 
-def majority_voting(y, yt):
-    vY = np.unique(np.vstack([y, yt]))
+# def majority_voting(y, yt):
+#     vY = np.unique(np.vstack([y, yt]))
+#
+def majority_voting(yt):
+    vY = np.unique(yt).tolist()
     vote = [np.sum(np.equal(yt, i), axis=0).tolist() for i in vY]
 
     nb_cls = len(yt)
@@ -52,13 +58,17 @@ def majority_voting(y, yt):
     return deepcopy(fens)
 
 
-def weighted_voting(y, yt, coef):
-    vY = np.unique(np.concatenate([[y], yt]))
+# def weighted_voting(y, yt, coef):
+#     vY = np.unique(np.concatenate([[y], yt]))
+#
+def weighted_voting(yt, coef):
+    vY = np.unique(yt).tolist()
     # coef = np.array(np.mat(coef).T)
     # coef = np.array(coef).reshape(-1, 1)
     coef = np.array([coef]).transpose()
 
-    weig = [np.sum(coef * np.equal(yt, i), axis=0).tolist() for i in vY]
+    weig = [np.sum(coef * np.equal(
+        yt, i), axis=0).tolist() for i in vY]
     loca = np.array(weig).argmax(axis=0).tolist()
     fens = [vY[i] for i in loca]
 
@@ -121,13 +131,13 @@ def tie_with_weight_plurality(y, yt, coef=None, nc=1):
 """
 
 
-def tie_with_weight_plurality(y, yt, coef=None, nc=1):
+def tie_with_weight_plurality(yt, coef=None, nc=1):
     if nc > 2:
-        fens = plurality_voting(y, yt) if (
-            coef is None) else weighted_voting(y, yt, coef)
+        fens = plurality_voting(yt) if (
+            coef is None) else weighted_voting(yt, coef)
         return fens
     if nc == 2:
-        y = [2 * i - 1 for i in y]
+        # y = [2 * i - 1 for i in y]
         yt = [[2 * i - 1 for i in fx] for fx in yt]
     if coef is None:
         fens = np.sum(yt, axis=0).tolist()  # .mean()

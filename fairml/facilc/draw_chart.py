@@ -91,8 +91,9 @@ def _sub_spread_COR(Xs, Ys, annotZs):
     return keys, estimated  # , num_z
 
 
-def multi_scatter_hor(X, Ys, annots, annotZs, figname,
-                      figsize, identity, base, locate):
+# def multi_scatter_hor(X, Ys, annots, annotZs, figname,
+#                       figsize, identity, base, locate):
+def multi_scatter_hor(X, Ys, annots, annotZs, identity):
     '''
     # Correlation
     Rs = [np.corrcoef(X, Y)[1, 0] for Y in Ys]
@@ -126,10 +127,13 @@ def multi_scatter_hor(X, Ys, annots, annotZs, figname,
         _sns_line_err_bars(axs, {  # "alpha": .2
             "color": _nat_sci_cs[i], "alpha": .3,
             "lw": 1}, X, Ys[i])
+    '''
     if base is not None:
         _setup_locater(fig, base)
+    '''
     plt.xlabel(annots[0])
     plt.ylabel(annots[1])
+    '''
     plt.legend(loc=locate, frameon=PLT_FRAMEBOX,
                labelspacing=.07, prop={'size': 9})
     if figsize is not None:
@@ -137,10 +141,13 @@ def multi_scatter_hor(X, Ys, annots, annotZs, figname,
     _setup_figshow(fig, figname)
     plt.close(fig)
     return
+    '''
+    return fig
 
 
-def multi_scatter_vrt(X, Ys, annots, annotZs, figname,
-                      figsize, identity, base, locate):
+# def multi_scatter_vrt(X, Ys, annots, annotZs, figname,
+#                       figsize, identity, base, locate):
+def multi_scatter_vrt(X, Ys, annots, annotZs, identity):
     '''
     # Correlation
     Rs = [np.corrcoef(Y, X)[1, 0] for Y in Ys]
@@ -171,11 +178,14 @@ def multi_scatter_vrt(X, Ys, annots, annotZs, figname,
         _sns_line_err_bars(axs, {
             "color": _nat_sci_cs[i], "alpha": .3,
             "lw": 1}, Ys[i], X)
+    '''
     if base is not None:
         _setup_locater(fig, base)
+    '''
     # axs.set_aspect(1)
     plt.xlabel(annots[1])
     plt.ylabel(annots[0])
+    '''
     plt.legend(loc=locate, frameon=PLT_FRAMEBOX,
                labelspacing=.07, prop={'size': 9})
     if figsize is not None:
@@ -183,6 +193,8 @@ def multi_scatter_vrt(X, Ys, annots, annotZs, figname,
     _setup_figshow(fig, figname)
     plt.close(fig)
     return
+    '''
+    return fig
 
 
 def multiple_scatter_chart(X, Ys, annots=('X', 'Ys'),
@@ -191,6 +203,7 @@ def multiple_scatter_chart(X, Ys, annots=('X', 'Ys'),
                            ind_hv='h', identity=True,
                            base=None,  # diff=0.05,
                            locate=PLT_LOCATION):
+    '''
     if ind_hv == 'h':
         multi_scatter_hor(X, Ys, annots, annotZs,
                           figname + "_hor", figsize,
@@ -199,6 +212,23 @@ def multiple_scatter_chart(X, Ys, annots=('X', 'Ys'),
         multi_scatter_vrt(X, Ys, annots, annotZs,
                           figname + "_vrt", figsize,
                           identity, base, locate)
+    '''
+
+    if ind_hv == 'h':
+        fig = multi_scatter_hor(X, Ys, annots, annotZs,
+                                identity)
+    elif ind_hv == 'v':
+        fig = multi_scatter_vrt(X, Ys, annots, annotZs,
+                                identity)
+    figname += ("_hor" if ind_hv == 'h' else "_vrt")
+    if base is not None:
+        _setup_locater(fig, base)
+    plt.legend(loc=locate, frameon=PLT_FRAMEBOX,
+               labelspacing=.07, prop={'size': 9})
+    if figsize is not None:
+        fig = _setup_figsize(fig, figsize)
+    _setup_figshow(fig, figname)
+    plt.close(fig)
     return
 
 
@@ -232,6 +262,47 @@ def analogous_confusion(Mat, label_vals, figname,
     return
 
 
+def _ext_confus_cm(cm, cmap, figsize):
+    fig, ax = plt.subplots(figsize=(8, 6))
+    if figsize == 'extra':
+        del fig, ax
+        fig, ax = plt.subplots(figsize=_setup_config[figsize])
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    num_za, num_zb = cm.shape
+    num_shrink = float(num_za) / float(num_zb) + .01
+    plt.colorbar(ax=ax, shrink=num_shrink)  # .8)
+
+    for i, j in itertools.product(
+            range(num_za), range(num_zb)):
+        plt.text(j, i, "{:.3f}".format(
+            cm[i, j]), horizontalalignment="center",
+            color="k", size="small")
+    return fig, ax
+
+
+def analogous_confusion_extended(Mat_A, Mat_B, key_A, key_B,
+                                 figname, figsize='L-NT',
+                                 cmap_name="Blues_r", rotate=5):
+    num_za, num_zb = len(key_A), len(key_B)
+    # if cm is None:
+    cm = np.zeros((num_za, num_zb))
+    for i in range(num_za):
+        for j in range(num_zb):
+            cm[i, j] = np.corrcoef(Mat_B[j], Mat_A[i])[1, 0]
+    cmap = plt.get_cmap(cmap_name)
+    fig, _ = _ext_confus_cm(cm, cmap, figsize)
+
+    # _style_set_axis(ax, invt=True)
+    tick_mk_a = np.arange(num_za)
+    tick_mk_b = np.arange(num_zb)
+    plt.xticks(tick_mk_b, key_B, rotation=rotate)
+    plt.yticks(tick_mk_a, key_A)
+    _style_set_fig(fig, siz=_setup_config[figsize])
+    _setup_figshow(fig, figname)
+    return
+
+
+'''
 def analogous_confusion_extended(Mat_A, Mat_B, key_A, key_B,
                                  figname, cm=None, figsize='L-NT',
                                  cmap_name="Blues_r", rotate=5):
@@ -257,10 +328,12 @@ def analogous_confusion_extended(Mat_A, Mat_B, key_A, key_B,
     plt.yticks(tick_mk_a, key_A)
     for i, j in itertools.product(range(num_za), range(num_zb)):
         plt.text(j, i, "{:.3f}".format(
-            cm[i, j]), horizontalalignment="center", color="k", size="small")
+            cm[i, j]), horizontalalignment="center",
+            color="k", size="small")
     _style_set_fig(fig, siz=_setup_config[figsize])
     _setup_figshow(fig, figname)
     return
+'''
 
 
 # def _alter_sub_Pearson_cor(x, ys, annotZs):
@@ -278,7 +351,8 @@ def _alternative_multi_scatter_hor(X, Ys, sens,
                                    figname, identity,
                                    locate, box, invt,
                                    # share=False,
-                                   kwargs=dict()):
+                                   # kwargs=dict()):
+                                   kwargs):  # dict()
     sa_len, num_z = len(sens), len(annotZs)
     fig, ax = plt.subplots(1, sa_len,  # sharey=share,
                            figsize=_multi_figsize[sa_len])
@@ -325,7 +399,8 @@ def _alternative_multi_scatter_vrt(X, Ys, sens,
                                    figname, identity,
                                    locate, box, invt,
                                    # share=False,
-                                   kwargs=dict()):
+                                   # kwargs=dict()):
+                                   kwargs):  # dict()
     sa_len, num_z = len(sens), len(annotZs)
     fig, ax = plt.subplots(1, sa_len,  # sharex=share,
                            figsize=_multi_figsize[sa_len])
@@ -601,6 +676,44 @@ def _discrete_illustrate(IndexSlices, SubIndices):
     return dist, [dis_1, dis_2, ans_1, ans_5, ans_6]
 
 
+def _discrete_not_split(freq_x, freq_y, comp_y, dist, annots,
+                        figname, figsize):
+    comp_x = freq_x
+    fc_p, fc_q = 'r', 'b'
+    annotX, annotY = annots
+    font = {"family": plt.rcParams['font.family']}
+    # before having _discrete_not_split
+
+    fig, axes = plt.subplots(figsize=_setup_config[figsize])
+    # axes.bar(freq_x, freq_y, fc=fc_p)
+    # axes.bar(comp_x, comp_y, fc=fc_q, label=dist)
+    wid = .4  # .5, \pm.25
+    axes.bar(
+        [i - .2 for i in freq_x], freq_y, wid, fc=fc_p)
+    axes.bar([i + .2 for i in comp_x], comp_y,
+             wid, fc=fc_q, label=dist)
+
+    # axes.bar(comp_x, base_y, fc=fc_q, label=dist)
+    axes.set_xlabel(annotX)
+    axes.set_ylabel(annotY)
+    axes.legend(loc="upper right", frameon=PLT_FRAMEBOX,
+                    prop=font, labelspacing=.4)
+    _setup_figshow(fig, figname + "_merge")
+    plt.close(fig)
+
+    fig, axes = plt.subplots(figsize=_setup_config[figsize])
+    axes.barh(freq_x, freq_y, fc=fc_p)
+    tmp_y = [-i for i in comp_y]
+    axes.barh(comp_x, tmp_y, fc=fc_q, label=dist)
+    axes.set_xlabel(annotY)
+    axes.set_ylabel(annotX)
+    axes.legend(loc="upper left", frameon=PLT_FRAMEBOX,
+                prop=font, labelspacing=.4)
+    _setup_figshow(fig, figname + "_transverse")  # 横向
+    plt.close(fig)
+    return
+
+
 def discrete_bar_comparison(IndexSlices, SubIndices,
                             figname="", figsize='L-WS',
                             density=False, split=True,
@@ -647,33 +760,8 @@ def discrete_bar_comparison(IndexSlices, SubIndices,
     plt.close(fig)
 
     if not split:
-        fig, axes = plt.subplots(figsize=_setup_config[figsize])
-        # axes.bar(freq_x, freq_y, fc=fc_p)
-        # axes.bar(comp_x, comp_y, fc=fc_q, label=dist)
-        wid = .4  # .5, \pm.25
-        axes.bar(
-            [i - .2 for i in freq_x], freq_y, wid, fc=fc_p)
-        axes.bar([i + .2 for i in comp_x], comp_y,
-                 wid, fc=fc_q, label=dist)
-
-        # axes.bar(comp_x, base_y, fc=fc_q, label=dist)
-        axes.set_xlabel(annotX)
-        axes.set_ylabel(annotY)
-        axes.legend(loc="upper right", frameon=PLT_FRAMEBOX,
-                    prop=font, labelspacing=.4)
-        _setup_figshow(fig, figname + "_merge")
-        plt.close(fig)
-
-        fig, axes = plt.subplots(figsize=_setup_config[figsize])
-        axes.barh(freq_x, freq_y, fc=fc_p)
-        tmp_y = [-i for i in comp_y]
-        axes.barh(comp_x, tmp_y, fc=fc_q, label=dist)
-        axes.set_xlabel(annotY)
-        axes.set_ylabel(annotX)
-        axes.legend(loc="upper left", frameon=PLT_FRAMEBOX,
-                    prop=font, labelspacing=.4)
-        _setup_figshow(fig, figname + "_transverse")  # 横向
-        plt.close(fig)
+        _discrete_not_split(freq_x, freq_y, comp_y, dist,
+                            (annotX, annotY), figname, figsize)
 
     return dist_arr
 

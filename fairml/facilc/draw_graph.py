@@ -791,7 +791,8 @@ def stat_chart_group(avg_accuracy, pickup_set,
 def visual_confusion_mat(y, hx, label_vals,
                          figname, figsize='M-WS',
                          title='Confusion matrix',
-                         cmap=None,
+                         # cmap=None,
+                         cmap_name='Blues',
                          normalize=True):
     # aka. def visualise_confusion_matrix()
     """
@@ -810,8 +811,9 @@ def visual_confusion_mat(y, hx, label_vals,
     cm = confusion_matrix(y, hx)  # y_true, y_pred
     accuracy = np.trace(cm) / np.sum(cm).astype('float')
     misclass = 1 - accuracy  # scalars
-    if cmap is None:
-        cmap = plt.get_cmap('Blues')
+    # if cmap is None:
+    #     cmap = plt.get_cmap('Blues')
+    cmap = plt.get_cmap(cmap_name)  # default:None
 
     fig = plt.figure(figsize=(8, 6))
     plt.imshow(cm, interpolation='nearest', cmap=cmap)

@@ -235,7 +235,8 @@ gc.enable()
 
 def _relevancy_score(y, yt):
     nb_cls = len(yt)
-    fens = plurality_voting(y, yt)  # weighted_voting(y,yt,coef)
+    # fens = plurality_voting(y, yt)  # weighted_voting(y,yt,coef)
+    fens = plurality_voting(yt)
     PC = np.mean(np.equal(fens, y))  # fens==y
     #   #
     idx = np.ones(shape=(nb_cls, nb_cls), dtype=DTY_BOL)
@@ -244,7 +245,8 @@ def _relevancy_score(y, yt):
     yt = np.array(yt)
     fidx = [yt[i].tolist() for i in idx]
     # fidx = [yt[i] for i in idx]  # shape=[[nb_cls-1,] nb_cls]
-    fidx = [plurality_voting(y, i) for i in fidx]  # [nb_y,nb_cls]
+    # fidx = [plurality_voting(y, i) for i in fidx]  # [nb_y,nb_cls]
+    fidx = [plurality_voting(i) for i in fidx]
     del yt  # fidx ?? check required  # checked
     #   #
     PCCi = [np.mean(np.equal(i, y)) for i in fidx]  # i==y
@@ -274,9 +276,9 @@ def _relevancy_score(y, yt):
 #         candidate features.
 
 def _complementary_score(y, yt, h):
-    fens = plurality_voting(y, yt)
-    hens = plurality_voting(y, yt + [h])
-    PS = np.mean(np.equal(fens, y))  # fens==y
+    fens = plurality_voting(yt)        # y,
+    hens = plurality_voting(yt + [h])  # y,
+    PS = np.mean(np.equal(fens, y))    # fens==y
     PSCi = np.mean(np.equal(hens, y))  # hens==y
     Com_Ci = PSCi / check_zero(PS) - 1.
     return float(Com_Ci), float(PS), float(PSCi)

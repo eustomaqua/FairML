@@ -41,7 +41,7 @@ conda env list
 exit
 ```
 
-*(3) create and delete an environment for reproduction (see [Requirements](#Requirements))*
+*(3) create and delete an environment for reproduction (see [Requirements](#requirements))*
 
 *(4) exit from docker and delete the image*
 ```shell

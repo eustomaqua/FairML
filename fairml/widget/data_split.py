@@ -132,15 +132,13 @@ def situation_split3(pr_trn, pr_tst, nb_iter, y):
 # Cross-Validation
 # ----------------------------------
 
-def situation_cross_validation(nb_iter, y,
-                               split_type='cross_valid_v3'):
+def situation_cross_validation(nb_iter, y, split_type='cross_valid_v3'):
     if split_type not in ["cross_valid_v3", "cross_valid_v2",
                           "cross_validation", "cross_valid"]:
         raise UserWarning("Check the number of datasets in the "
                           "cross-validation please.")
 
-    y = np.array(y)
-    vY = np.unique(y).tolist()
+    y, vY = np.array(y), np.unique(y).tolist()
     dY = len(vY)
     iY = [np.where(y == j)[0] for j in vY]  # indexes
     lY = [len(j) for j in iY]  # length

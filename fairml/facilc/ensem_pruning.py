@@ -502,7 +502,7 @@ def Reduce_Error_Pruning(y, yt, nb_cls, nb_pru):
             temP = P.copy()
             temP[i] = True
             temyt = yt[temP].tolist()
-            temfens = plurality_voting(y, temyt)
+            temfens = plurality_voting(temyt)  # y,
             # temerr = np.mean(temfens != y, axis=0)
             temerr = np.mean(np.not_equal(temfens, y), axis=0)
             anserr.append(temerr)
@@ -541,7 +541,7 @@ def Complementarity_Measure_Pruning(y, yt, nb_cls, nb_pru):
     while np.sum(P) < nb_pru:
         S_u = np.where(P)[0]  # pruned sub-   # current selected individuals
         L_u = np.where(np.logical_not(P))[0]  # current left classifiers in ensemble
-        fens = plurality_voting(y, yt[S_u].tolist())
+        fens = plurality_voting(yt[S_u].tolist())  # y,
         hk_x = [np.logical_and(np.not_equal(fens, y),
                                np.equal(y, yt[k])) for k in L_u]
         # hk_x = [np.logical_and(fens != y, y == yt[k]) for ..]  # [[nb_y] len(L_u)]
@@ -1024,7 +1024,7 @@ def _drep_multi_modify_diff(ha, hb):
 
 def _drep_multi_modify_findidx(y, yt, rho, P):
     hstar = np.array(yt)[P].tolist()
-    hstar = plurality_voting(y, hstar)
+    hstar = plurality_voting(hstar)  # y,
     all_q_in_S = np.where(np.logical_not(P))[0]
     dhstar = [_drep_multi_modify_diff(yt[q],
                                       hstar) for q in all_q_in_S]
@@ -1035,7 +1035,8 @@ def _drep_multi_modify_findidx(y, yt, rho, P):
     errHstar = np.mean(np.not_equal(hstar, y))
     idx = np.where(P)[0].tolist()
     yt = np.array(yt)
-    errNew = [plurality_voting(y, yt[idx + [p]].tolist()) for p in gamma]
+    # errNew = [plurality_voting(y, yt[idx + [p]].tolist()) for p in gamma]
+    errNew = [plurality_voting(yt[idx + [p]].tolist()) for p in gamma]
     errNew = [np.mean(np.not_equal(p, y)) for p in errNew]
     errIdx = errNew.index(np.min(errNew))
     if errNew[errIdx] <= errHstar:
