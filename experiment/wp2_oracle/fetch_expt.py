@@ -2,31 +2,28 @@
 # fetch_data.py
 
 
-from fairml.widget.utils_saver import elegant_print
-from fairml.widget.utils_remark import (
+from pyfair.facil.utils_saver import elegant_print
+from pyfair.facil.utils_remark import (
     AVAILABLE_NAME_PRUNE, LATEST_NAME_PRUNE)
 
 # Experiments
-from fairml.widget.utils_const import _get_tmp_name_ens
+from pyfair.facil.utils_const import _get_tmp_name_ens
+
 from fairml.datasets import preprocess
 from fairml.preprocessing import (
     adversarial, transform_X_and_y, transform_unpriv_tag,
     transform_perturbed)
-from fairml.facils.data_classify import EnsembleAlgorithm
-# from fairml.facils.utils_wpclf import FAIR_INDIVIDUALS as INDIVIDUALS
-from experiment.widget.utils_wpclf import FAIR_INDIVIDUALS as INDIVIDUALS
-# from fairml.facils.metrics_cont import (
-#     calc_accuracy, calc_Acc, calc_PR, calc_F1, calc_4Rate,
-#     calc_confusion)
+
+from pyfair.marble.data_classify import EnsembleAlgorithm
+from experiment.utils.utils_learner import FAIR_INDIVIDUALS as INDIVIDUALS
+
 from experiment.wp2_oracle.fetch_data import (
     calc_accuracy, calc_Acc, calc_PR, calc_F1, calc_4Rate,
     calc_confusion, DataSetup)
 
-from fairml.facils.metric_fair import marginalised_pd_mat
-# from fairml.facils.fairness_group import marginalised_pd_mat
-from fairml.facilc.ensem_pruning import \
+from pyfair.granite.ensem_pruning import \
     contrastive_pruning_methods as exist_pruning_basics
-from fairml.facilc.ensem_prulatest import \
+from pyfair.granite.ensem_prulatest import \
     contrastive_pruning_lately as exist_pruning_latest
 from fairml.discriminative_risk import (
     hat_L_fair, E_rho_L_fair_f, Erho_sup_L_fair,
@@ -35,28 +32,31 @@ from fairml.dr_pareto_optimal import (
     Pareto_Optimal_EPAF_Pruning, _bi_objectives, POAF_PEP,
     Centralised_EPAF_Pruning, Distributed_EPAF_Pruning)
 
-from fairml.facils.metric_fair import prev_unpriv_grp_one \
-    as unpriv_group_one
-from fairml.facils.metric_fair import prev_unpriv_grp_two \
-    as unpriv_group_two
-from fairml.facils.metric_fair import prev_unpriv_grp_thr \
-    as unpriv_group_thr
-from fairml.facils.metric_fair import prev_unpriv_unaware \
-    as unpriv_unaware
-from fairml.facils.metric_fair import prev_unpriv_manual \
-    as unpriv_manual
+from pyfair.facil.utils_const import check_zero, unique_column
+from pyfair.facil.utils_saver import elegant_print
+from pyfair.marble.metric_fair import (
+    marginalised_pd_mat, prev_unpriv_grp_one, prev_unpriv_grp_two,
+    prev_unpriv_grp_thr, prev_unpriv_unaware, prev_unpriv_manual)
+
 from fairml.widget.data_split import (
     sklearn_k_fold_cv, sklearn_stratify, manual_cross_valid)
 # Experiments
 
-# import pandas as pd
 import numpy as np
-# import numba
 import csv
 import logging
 import os
 import sys
 import time
+
+unpriv_group_one = prev_unpriv_grp_one
+unpriv_group_two = prev_unpriv_grp_two
+unpriv_group_thr = prev_unpriv_grp_thr
+unpriv_unaware = prev_unpriv_unaware
+unpriv_manual = prev_unpriv_manual
+
+del prev_unpriv_grp_one, prev_unpriv_grp_two, prev_unpriv_grp_thr
+del prev_unpriv_unaware, prev_unpriv_manual
 
 
 # ==================================

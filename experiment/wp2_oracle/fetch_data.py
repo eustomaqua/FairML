@@ -1,24 +1,16 @@
 # coding: utf-8
 
 
-from fairml.widget.utils_remark import AVAILABLE_ABBR_CLS
-# Experiments
-from fairml.widget.utils_const import _get_tmp_document, check_zero
-from fairml.datasets import (
-    DATASETS, DATASET_NAMES, RAW_EXPT_DIR)
-# from fairml.facils.metrics_cont import (
-#     calc_accuracy, calc_Acc, calc_PR, calc_F1, calc_4Rate,
-#     calc_confusion)
-# Experiments
-
+import os
 import pandas as pd
 import numpy as np
 import numba
-# import csv
-# import logging
-import os
-# import sys
-# import time
+
+from pyfair.facil.utils_remark import AVAILABLE_ABBR_CLS
+from pyfair.facil.utils_const import _get_tmp_document, check_zero
+from fairml.datasets import DATASETS, DATASET_NAMES, RAW_EXPT_DIR
+
+# Experiments
 CURR_EXPT_DIR = os.path.join(RAW_EXPT_DIR, 'wp2_oracle')
 
 

@@ -1,42 +1,35 @@
 # coding: utf-8
 #
 # TARGET:
-#   Oracle bounds regarding fairness for majority vote
+#   Oracle bounds regarding fairness for weighted vote
 #
 
 
 import numpy as np
-# import pandas as pd
 import time
 
-from fairml.widget.utils_const import unique_column
-# from fairml.widget.utils_saver import elegant_print
-
 from fairml.discriminative_risk import (
-    hat_L_fair, E_rho_L_fair_f,  # ell_fair_x,tandem_fair,
-    hat_L_loss, E_rho_L_loss_f,  # ell_loss_x,tandem_loss,
-    Erho_sup_L_fair)  # Erho_sup_L_loss, ED_Erho_I_fair,
-# hat_L_objt, cal_L_obj_v1, cal_L_obj_v2)
+    hat_L_fair, E_rho_L_fair_f, Erho_sup_L_fair,
+    hat_L_loss, E_rho_L_loss_f,)
 from fairml.dr_pareto_optimal import (
     Pareto_Optimal_EPAF_Pruning, Centralised_EPAF_Pruning,
     Distributed_EPAF_Pruning, POAF_PEP, _POAF_calc_eval)
-# from fairml.dr_pareto_optimal import _bi_objectives  # as _POAF_calc_eval
-
 from experiment.wp2_oracle.fetch_expt import EnsembleSetup
-# from fairml.facils.fairness_group import (
-#     unpriv_group_one, unpriv_group_two, unpriv_group_thr,
-#     marginalised_pd_mat, unpriv_unaware, unpriv_manual)
-from fairml.facils.metric_fair import marginalised_pd_mat
-from fairml.facils.metric_fair import prev_unpriv_grp_one \
-    as unpriv_group_one
-from fairml.facils.metric_fair import prev_unpriv_grp_two \
-    as unpriv_group_two
-from fairml.facils.metric_fair import prev_unpriv_grp_thr \
-    as unpriv_group_thr
-from fairml.facils.metric_fair import prev_unpriv_unaware \
-    as unpriv_unaware
-from fairml.facils.metric_fair import prev_unpriv_manual \
-    as unpriv_manual
+
+
+from pyfair.facil.utils_const import unique_column
+from pyfair.marble.metric_fair import (
+    marginalised_pd_mat, prev_unpriv_grp_one, prev_unpriv_grp_two,
+    prev_unpriv_grp_thr, prev_unpriv_unaware, prev_unpriv_manual)
+
+unpriv_group_one = prev_unpriv_grp_one
+unpriv_group_two = prev_unpriv_grp_two
+unpriv_group_thr = prev_unpriv_grp_thr
+unpriv_unaware = prev_unpriv_unaware
+unpriv_manual = prev_unpriv_manual
+
+del prev_unpriv_grp_one, prev_unpriv_grp_two, prev_unpriv_grp_thr
+del prev_unpriv_unaware, prev_unpriv_manual
 
 
 # =====================================

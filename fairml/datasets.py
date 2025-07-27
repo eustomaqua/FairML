@@ -1,10 +1,22 @@
 # coding: utf-8
 
+
 import os
 import os.path as osp
 # import numpy as np
 import pandas as pd
-from fairml.widget.utils_saver import elegant_print
+from pyfair.facil.utils_saver import elegant_print
+
+
+__all__ = [
+    'Ricci', 'German', 'Adult', 'PropublicaRecidivism',
+    'PropublicaViolentRecidivism', 'DATASETS',
+    'DATASET_NAMES',  # 'prepare_data',
+    'process_above', 'process_below', 'preprocess',
+
+    'RAW_EXPT_DIR', 'AVAILABLE_FAIR_DATASET',
+    'make_sensitive_attrs_binary', 'make_class_attr_num',
+]
 
 
 # ===========================
@@ -21,8 +33,8 @@ def local_root_path():
 
 def local_data_path():
     home = local_root_path()
-    # path = osp.join(home, 'data')
-    path = osp.join(home, 'fairml', 'data')
+    path = osp.join(home, 'data')
+    # path = osp.join(home, 'fairml', 'data')
     return path
 
 
@@ -380,12 +392,12 @@ class PropublicaViolentRecidivism(Data):
             'days_b_screening_arrest', 'is_recid', 'decile_score',
             'score_text'])
 
-        '''
-        # >>> np.all(df['two_year_recid.1'] == df.two_year_recid)
-        # True
-        data_frame = data_frame.drop(columns=['two_year_recid.1'])
-        '''
-        # BUG. Cannot delete this column.
+        # '' '
+        # # >>> np.all(df['two_year_recid.1'] == df.two_year_recid)
+        # # True
+        # data_frame = data_frame.drop(columns=['two_year_recid.1'])
+        # '' '
+        # # BUG. Cannot delete this column.
 
         return data_frame
 

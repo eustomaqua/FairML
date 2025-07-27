@@ -1,5 +1,5 @@
 # coding: utf-8
-# utils_clfs.py
+# utils_wpclf(s).py
 #
 # TARGET:
 #   Oracle bounds regarding fairness for majority vote
@@ -25,14 +25,7 @@ import lightgbm
 import fairgbm
 # from lightgbm import LGBMClassifier
 # from fairgbm import FairGBMClassifier
-import sklearn
-skl_ver = sklearn.__version__
-if skl_ver.startswith('1.3'):  # '1.3.0', '1.3.2'
-    # from fairml.widget.pkgs_AdaFair_py36 import AdaFair
-    from experiment.widget.pkgs_AdaFair_py36 import AdaFair
-elif skl_ver.startswith('1.5.1'):
-    pass
-del skl_ver
+from experiment.widget.pkgs_AdaFair_py36 import AdaFair
 
 
 # =====================================

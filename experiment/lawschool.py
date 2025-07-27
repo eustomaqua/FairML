@@ -16,8 +16,8 @@ import pyro
 import pyro.distributions as dist
 from pyro.nn import PyroModule
 
-from fairml.widget.utils_saver import elegant_print
-from fairml.widget.utils_timer import fantasy_durat
+from pyfair.facil.utils_saver import elegant_print
+from pyfair.facil.utils_timer import fantasy_durat
 
 
 plt.rcParams['font.family'] = 'Times New Roman'
