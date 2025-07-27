@@ -8,61 +8,44 @@ from sklearn.ensemble import (
 # import lightgbm
 from lightgbm import LGBMClassifier
 from fairgbm import FairGBMClassifier
-# from fairml.widget.pkgs_AdaFair import AdaFair
 from experiment.widget.pkgs_AdaFair import AdaFair
 
-from fairml.widget.metric_cont import contg_tab_mu_type2 \
+from pyfair.facil.metric_cont import contg_tab_mu_type2 \
     as contingency_table
-from fairml.facils.metric_perf import (
+from pyfair.marble.metric_perf import (
     calc_accuracy, calc_precision, calc_recall, calc_f1_score,
     calc_fpr, calc_fnr, calc_sensitivity, calc_specificity,
     imba_geometric_mean, imba_discriminant_power,
-    imba_Matthew_s_cc, imba_Cohen_s_kappa)  # calc_tpr,
+    imba_Matthew_s_cc, imba_Cohen_s_kappa)
 # from prgm.nucleus.oracle_metric import (
 #     marginalised_pd_mat, unpriv_unaware, unpriv_manual,
 #     unpriv_group_one, unpriv_group_two, unpriv_group_thr)
 
-from fairml.facils.metric_fair import marginalised_pd_mat
+from pyfair.marble.metric_fair import marginalised_pd_mat
 from fairml.dr_pareto_optimal import (
     unpriv_group_one, unpriv_group_two, unpriv_group_thr,
     unpriv_unaware, unpriv_manual)
-# from fairml.facils.metric_fair import (
-#     marginalised_pd_mat, prev_unpriv_unaware, prev_unpriv_manual,
-#     prev_unpriv_grp_one, prev_unpriv_grp_two, prev_unpriv_grp_thr)
-# unpriv_group_one = prev_unpriv_grp_one
-# unpriv_group_two = prev_unpriv_grp_two
-# unpriv_group_thr = prev_unpriv_grp_thr
-# unpriv_unaware = prev_unpriv_unaware
-# unpriv_manual = prev_unpriv_manual
-# del prev_unpriv_grp_one, prev_unpriv_grp_two, prev_unpriv_grp_thr
-# del prev_unpriv_unaware, prev_unpriv_manual
-from fairml.discriminative_risk import (
-    hat_L_fair, hat_L_loss)  # E_rho_L_fair_f,E_rho_L_loss_f
-# from archv.fair.oracle_fetch import EnsembleSetup
+from fairml.discriminative_risk import hat_L_fair, hat_L_loss
 
-from experiment.widget.utils_wpclf import FAIR_INDIVIDUALS
-# from fairml.facils.utils_wpclf import (
-#     FAIR_INDIVIDUALS)  # ,TREE_ENSEMBLES,HOMO_ENSEMBLES)#,ALG_NAMES)
+from experiment.widget.utils_learner import FAIR_INDIVIDUALS
 from fairml.dr_pareto_optimal import (
     Pareto_Optimal_EPAF_Pruning, POAF_PEP,  # POAF_PEP(alternative)
     Centralised_EPAF_Pruning, Distributed_EPAF_Pruning,
     Ranking_based_fairness_Pruning)
-from fairml.widget.utils_const import unique_column
-from fairml.facils.data_classify import EnsembleAlgorithm
+from pyfair.facil.utils_const import unique_column
+from pyfair.marble.data_classify import EnsembleAlgorithm
 
 
-# rev_baseline.py
 import csv
 import json
-# import logging
 import os
 import sys
 import time
-from fairml.widget.utils_saver import (
+from pyfair.facil.utils_saver import (
     get_elogger, rm_ehandler, elegant_print)
-from fairml.widget.utils_timer import elegant_dated, elegant_durat
-from fairml.widget.utils_const import _get_tmp_name_ens
-from fairml.widget.data_split import (  # situation_split1,
+from pyfair.facil.utils_timer import elegant_dated, elegant_durat
+from pyfair.facil.utils_const import _get_tmp_name_ens
+from pyfair.facil.data_split import (
     sklearn_k_fold_cv, sklearn_stratify, manual_cross_valid)
 from fairml.datasets import preprocess
 from fairml.preprocessing import (

@@ -13,11 +13,11 @@ import time
 import numpy as np
 import pandas as pd
 
-from fairml.widget.utils_saver import (get_elogger, rm_ehandler,
-                                       elegant_print)
-from fairml.widget.utils_timer import elegant_dated, elegant_durat
-from fairml.widget.utils_const import _get_tmp_document
-from fairml.widget.utils_remark import AVAILABLE_ABBR_ENSEM
+from pyfair.facil.utils_saver import (get_elogger, rm_ehandler,
+                                      elegant_print)
+from pyfair.facil.utils_timer import elegant_dated, elegant_durat
+from pyfair.facil.utils_const import _get_tmp_document
+from pyfair.facil.utils_remark import AVAILABLE_ABBR_ENSEM
 
 from experiment.wp2_oracle.fetch_data import (
     pd_concat_divide_raw)  # DataSetup, CURR_EXPT_DIR,

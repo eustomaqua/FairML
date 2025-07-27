@@ -38,7 +38,7 @@ from pyfair.marble.metric_fair import (
     marginalised_pd_mat, prev_unpriv_grp_one, prev_unpriv_grp_two,
     prev_unpriv_grp_thr, prev_unpriv_unaware, prev_unpriv_manual)
 
-from fairml.widget.data_split import (
+from fairml.facil.data_split import (
     sklearn_k_fold_cv, sklearn_stratify, manual_cross_valid)
 # Experiments
 

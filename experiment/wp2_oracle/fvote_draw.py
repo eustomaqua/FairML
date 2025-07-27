@@ -1,23 +1,20 @@
 # coding: utf-8
 
 
-from fairml.facilc.draw_graph import (
-    multiple_line_chart, multiple_hist_chart,
-    Friedman_chart, stat_chart_stack,  # twinx_hist_chart,
-    histogram_chart, scatter_parl_chart,  # twinx_bars_chart,
-    scatter_id_chart,  # scatter_and_corr,sns_scatter_corr,
-    _setup_config, _setup_figsize, _setup_figshow)
-from fairml.facils.draw_hypos import (
-    Friedman_init, _encode_sign,  # _avg_and_stdev,
-    comp_t_prep, comp_t_sing,  # comp_t_init,
+from pyfair.granite.draw_graph import (
+    multiple_line_chart, multiple_hist_chart, Friedman_chart,
+    stat_chart_stack, histogram_chart, scatter_parl_chart,
+    scatter_id_chart, _setup_config, _setup_figsize, _setup_figshow)
+from pyfair.marble.draw_hypos import (
+    Friedman_init, _encode_sign, comp_t_prep, comp_t_sing,
     cmp_paired_avg, cmp_paired_wtl)
 
 from experiment.wp2_oracle.fetch_data import (
     GraphSetup, CURR_EXPT_DIR, pd_concat_divide_raw,
     pd_concat_divide_sht, pd_concat_sens_raw)
-from fairml.widget.utils_const import (
+from pyfair.facil.utils_const import (
     DTY_FLT, unique_column, _get_tmp_name_ens, _get_tmp_document)
-from fairml.widget.utils_remark import (
+from pyfair.facil.utils_remark import (
     AVAILABLE_ABBR_ENSEM, AVAILABLE_ABBR_CLS)
 
 import csv

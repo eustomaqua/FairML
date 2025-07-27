@@ -8,7 +8,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from fairml.facilc.draw_graph import (  # .graph.utils_param
+# from pyfair.granite.draw_graph import (
+from pyfair.facil.draw_prelim import (
     DTY_PLT,  # PLT_LOCATION, PLT_AX_STYLE,
     _setup_config, _setup_figsize, _setup_figshow, _barh_kwargs)
 

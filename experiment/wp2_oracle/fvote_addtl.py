@@ -5,24 +5,23 @@ import json
 import os
 import time
 import numpy as np
+
 from pyfair.facil.utils_const import DTY_FLT, _get_tmp_name_ens
 from pyfair.facil.utils_saver import (
     elegant_print, get_elogger, rm_ehandler)
-from fairml.widget.utils_timer import elegant_durat
+from pyfair.facil.utils_timer import elegant_durat
 
-from fairml.facils.draw_hypos import (  # .graph.utils_hypos
+from pyfair.marble.draw_hypos import (
     _encode_sign, Friedman_init,
     cmp_paired_wtl, cmp_paired_avg, comp_t_sing, comp_t_prep)
-from fairml.facilc.draw_graph import (
+from pyfair.granite.draw_graph import (
     Friedman_chart, stat_chart_stack, multiple_hist_chart)
-from fairml.facilc.draw_chart import (
+from pyfair.granite.draw_chart import (
     multiple_scatter_chart, analogous_confusion,
     multiple_scatter_alternative, analogous_confusion_alternative,
     analogous_confusion_extended)
 
-from fairml.facilc.draw_addtl import (
-    # _subproc_pl_lin_reg_alt,
-    # line_reg_with_marginal_distr, scatter_with_marginal_distrib,
+from pyfair.granite.draw_addtl import (
     FairGBM_scatter, FairGBM_tradeoff_v1, FairGBM_tradeoff_v2,
     FairGBM_tradeoff_v3)
 from experiment.wp2_oracle.fetch_data import (
