@@ -13,12 +13,12 @@ import pdb
 from fairml.datasets import German, preprocess  # Ricci,
 from fairml.preprocessing import (
     adversarial, transform_X_and_y, transform_unpriv_tag)
-from fairml.facils.ensem_voting import weighted_voting
-from fairml.widget.utils_saver import elegant_print
-from fairml.widget.utils_timer import elegant_durat
+from pyfair.facil.ensem_voting import weighted_voting
+from pyfair.facil.utils_saver import elegant_print
+from pyfair.facil.utils_timer import elegant_durat
 
 from fairml.discriminative_risk import hat_L_fair, hat_L_loss
-from fairml.facils.metric_fair import (
+from pyfair.marble.metric_fair import (
     unpriv_group_one, unpriv_group_two, unpriv_group_thr,
     marginalised_np_mat, calc_fair_group,)
 #     marginalised_pd_mat, prev_unpriv_grp_one, prev_unpriv_grp_two,
@@ -65,15 +65,16 @@ del kf
 i_trn, i_tst = split_idx[k]
 X_trn, y_trn = X.iloc[i_trn], y.iloc[i_trn]
 X_tst, y_tst = X.iloc[i_tst], y.iloc[i_tst]
-Xp_trn = Xp.iloc[i_trn].to_numpy()
-Xp_tst = Xp.iloc[i_tst].to_numpy()
-X_trn, y_trn = X_trn.to_numpy(), y_trn.to_numpy()
-X_tst, y_tst = X_tst.to_numpy(), y_tst.to_numpy()
+Xp_trn = Xp.iloc[i_trn]  # .to_numpy()
+Xp_tst = Xp.iloc[i_tst]  # .to_numpy()
+# X_trn, y_trn = X_trn.to_numpy(), y_trn.to_numpy()
+# X_tst, y_tst = X_tst.to_numpy(), y_tst.to_numpy()
 nsa_idx_trn = [idx[i_trn] for idx in non_sa]
 nsa_idx_tst = [idx[i_tst] for idx in non_sa]
 
 
 clf = ensemble.BaggingClassifier(n_estimators=nb_cls)
+pdb.set_trace()
 clf.fit(X_trn, y_trn)
 yhat_trn = [clf.estimators_[i].predict(
     X_trn).tolist() for i in range(nb_cls)]

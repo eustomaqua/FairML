@@ -17,14 +17,14 @@ from fairml.discriminative_risk import (
     hat_L_loss, E_rho_L_loss_f,   # Erho_sup_L_loss,
     tandem_objt, cal_L_obj_v1)    # hat_L_objt,
 # from fairml.widget.utils_const import DTY_BOL
-from fairml.facils.ensem_voting import weighted_voting
-from fairml.facilc.ensem_pruning import _PEP_flipping_uniformly
+from pyfair.facil.ensem_voting import weighted_voting
+from pyfair.granite.ensem_pruning import _PEP_flipping_uniformly
 
 # Algorithm 4
-from fairml.facils.metric_fair import (
+from pyfair.marble.metric_fair import (
     marginalised_pd_mat, prev_unpriv_unaware, prev_unpriv_manual,
     prev_unpriv_grp_one, prev_unpriv_grp_two, prev_unpriv_grp_thr)
-from fairml.facils.draw_hypos import _Friedman_sequential
+from pyfair.marble.draw_hypos import _Friedman_sequential
 # from fairml.facilc.draw_hypos import _Friedman_successive
 
 
