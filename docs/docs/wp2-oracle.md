@@ -42,11 +42,11 @@ fairness concurrently),* presented in centralised and distributed versions (that
 import numpy as np
 # np.random.seed(None)
 
-k = 2        # k-th in Cross Validation
+k = 2             # k-th in Cross Validation
 nb_cls = 21  # number of individual classifiers
 nb_pru = 11  # size of the pruned sub-ensemble
-lam = .5     # regularisation factor in bi-objective
-n_m = 2      # number of machines in EPAF-D
+lam = .5        # regularisation factor in bi-objective
+n_m = 2        # number of machines in EPAF-D
 ```
 
 (2) load one dataset
@@ -94,11 +94,19 @@ nsa_idx_trn = [idx[i_trn] for idx in non_sa]
 nsa_idx_tst = [idx[i_tst] for idx in non_sa]
 ```
 
+<!--
+from fairml.facils.ensem_voting import weighted_voting
+
+from fairml.discriminative_risk import hat_L_fair  # ,hat_L_loss
+from fairml.facils.metric_fair import (
+    unpriv_group_one, unpriv_group_two, unpriv_group_thr,
+    marginalised_np_mat, calc_fair_group,)
+-->
 (4) train one ensemble classifier
 ```python
 from sklearn import ensemble
 from sklearn import metrics
-from fairml.facils.ensem_voting import weighted_voting
+from pyfair.facil.ensem_voting import weighted_voting
 
 clf = ensemble.BaggingClassifier(n_estimators=nb_cls)
 clf.fit(X_trn, y_trn)
@@ -124,8 +132,8 @@ acc_qtb = get_accuracy(y_tst, hp_qtb_tst)
 
 (5) compute the discriminative risk and three group fairness measures
 ```python
-from fairml.discriminative_risk import hat_L_fair  # ,hat_L_loss
-from fairml.facils.metric_fair import (
+from fairml.discriminative_risk import hat_L_fair
+from pyfair.marble.metric_fair import (
     unpriv_group_one, unpriv_group_two, unpriv_group_thr,
     marginalised_np_mat, calc_fair_group,)
 
@@ -139,7 +147,7 @@ def get_grp_fairness(y, y_hat, pos_lbl, non_sa):
     bias_grp3 = calc_fair_group(*bias_grp3)
     return bias_grp1, bias_grp2, bias_grp3
 
-dr = hat_L_fair(hens_tst, hp_qtb_tst)
+dr, _ = hat_L_fair(hens_tst, hp_qtb_tst)
 grp_sa1 = get_grp_fairness(y_tst, hens_tst, pos_label, nsa_idx_tst[0])
 grp_sa2 = get_grp_fairness(y_tst, hens_tst, pos_label, nsa_idx_tst[1])
 ```
@@ -159,7 +167,7 @@ def get_subensemble(y, y_hat, y_hat_qtb, coef, H, non_sa):
 
     acc = get_accuracy(y, h_ens)
     acc_qtb = get_accuracy(y, hp_qtb)
-    dr = hat_L_fair(h_ens, hp_qtb)
+    dr, _ = hat_L_fair(h_ens, hp_qtb)
     grp_sa = [get_grp_fairness(
       y, h_ens, pos_label, i) for i in non_sa]
     return

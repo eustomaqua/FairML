@@ -74,7 +74,7 @@ nsa_idx_tst = [idx[i_tst] for idx in non_sa]
 
 
 clf = ensemble.BaggingClassifier(n_estimators=nb_cls)
-pdb.set_trace()
+# pdb.set_trace()
 clf.fit(X_trn, y_trn)
 yhat_trn = [clf.estimators_[i].predict(
     X_trn).tolist() for i in range(nb_cls)]
@@ -165,11 +165,11 @@ elegant_print([
         get_accuracy(y_tst, hens_tst),
         get_accuracy(y_tst, hp_qtb_tst)),
     "| Discriminative risk  |  {:.5f} | {:.5f}  |".format(
-        hat_L_fair(hens_trn, hp_qtb_trn),
-        hat_L_loss(hens_trn, y_trn)),
+        hat_L_fair(hens_trn, hp_qtb_trn)[0],
+        hat_L_loss(hens_trn, y_trn)[0]),
     "|   0/1 loss function  |  {:.5f} | {:.5f}  |".format(
-        hat_L_fair(hens_tst, hp_qtb_tst),
-        hat_L_loss(hens_tst, y_tst)),
+        hat_L_fair(hens_tst, hp_qtb_tst)[0],
+        hat_L_loss(hens_tst, y_tst)[0]),
     "| Group fairness 1: DP | {:.6f} , {:.6f} | {:.6f} , {:.6f} |".format(
         bias_trn[0][0], bias_trn[1][0], bias_tst[0][0], bias_tst[1][0]),
     "| Group fairness 2: EO | {:.6f} , {:.6f} | {:.6f} , {:.6f} |".format(
@@ -223,11 +223,11 @@ def get_subensemble(yhat_trn, yhat_tst, yp_qtb_trn, yp_qtb_tst,
             get_accuracy(y_tst, hens_tst),
             get_accuracy(y_tst, hp_qtb_tst)),
         "| Discriminative risk  |  {:.5f} | {:.5f}  |".format(
-            hat_L_fair(hens_trn, hp_qtb_trn),
-            hat_L_loss(hens_trn, y_trn)),
+            hat_L_fair(hens_trn, hp_qtb_trn)[0],
+            hat_L_loss(hens_trn, y_trn)[0]),
         "|   0/1 loss function  |  {:.5f} | {:.5f}  |".format(
-            hat_L_fair(hens_tst, hp_qtb_tst),
-            hat_L_loss(hens_tst, y_tst)),
+            hat_L_fair(hens_tst, hp_qtb_tst)[0],
+            hat_L_loss(hens_tst, y_tst)[0]),
         "| Group fairness 1: DP | {:.6f} , {:.6f} | {:.6f} , {:.6f} |".format(
             bias_trn[0][0], bias_trn[1][0], bias_tst[0][0], bias_tst[1][0]),
         "| Group fairness 2: EO | {:.6f} , {:.6f} | {:.6f} , {:.6f} |".format(
@@ -287,5 +287,4 @@ for criterion in ['DP', 'EO', 'PQP']:
         elegant_print(f"\trank_idx = {rank_idx}")
 
 
-pdb.set_trace()
 # pdb.set_trace()

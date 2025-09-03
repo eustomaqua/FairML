@@ -9,8 +9,8 @@ https://readthedocs.org/projects/fairml/
 -->
 ![CircleCI](https://img.shields.io/circleci/build/github/eustomaqua/FairML/master)
 [![Documentation Status](https://readthedocs.org/projects/fairml/badge/?version=latest)](https://fairml.readthedocs.io/en/latest/?badge=latest)
-<!--
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/7676a4d116f447e897b6a4260b5c5f4f)](https://app.codacy.com/gh/eustomaqua/FairML/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
+<!--
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/7676a4d116f447e897b6a4260b5c5f4f)](https://app.codacy.com/gh/eustomaqua/FairML/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 -->
 

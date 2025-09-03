@@ -116,12 +116,12 @@ We borrow some auxiliary functions from [PyFairness](https://github.com/eustomaq
 # Two ways to install (& uninstall) PyFairness
 git clone git@github.com:eustomaqua/PyFairness.git
 
-pip install -r PyFairness/reqs_py311.txt
-pip install -e ./PyFairness
+# pip install -r PyFairness/reqs_py311.txt
+# pip install -e ./PyFairness
 # pip uninstall pyfair
 
 cp -r ./PyFairness/pyfair ./    # mv <folder> ./
-# rm -r pyfair
+rm -r pyfair
 yes | rm -r PyFairness
 ```
 
