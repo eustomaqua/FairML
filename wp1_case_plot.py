@@ -52,6 +52,7 @@ att2 = {
 
 fair_string = ["DP", "EO", "PQP", "DR", "loss"]
 bias_risk = ['undisturbed', 'disturbed']
+bias_risk = ['unperturbed', 'perturbed']
 
 
 def _subplot_bar_pl(ax, names, annot, val_1, val_2):

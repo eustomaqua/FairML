@@ -27,6 +27,9 @@ from pyfair.granite.draw_addtl import (
 from experiment.wp2_oracle.fetch_data import (
     GraphSetup, DataSetup, CURR_EXPT_DIR)
 
+BLFAIR = ['DP', 'EO', 'PQP', 'DR']
+BLFAIR = ['DP', 'EOpp', 'PP', 'DR']
+
 
 # =====================================
 # Experiments (additional)
@@ -83,7 +86,8 @@ class PlotA_Measures(GraphSetup):
             # idx = [23, 24, 25, 26, 27, 28]  # fairness
             # key = ["unaware", "DP", "EO", "PQP", "Manual", "DR"]
             idx = [24, 25, 26, 28]
-            key = ["DP", "EO", "PQP", "DR"]  # or "FQ (ours)"
+            # key = ["DP", "EO", "PQP", "DR"]  # or "FQ (ours)"
+            key = BLFAIR
         # mode = 'ascend' if mark == "fair" else "descend"
 
         new_curr = curr[:, idx, :]  # .shape (#alg,#eval,#iter)
@@ -127,7 +131,7 @@ class PlotD_Measures(PlotA_Measures):
         X, Ys = alt_data[26], alt_data[[50, 51, 52, 54], :]
         # annots = ('diff(Accuracy)', 'Fairness Measure')
         annots = (r"$\Delta$(Accuracy)", "Fairness Measure")
-        annotZs = ('DP', 'EO', 'PQP', 'DR')
+        annotZs = BLFAIR  # ('DP', 'EO', 'PQP', 'DR')
         fgn = figname + "_correlation"
         multiple_scatter_chart(X, Ys, annots, annotZs, fgn)
         multiple_scatter_chart(X, Ys, annots, annotZs, fgn,
@@ -138,7 +142,7 @@ class PlotD_Measures(PlotA_Measures):
         #        "Sensitivity", "Specificity"]
         key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
         key = [r"$\Delta$({})".format(i) for i in key
-               ] + ["DP", "EO", "PQP", "DR"]
+               ] + BLFAIR  # ["DP", "EO", "PQP", "DR"]
         fgn = figname + "_confusion"
         analogous_confusion(Mat, key, fgn, normalize=False)
         return
@@ -161,7 +165,8 @@ class PlotD_Measures(PlotA_Measures):
                    "Matthew", "Cohen"]
         elif mark == "fair":
             idx = [50, 51, 52, 54]
-            key = ["DP", "EO", "PQP", "DR"]  # or "FQ (ours)"
+            # key = ["DP", "EO", "PQP", "DR"]  # or "FQ (ours)"
+            key = BLFAIR
 
         '''
         if mark.endswith("norm"):
@@ -205,7 +210,7 @@ class GatherD_Measures(PlotD_Measures):
 
         X, Ys = alt_data[26], alt_data[[50, 51, 52, 54], :]
         annots = (r"$\Delta$(Accuracy)", "Fairness Measure")
-        annotZs = ('DP', 'EO', 'PQP', 'DR')
+        annotZs = BLFAIR  # ('DP', 'EO', 'PQP', 'DR')
         fgn = figname + "_correlation"
         if verbose:
             multiple_scatter_chart(X, Ys, annots, annotZs, fgn)
@@ -215,7 +220,7 @@ class GatherD_Measures(PlotD_Measures):
         Mat = alt_data[[26, 27, 28, 29, 32, 33, 50, 51, 52, 54]]
         key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
         key = [r"$\Delta$(%s)" % i for i in key
-               ] + ["DP", "EO", "PQP", "DR"]
+               ] + BLFAIR  # ["DP", "EO", "PQP", "DR"]
         key[3] = r"$\Delta(\mathrm{f}_1)$"  # r"$\Delta(f_1)$"
         fgn = figname + "_confusion"
         if verbose:
@@ -283,12 +288,11 @@ class PlotE_Measures(PlotD_Measures):
                 test_J[i] for i in range(num_e)], axis=1)
 
         annots = (r"$\Delta$(Accuracy)", "Fairness Measure")
-        annotZs = ('DP', 'EO', 'PQP', 'DR')
+        annotZs = BLFAIR  # ('DP', 'EO', 'PQP', 'DR')
         fgn_r = figname + "_correlation"
         key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
-        key = [
-            r"$\Delta$(%s)" % i for i in key] + [
-            "DP", "EO", "PQP", "DR"]
+        key = [r"$\Delta$(%s)" % i for i in key
+               ] + BLFAIR  # ["DP", "EO", "PQP", "DR"]
         fgn_f = figname + "_confusion"
         if len(sensitive_attributes) == 1:
             alt_data = [test_A]
@@ -361,11 +365,11 @@ class GatherE_Measures(PlotE_Measures):
         alt_data = np.concatenate(alt_data, axis=1)
 
         annots = (r"$\Delta$(Accuracy)", "Fairness Measure")
-        annotZs = ('DP', 'EO', 'PQP', 'DR')
+        annotZs = BLFAIR  # ('DP', 'EO', 'PQP', 'DR')
         fgn_r = figname + "_correlation" + "_{}".format(str(jt)[0])
         key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
-        key = [
-            r"$\Delta$(%s)" % i for i in key] + ["DP", "EO", "PQP", "DR"]
+        key = [r"$\Delta$(%s)" % i for i in key
+               ] + BLFAIR  # ["DP", "EO", "PQP", "DR"]
         fgn_f = figname + "_confusion" + "_{}".format(str(jt)[0])
 
         X, Ys = alt_data[26], alt_data[[50, 51, 52, 54], :]
@@ -814,7 +818,7 @@ class PlotB_Measures(GraphSetup):
                    "Matthew", "Cohen"]
         elif mark == "fair":
             idx = [24, 25, 26, 28]
-            key = ["DP", "EO", "PQP", "DR"]
+            key = BLFAIR  # ["DP", "EO", "PQP", "DR"]
         # mode = "ascend" if mark == "fair" else "descend"
 
         # new_curr = curr[:, :, idx]  # shape (8, 60, ?)
@@ -1023,7 +1027,7 @@ class Renew_GatherF_Prunings(GatherF_Prunings):
             new_data, res_all, optional_data, 52)
         _, _, Ys_DR = self.renew_retrieve_dat(
             new_data, res_all, optional_data, 54)
-        Ys_annot = ['DP', 'EO', 'PQP', 'DR']
+        Ys_annot = BLFAIR  # ['DP', 'EO', 'PQP', 'DR']
         self.renew_graph_scatter(Ys_acc, [
             Ys_DP, Ys_EO, Ys_PQP, Ys_DR], Ys_model, Ys_annot,
             verbose)
