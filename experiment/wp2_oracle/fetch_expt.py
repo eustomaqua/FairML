@@ -15,7 +15,8 @@ from fairml.preprocessing import (
     transform_perturbed)
 
 from pyfair.marble.data_classify import EnsembleAlgorithm
-from experiment.utils.utils_learner import FAIR_INDIVIDUALS as INDIVIDUALS
+# from experiment.utils.utils_learner import FAIR_INDIVIDUALS as INDIVIDUALS
+from experiment.widget.utils_learner import FAIR_INDIVIDUALS as INDIVIDUALS
 
 from experiment.wp2_oracle.fetch_data import (
     calc_accuracy, calc_Acc, calc_PR, calc_F1, calc_4Rate,
@@ -38,7 +39,7 @@ from pyfair.marble.metric_fair import (
     marginalised_pd_mat, prev_unpriv_grp_one, prev_unpriv_grp_two,
     prev_unpriv_grp_thr, prev_unpriv_unaware, prev_unpriv_manual)
 
-from fairml.facil.data_split import (
+from pyfair.facil.data_split import (
     sklearn_k_fold_cv, sklearn_stratify, manual_cross_valid)
 # Experiments
 

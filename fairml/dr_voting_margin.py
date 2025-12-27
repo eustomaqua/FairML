@@ -179,6 +179,24 @@ def Erl_summary(yt, yq, wgt, eta=.05, nc=2):
 
 
 # -------------------------------------
+# PAC bounds
+
+
+def pac_indiv(nb_trn, delt):
+    tmp = -np.log(delt)  # ln()
+    tmp = tmp / (2. * nb_trn)
+    tmp = np.sqrt(tmp)
+    return tmp.tolist()
+
+
+def pac_ensem(nb_trn, delt, nf):
+    tmp = np.log(nf) - np.log(delt)
+    tmp = tmp / (2. * nb_trn)
+    tmp = np.sqrt(tmp)
+    return tmp.tolist()
+
+
+# -------------------------------------
 
 
 # =====================================

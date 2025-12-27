@@ -40,7 +40,8 @@ from sklearn.ensemble import BaseEnsemble
 from sklearn.ensemble._forest import BaseForest  # BaseEnsemble
 # from sklearn.externals import six
 
-from fairml.widget.utils_const import check_zero
+# from fairml.widget.utils_const import check_zero
+from pyfair.facil.utils_const import check_zero
 import six
 import sys
 # import pdb  # Modification to make it suit for multi-class classification

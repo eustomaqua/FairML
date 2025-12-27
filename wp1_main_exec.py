@@ -10,11 +10,18 @@ import csv
 import logging
 import sys
 import time
+import pdb
 
-from fairml.widget.utils_saver import (
+# from fairml.widget.utils_saver import (
+#     get_elogger, rm_ehandler, elegant_print)
+# from fairml.widget.utils_timer import elegant_durat
+# from fairml.widget.data_split import (
+#     sklearn_k_fold_cv, sklearn_stratify, manual_cross_valid,
+#     situation_split1)
+from pyfair.facil.utils_saver import (
     get_elogger, rm_ehandler, elegant_print)
-from fairml.widget.utils_timer import elegant_durat
-from fairml.widget.data_split import (
+from pyfair.facil.utils_timer import elegant_durat
+from pyfair.facil.data_split import (
     sklearn_k_fold_cv, sklearn_stratify, manual_cross_valid,
     situation_split1)
 
@@ -522,6 +529,7 @@ def default_parameters():
         '--nb-lam', type=int, default=5, help='Number of lam values')
     parser.add_argument(
         '--delta', type=float, default=1e-6, help='$1-\delta$')
+    parser.add_argument('--eta', type=float, default=.56)
     parser.add_argument(
         '--screen', action='store_true', help='Where to output')
     parser.add_argument(
@@ -552,7 +560,12 @@ rho = float(nb_pru) / nb_cls
 
 if args.add_expt:
     kwargs = {}
-    if trial_type.endswith('expt3'):
+    if trial_type.endswith('expt11'):
+        kwargs['delt'] = args.delta    # 'delta'
+        kwargs['name_ens'] = args.name_ens
+        kwargs['abbr_cls'] = args.abbr_cls
+        kwargs['eta'] = args.eta
+    elif trial_type.endswith('expt3'):
         kwargs['name_ens'] = args.name_ens
         kwargs['abbr_cls'] = args.abbr_cls
     # elif trial_type[-5:] in ('expt4', 'expt5', 'expt6'):
@@ -618,4 +631,10 @@ python wp1_main_exec.py --logged -exp mCV_expt6 --name-ens Bagging --abbr-cls DT
 python wp1_main_exec.py -add -exp mCV_expt1 -dat german
 python wp1_main_exec.py -add -exp mCV_expt4 -dat * --ratio .95 --nb-cls 7 --nb-pru 3
 python wp1_main_exec.py -add -exp mCV_expt5 -dat * --ratio .95 --nb-cls 3 --nb-pru 1
+"""
+
+"""
+# corrected
+python wp1_main_exec.py -add --logged -exp mCV_expt3 --name-ens Bagging --abbr-cls DT --nb-cls 11 -dat ricci
+python wp1_main_exec.py -add --logged -exp mCV_expt11 --name-ens Bagging --abbr-cls DT --nb-cls 11 --delta 1e-6 --eta .6 -dat ricci -nk 2
 """
