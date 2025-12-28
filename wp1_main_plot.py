@@ -12,6 +12,7 @@ import sys
 import time
 import numpy as np
 import pandas as pd
+import pdb
 
 from pyfair.facil.utils_saver import (get_elogger, rm_ehandler,
                                       elegant_print)
@@ -33,6 +34,7 @@ from experiment.wp2_oracle.fvote_draw import (
 from experiment.wp2_oracle.fvote_draw import PlotD_ImprovePruning  # legacy
 from experiment.wp2_oracle.fvote_addtl import FairVoteDrawing
 from experiment.wp2_oracle.rev_fig_repr import FVre_Drawing
+from experiment.wp2_oracle.rev_fig_repr import CorrFigCK_bounds
 
 
 # ----------------------------------
@@ -484,6 +486,23 @@ if trial_type[-5:] in ('expt4', 'expt6',
 
 name_ens = args.name_ens
 gather = args.gather
+if trial_type.endswith('exp11g'):
+    # case = OracleGatheredDrawing(trial_type, nb_iter, **kwargs)
+    nb_cls, delt, eta = args.nb_cls, 0.01, .6  # 17,
+    xlsx_name = f'_pms_delt{int(delt*100)}_eta{int(eta*100)}'
+    xlsx_name = f'{trial_type}_nk{nb_iter}nf{nb_cls}{xlsx_name}'
+    from pyfair.facil.utils_const import _get_tmp_name_ens
+    shet_name = _get_tmp_name_ens(name_ens)
+    shet_name = f'{trial_type[-6:]}_{shet_name}'
+    iterator = CorrFigCK_bounds(
+        name_ens, nb_cls, nb_pru='', nb_iter=args.nb_iter,
+        figname='gck')  # 'exp11g'
+    raw_df = iterator.load_raw_dataset(xlsx_name, shet_name)
+    iterator.schedule_mspaint(raw_df)
+    del xlsx_name, shet_name, delt, eta
+    del iterator, raw_df, nb_cls
+    sys.exit()
+
 if trial_type.endswith('expt10'):
     kwargs['nb_lam'] = args.nb_lam
 else:
@@ -525,4 +544,8 @@ python wp1_main_plot.py -exp mCV_expt8 --name-ens Bagging
 python wp1_main_plot.py -exp mCV_expt8 --name-ens AdaBoostM1 --nb-cls 11 --nb-pru 5
 python wp1_main_plot.py -exp mCV_expt8 --name-ens SAMME --nb-cls 11 --nb-pru 5
 python wp1_main_plot.py -exp mCV_expt10 --name-ens Bagging --nb-iter 2 --nb-cls 11
+"""
+
+"""
+python wp1_main_plot.py -exp mCV_exp11g --nb-cls 17 --name-ens *  # --gather
 """

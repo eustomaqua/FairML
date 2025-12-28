@@ -1485,6 +1485,66 @@ class Correct311CK_theorem(PartC_FairMeasure):  # ClassifierSetup):
         return res  # .shape=(6+4*nf,)=(5+1+4*#cls)
 
 
+class Correct311_gather(Correct311CK_theorem):
+    # ClassifierSetup,
+    def __init__(self, name_ens, nb_cls):
+        # super().__init__()
+        self._name_ens = name_ens
+        self._nb_cls = nb_cls
+        self._abbr_cls_set = ['DT', 'NB', 'SVM', 'linSVM',
+                              'LR1', 'LR2', 'LM1', 'LM2',
+                              'kNNu', 'kNNd', 'MLP']
+
+    def schedule_content(self,  # nb_cls, lam=.5,
+                         X_trn, y_trn, Xd_trn,
+                         X_tst, y_tst, Xd_tst,
+                         eta=.6, delt=0.05):
+        res_curr = []
+        for abbr_cls in self._abbr_cls_set:
+            res_iter = self.sched_subproc(abbr_cls,
+                                          X_trn, y_trn, Xd_trn,
+                                          X_tst, y_tst, Xd_tst,
+                                          eta, delt)
+            res_curr.append(res_iter)
+        return res_curr  # .size=(11,1+10+24+6+4*nf)
+
+    def sched_subproc(self, abbr_cls,
+                      X_trn, y_trn, Xd_trn,
+                      X_tst, y_tst, Xd_tst,
+                      eta, delt):
+        ut = time.time()
+        name_cls = INDIVIDUALS[abbr_cls]
+        coef, clfs, _ = EnsembleAlgorithm(
+            self._name_ens, name_cls, self._nb_cls, X_trn, y_trn)
+        ut = time.time()
+
+        y_insp = [j.predict(X_trn).tolist() for j in clfs]
+        y_pred = [j.predict(X_tst).tolist() for j in clfs]
+        yq_insp = [j.predict(Xd_trn).tolist() for j in clfs]
+        yq_pred = [j.predict(Xd_tst).tolist() for j in clfs]
+        fens_trn = weighted_voting(y_insp, coef)  # y_trn,
+        fens_tst = weighted_voting(y_pred, coef)  # y_tst,
+        fqtb_trn = weighted_voting(yq_insp, coef)  # y_trn,
+        fqtb_tst = weighted_voting(yq_pred, coef)  # y_tst,
+        fens_trn, fens_tst = np.array(fens_trn), np.array(fens_tst)
+        fqtb_trn, fqtb_tst = np.array(fqtb_trn), np.array(fqtb_tst)
+
+        res_iter = [ut]
+        res_iter.extend(
+            self.verify_inspiration(y_trn, y_insp, coef, fens_trn))
+        res_iter.extend(
+            self.verify_inspiration(y_tst, y_pred, coef, fens_tst))
+        res_iter.extend(self.verify_theorem(
+            y_trn, y_insp, coef, fens_trn, yq_insp, fqtb_trn, eta))
+        res_iter.extend(self.verify_theorem(
+            y_tst, y_pred, coef, fens_tst, yq_pred, fqtb_tst, eta))
+        res_iter.extend(self.verify_paclemma(
+            y_trn, y_insp, yq_insp, fens_trn, fqtb_trn,
+            y_tst, y_pred, yq_pred, fens_tst, fqtb_tst,
+            coef, delt))
+        return res_iter
+
+
 # -------------------------------------
 # Experimental design
 #
@@ -1508,6 +1568,10 @@ class FairVoteEmpirical(DataSetup):
         if trial_type.endswith('expt11'):
             self._log_document = '_'.join([
                 trial_type, f'nf{nb_cls}nk{nb_iter}',
+                self._log_document, 'pms'])
+        elif trial_type.endswith('exp11g'):
+            self._log_document = '_'.join([
+                trial_type, f'nk{nb_iter}nf{nb_cls}',
                 self._log_document, 'pms'])
         else:
             self._log_document = "_".join([
@@ -1537,6 +1601,10 @@ class FairVoteEmpirical(DataSetup):
             nmens_tmp = _get_tmp_name_ens(name_ens)
             self._log_document += f'_{nmens_tmp}_{abbr_cls}'
             self._nb_pru = ''
+        elif trial_type.endswith('exp11g'):  # cor
+            self._delt, self._eta, self._nb_pru = delt, eta, ''
+            nmens_tmp = _get_tmp_name_ens(name_ens)
+            self._log_document += f'_{nmens_tmp}_delt{int(delt*100)}_eta{int(eta*100)}'
         if trial_type.endswith('expt3'):
             nmens_tmp = _get_tmp_name_ens(name_ens)
             self._log_document = self._log_document.replace(
@@ -1562,6 +1630,8 @@ class FairVoteEmpirical(DataSetup):
 
         elif trial_type.endswith('expt11'):
             self._iterator = Correct311CK_theorem(name_ens, abbr_cls)
+        elif trial_type.endswith('exp11g'):
+            self._iterator = Correct311_gather(name_ens, nb_cls)
 
     # def __del__(self):
     #     pass
@@ -1678,7 +1748,8 @@ class FairVoteEmpirical(DataSetup):
                       'nb_cls', 'nb_pru', 'nb_iter', 'iteration']
         csv_row_2b = ["#sens_attr", "name_ens", "abbr_cls",
                       "name_pru", "#iter", "#eval"]
-        if self._trial_type.endswith('expt11'):
+        if self._trial_type.endswith(
+                'expt11') or self._trial_type.endswith('exp11g'):
             (csv_row_1, csv_r2c, csv_r3c,
              csv_r4c) = self._iterator.prepare_trial(self._nb_cls)
         else:
@@ -1802,6 +1873,15 @@ class FairVoteEmpirical(DataSetup):
             for k in range(1, self._nb_iter):
                 csv_w.writerow([
                     ''] * 5 + [k, '', '', '', '', k, ''] + res_data[k])
+        elif self._trial_type[-6:] in ['exp11g', ]:
+            csv_w.writerow(res_all[0] + [res_all[1], '', ''])
+            for j, abbr_cls in enumerate(res_all[-1]):
+                k = 0
+                csv_w.writerow(res_all[0][:-1] + [k, '', res_all[
+                    -2][0], abbr_cls, '', k, ''] + res_data[k][j])
+                for k in range(1, self._nb_iter):
+                    csv_w.writerow([''] * 5 + [
+                        k, '', '', '', '', k, ''] + res_data[k][j])
             # pdb.set_trace()
 
         # END
@@ -1912,6 +1992,9 @@ class FairVoteEmpirical(DataSetup):
             res_all.append([self._name_ens])
             res_all.append([self._abbr_cls])
             # res_all.append(['Ensem'] + ['rank.' + i for i in CRITERIA])
+        elif self._trial_type.endswith('exp11g'):
+            res_all.append([self._name_ens])
+            res_all.append(self._iterator._abbr_cls_set)
             # pdb.set_trace()
         res_data = []
 
@@ -2045,6 +2128,10 @@ class FairVoteEmpirical(DataSetup):
                 X_tst, y_tst, Xd_tst,  # gones_tst, jt_tst,
                 # positive_label, self._lam, self._delt)
                 self._lam, self._eta, self._delt)
+        elif self._trial_type.endswith('exp11g'):
+            res_iter = self._iterator.schedule_content(
+                X_trn, y_trn, Xd_trn, X_tst, y_tst, Xd_tst,
+                self._eta, self._delt)
 
         tim_elapsed = time.time() - since
         elegant_print(["Iteration {}, Consumed {}".format(

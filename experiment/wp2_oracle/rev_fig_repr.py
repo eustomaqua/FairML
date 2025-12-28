@@ -6,6 +6,8 @@ import json
 import os
 import time
 import numpy as np
+import pdb
+import pandas as pd
 
 from pyfair.facil.utils_const import DTY_FLT, _get_tmp_document
 from pyfair.facil.utils_saver import (
@@ -20,11 +22,12 @@ from pyfair.granite.draw_chart import (
     analogous_confusion, analogous_confusion_alternative,
     analogous_confusion_extended)
 from pyfair.granite.draw_graph import (
-    Friedman_chart, stat_chart_stack, multiple_hist_chart)
+    Friedman_chart, stat_chart_stack, multiple_hist_chart,
+    scatter_id_chart)
 
 from pyfair.granite.draw_addtl import (
     FairGBM_scatter, FairGBM_tradeoff_v1, FairGBM_tradeoff_v2,
-    FairGBM_tradeoff_v3)
+    FairGBM_tradeoff_v3, multi_lin_reg_without_distr)
 from experiment.wp2_oracle.fvote_draw import PlotC_TheoremsLemma
 from experiment.wp2_oracle.fetch_data import DataSetup, GraphSetup
 from experiment.wp2_oracle.fvote_addtl import _little_helper
@@ -1002,3 +1005,366 @@ class FVre_Drawing(DataSetup):
         elegant_print("Time period in total: {}".format(
             elegant_durat(tim_elapsed)), logger)
         return
+
+
+# =====================================
+# Experiments (corrected bounds)
+# =====================================
+
+
+# -------------------------------------
+# fvote_draw.py
+#   PlotC_TheoremsLemma
+#   PlotK_PACGeneralisation
+
+
+class CorrFigCK_bounds(GraphSetup):
+    def load_raw_dataset(self, filename, sheetname):
+        filepath = self.get_raw_filename('')  # 'mCV_exp11g'
+        filepath = os.path.dirname(filepath)
+        filepath = os.path.join(filepath, f'{filename}.xlsx')
+        # import pandas as pd  # return dframe
+        self._cmap_name = 'muted'
+        return pd.read_excel(filepath, sheetname)
+
+    def recap_sub_data(self, dframe, nb_row=4,
+                       nc_norm=11, nc_sens=0):
+        each_att = nc_sens * self._nb_iter
+        each_gen = nc_norm * self._nb_iter
+        each_set = each_att * 2 + each_gen + 1
+        nb_set = len(dframe) - nb_row + 1
+        nb_set = (nb_set + each_att) // each_set
+
+        tmp = each_set - each_att  # i.e. tmp_diff
+        id_set = [i * each_set + tmp for i in range(nb_set)]
+        id_set = [i + nb_row - 1 for i in [0] + id_set]
+        del tmp, each_gen, each_att, each_set
+        return nb_set, id_set
+
+    def prepare_graph(self):
+        from pyfair.facil.utils_const import unique_column
+        num = (5 + 12) * 2 + (6 + 4 * self._nb_cls)
+        csv_row_1 = unique_column(12 + 1 + num)
+
+        pms = csv_row_1[: 12 + 1]  # params last: Ensem/ut
+        tmp_loss = csv_row_1[13: 13 + 10]
+        tmp_bias = csv_row_1[23: 23 + 24]
+        tag_pac = csv_row_1[47: 47 + 6]
+        tmp_pac_alt = csv_row_1[47 + 6:]
+
+        tag_trn = tmp_loss[:5] + tmp_bias[:12]
+        tag_tst = tmp_loss[5:] + tmp_bias[12:]
+        tag_pac_alt = []
+        for i in range(self._nb_cls):
+            tag_pac_alt.append(tmp_pac_alt[i * 4: (i + 1) * 4])
+        del tmp_loss, tmp_bias, tmp_pac_alt, pms
+        return tag_trn, tag_tst, tag_pac, tag_pac_alt
+
+    # def plot_scatter_chart(self, df, tgx, tgy, fgn, ant=('X', 'Y')):
+    #     X = df[tgx].values.astype(DTY_FLT)  # tag_X
+    #     Y = df[tgy].values.astype(DTY_FLT)  # tag_Y
+    #     kws = {"annots": ant, "identity": True, "figsize": 'L-WS'}
+    #     if "lem32" in fgn:            # figname
+    #         kws['diff'] = 0.05        # -.05
+    #         kws['base'] = 0.05
+    #     kws['locate'] = 'upper left'  # kwargs
+    #     scatter_id_chart(X, Y, fgn, **kws)  # 'man_'+
+    #     return
+
+    def plot_scatter_chart(self, df_X, df_Y, fgn, ant=('X', 'Y')):
+        X = df_X.values.astype(DTY_FLT)
+        Y = df_Y.values.astype(DTY_FLT)
+        if ('_ck' in fgn) or ('_rl' in fgn) or (
+                '_pac' in fgn) or ('_lem' in fgn):
+            multi_lin_reg_without_distr(
+                X, [Y], [''], ant, fgn + '_alt',  # [ant[1]],
+                figsize='S-NT',  # if '_pac' in fgn else 'S-WS',
+                snspec='sty8a')  # 'sty4','sty3a','sty3b'
+        if '_lem' in fgn:
+            multi_lin_reg_without_distr(X, [Y], [
+                ''], ant, fgn + '_als', snspec='sty8b')  # 'sty3a')
+        kws = {"annots": ant, "identity": True, "figsize": 'L-WS'}
+        if 'lem2' in fgn:
+            kws['diff'] = .05
+            kws['base'] = .05
+        kws['locate'] = 'upper left'
+        scatter_id_chart(X, Y, fgn, **kws)
+        return
+
+    def obtn_dat_bnds(self, dframe, nb_set, id_set, tag):
+        k = 0
+        df_raw = dframe.iloc[id_set[k] + 1: id_set[k + 1]][tag]
+        for k in range(1, nb_set):
+            df_tmp = dframe.iloc[id_set[k] + 1: id_set[k + 1]][tag]
+            df_raw = pd.concat([df_raw, df_tmp], axis=0)
+        return df_raw.reset_index(drop=True)
+
+    def obtn_dat_pac_coll(self, dframe, tag_pac_alt,
+                          tag_pac):  # collect.
+        df_raw = dframe[tag_pac_alt[0] + [tag_pac[-1]]]
+        for j in tag_pac_alt[1:]:
+            columns = {t2: t1 for t1, t2 in zip(tag_pac_alt[0], j)}
+            df_tmp = dframe[j + [
+                tag_pac[-1], ]].rename(columns=columns)
+            df_raw = pd.concat([df_raw, df_tmp], axis=0)
+        return df_raw  # .reset_index(drop=True)
+
+    def schedule_mspaint(self, raw_dframe, omit=True):
+        nb_set, id_set = self.recap_sub_data(raw_dframe)
+        tag_trn, tag_tst, tag_pac, tag_alt = self.prepare_graph()
+
+        from pyfair.facil.utils_const import _get_tmp_name_ens
+        tmp = _get_tmp_name_ens(self._name_ens)
+        tag, fgn = tag_tst, f'{self._figname}_{tmp}_tst'
+        # tag, fgn = tag_trn, f'{self._figname}_{tmp}_trn'
+        df_raw = self.obtn_dat_bnds(raw_dframe, nb_set, id_set, tag)
+        # df_set = self.obtn_dat_bnds(
+        #     raw_dframe, 1, [id_set[1], id_set[2]], tag_tst)
+        self.verify_theorem31(df_raw, tag, fgn, True)
+        self.verify_theorem33(df_raw, tag, fgn, True)
+        self.verify_lemma32(df_raw, tag, fgn)
+        self.verify_theorem34(df_raw, tag, fgn, True)
+        # self.verify_bounds(df_raw, tag, fgn)  # df_tmp,
+
+        tmp_pac_alt = np.array(tag_alt).reshape(-1).tolist()
+        df_raw = self.obtn_dat_bnds(
+            raw_dframe, nb_set, id_set, tag_pac + tmp_pac_alt)
+        df_tmp = self.obtn_dat_pac_coll(df_raw, tag_alt, tag_pac)
+        self.verify_theorem36(df_raw, tag_pac, fgn[:-4])
+        self.verify_theorem35(
+            df_tmp, tag_alt[0] + [tag_pac[-1], ], fgn[:-4])
+        pdb.set_trace()
+
+        if omit:
+            os.remove(f'{fgn}_ck_thm1.pdf')
+            os.remove(f'{fgn}_ck_thm3.pdf')
+            os.remove(f'{fgn}_ck_thm4.pdf')
+            os.remove(f'{fgn}_rl_col7.pdf')
+            os.remove(f'{fgn}_rl_col8.pdf')
+            os.remove(f'{fgn[:-4]}_err_thm5.pdf')
+            os.remove(f'{fgn[:-4]}_err_thm6.pdf')
+            os.remove(f'{fgn[:-4]}_pac_thm5.pdf')
+            os.remove(f'{fgn[:-4]}_pac_thm6.pdf')
+            os.remove(f'{fgn}_lem2_als.pdf')
+
+            os.remove(f'{fgn}_lem2.pdf')
+            os.remove(f'{fgn}_err_thm1.pdf')
+            os.remove(f'{fgn}_err_thm3.pdf')
+            os.remove(f'{fgn}_err_thm4.pdf')
+            os.remove(f'{fgn}_thm1.pdf')
+            os.remove(f'{fgn}_thm3.pdf')
+            os.remove(f'{fgn}_thm4.pdf')
+        return
+
+    def verify_theorem31(self, df, tag, fgn, omit=False):
+        annots = [
+            r"$2\mathbb{E}_\rho[\mathcal{L}_{bias}(f)]$",
+            r"$\mathcal{L}_{bias}(\mathbf{wv}_\rho)$"]
+        # figname = fgn + "_thm31"  # "31_"+kw
+        df_X = df[tag[5 + 1]] * 2.  # tag[6]
+        self.plot_scatter_chart(
+            df_X, df[tag[5]], fgn + '_thm1', ant=annots)
+        self.plot_scatter_chart(
+            df[tag[5]], df_X, fgn + '_re_thm1', annots[::-1])
+
+        annots[0] = r"$2\mathbb{E}\left[\frac{ \phi_\rho(\mathbf{x}) }{ \gamma_\rho(\mathbf{x}) }\right]$"
+        annots.append(r'$f(x)=x$')
+        df_Y, df_X = df[tag[5]], df[tag[5 + 5 + 0]] * 2.
+        self.plot_scatter_chart(
+            df_X, df_Y, fgn + '_ck_thm1', ant=annots)
+        annots[0] = r"$\frac{2}{\gamma_0} \mathbb{E}_\rho[\mathcal{L}_{bias}(f)]+\eta$"
+        df_X = df[tag[5 + 5 + 3 + 0]]
+        self.plot_scatter_chart(
+            df_X, df_Y, fgn + '_rl_col7', ant=annots)
+        del df_Y, df_X  # '_rl_col5'
+
+        annots = (
+            r"$2\mathbb{E}_\rho[\mathcal{L}_{err}(f)]$",
+            r"$\mathcal{L}_{err}(\mathbf{wv}_\rho)$")
+        self.plot_scatter_chart(
+            # df, tag[1], tag[0], fgn + '_err_thm1', annots)
+            df[tag[1]] * 2., df[tag[0]], fgn + '_err_thm1', annots)
+        if omit:
+            # os.remove(f"{fgn}_err_thm1.pdf")
+            os.remove(f"{fgn}_re_thm1.pdf")
+        return
+
+    def verify_theorem33(self, df, tag, fgn, omit=False):
+        annots = [
+            r"$4\mathbb{E}_{\rho^2}[\mathcal{L}_{bias}(f,f^\prime)]$",
+            r"$\mathcal{L}_{bias}(\mathbf{wv}_\rho)$"]
+        df_X = df[tag[5 + 3]] * 4.  # tag[8]
+        self.plot_scatter_chart(
+            df_X, df[tag[5]], fgn + '_thm3', ant=annots)
+        self.plot_scatter_chart(
+            df[tag[5]], df_X, fgn + '_re_thm3', annots[::-1])
+
+        annots[0] = r"$4\mathbb{E}\left[\frac{ \phi_\rho(\mathbf{x})^2 }{ \gamma_\rho(\mathbf{x})^2 }\right]$"
+        annots.append(r'$f(x)=x$')
+        df_Y, df_X = df[tag[5]], df[tag[5 + 5 + 1]] * 4.
+        self.plot_scatter_chart(
+            df_X, df_Y, fgn + '_ck_thm3', ant=annots)
+        annots[0] = r"$\frac{4}{\gamma_0^2} \mathbb{E}_{\rho^2}[\mathcal{L}_{bias}(f,f')]+\eta$"
+        df_X = df[tag[5 + 5 + 3 + 3]]
+        self.plot_scatter_chart(
+            df_X, df_Y, fgn + '_rl_col8', ant=annots)
+        del df_Y, df_X  # '_rl_col6'
+
+        annots = (
+            r"$4\mathbb{E}_{\rho^2}[\mathcal{L}_{err}(f,f^\prime)]$",
+            r"$\mathcal{L}_{err}(\mathbf{wv}_\rho)$")
+        self.plot_scatter_chart(
+            # df, tag[3], tag[0], fgn + '_err_thm3', annots)
+            df[tag[3]] * 4., df[tag[0]], fgn + '_err_thm3', annots)
+        if omit:
+            # os.remove(f"{fgn}_err_thm3.pdf")
+            os.remove(f"{fgn}_re_thm3.pdf")
+        return
+
+    def verify_lemma32(self, df, tag, fgn, omit=True):
+        annots = (
+            r"$\mathbb{E}_{\rho^2}[\mathcal{L}_{bias}(f,f^\prime)]$",
+            r"$\mathbb{E}_\mathcal{D}[\mathbb{E}_\rho[\ell_{bias}(f,\mathbf{x})]^2]$")
+        df_X, df_Y = df[tag[5 + 3]], df[tag[5 + 2]]  # tag[7],tag[8]
+        self.plot_scatter_chart(
+            df_X, df_Y, fgn + '_lem2', ant=annots)
+        self.plot_scatter_chart(
+            df_Y, df_X, fgn + '_re_lem2', annots[::-1])
+        del df_X, df_Y
+
+        annots = (
+            r"$\mathbb{E}_{\rho^2}[\mathcal{L}_{err}(f,f^\prime)]$",
+            r"$\mathbb{E}_\mathcal{D}[\mathbb{E}_\rho[\ell_{err}(f,\mathbf{x})]^2]$")
+        self.plot_scatter_chart(
+            # df, tag[3], tag[2], fgn + '_err_lem2', annots)
+            df[tag[3]], df[tag[2]], fgn + '_err_lem2', annots)
+        if omit:
+            os.remove(f"{fgn}_err_lem2.pdf")
+            os.remove(f"{fgn}_re_lem2.pdf")
+            os.remove(f"{fgn}_err_lem2_alt.pdf")
+            os.remove(f"{fgn}_err_lem2_als.pdf")
+            os.remove(f"{fgn}_re_lem2_alt.pdf")
+            os.remove(f"{fgn}_re_lem2_als.pdf")
+        return
+
+    def verify_theorem34(self, df, tag, fgn, omit=False):
+        annots = [
+            r"$\mathrm{RHS}$ in Theorem 3.3",  # $\mathbf{RHS}$
+            r"$\mathcal{L}_{bias}(\mathbf{wv}_\rho)$"]
+        annots[0] = r"$\frac{ \mathbb{E}_{\rho^2}[\mathcal{L}_{bias}(f,f')] -\mathbb{E}_\rho[\mathcal{L}_{bias}(f)]^2 }{ \mathbb{E}_{\rho^2}[\mathcal{L}_{bias}(f,f')] -\mathbb{E}_\rho[\mathcal{L}_{bias}(f)]+\frac{1}{4} }$"
+        df_Y, df_X = df[tag[5]], df[tag[5 + 4]]  # tag[9]
+        df_Z = (df[tag[5 + 1]] < 1. / 2).values
+        self.plot_scatter_chart(
+            df_X[df_Z], df_Y[df_Z], fgn + '_thm4', ant=annots)
+        self.plot_scatter_chart(
+            df_Y[df_Z], df_X[df_Z], fgn + '_re_thm4', annots[::-1])
+
+        # annots[0] = r"$\mathrm{RHS}$ in Theorem 3.3"
+        annots[0] = r"$\frac{ \mathbb{E}_\mathcal{D}[\phi_\rho(\mathbf{x})^2/\gamma_\rho(\mathbf{x})^2] -\mathbb{E}_\mathcal{D}[\phi_\rho(\mathbf{x})/\gamma_\rho(\mathbf{x})]^2 }{ \mathbb{E}_\mathcal{D}[\phi_\rho(\mathbf{x})^2/\gamma_\rho(\mathbf{x})^2] -\mathbb{E}_\mathcal{D}[\phi_\rho(\mathbf{x})/\gamma_\rho(\mathbf{x})]+\frac{1}{4} }$"
+        annots.append(r'$f(x)=x$')
+        df_X = df[tag[5 + 5 + 2]]  # df_Y,=df[tag[5]],
+        self.plot_scatter_chart(
+            df_X, df_Y, fgn + '_ckp_thm4', ant=annots)
+        df_Z = (df[tag[5 + 5 + 0]] < 1. / 2).values
+        # pdb.set_trace()
+        df_Y, df_X = df_Y[df_Z], df_X[df_Z]
+        self.plot_scatter_chart(
+            df_X, df_Y, fgn + '_ck_thm4', ant=annots)
+        del df_Y, df_X, df_Z
+
+        annots = [
+            r"$\mathrm{RHS}$ in Theorem 3.4",  # $\mathbf{RHS}$
+            r"$\mathcal{L}_{err}(\mathbf{wv}_\rho)$"]
+        annots[0] = r"$\frac{ \mathbb{E}_{\rho^2}[\mathcal{L}_{err}(f,f')] -\mathbb{E}_\rho[\mathcal{L}_{err}(f)]^2 }{ \mathbb{E}_{\rho^2}[\mathcal{L}_{err}(f,f')] -\mathbb{E}_\rho[\mathcal{L}_{err}(f)]+\frac{1}{4} }$"
+        self.plot_scatter_chart(
+            # df, tag[4], tag[0], fgn + '_err_thm4', annots)
+            df[tag[4]], df[tag[0]], fgn + '_err_thm4', annots)
+        if omit:
+            # os.remove(f"{fgn}_err_thm4.pdf")
+            os.remove(f"{fgn}_re_thm4.pdf")
+            os.remove(f"{fgn}_ckp_thm4.pdf")
+            os.remove(f"{fgn}_ckp_thm4_alt.pdf")
+        return
+
+    # def verify_bounds(self, df, tag, fgn, omit=False):
+    #     import matplotlib.pyplot as plt
+    #     from pyfair.facil.draw_prelim import (
+    #         _setup_figsize, _setup_figshow, _setup_config)
+    #
+    #     annots = (
+    #         r"$\mathcal{L}_{bias}(\mathbf{wv}_\rho)$",
+    #         r"$2\mathbb{E}_\rho[\mathcal{L}_{bias}(f)]$",
+    #         r"$4\mathbb{E}_{\rho^2}[\mathcal{L}_{bias}(f,f^\prime)]$",
+    #         r"$\mathrm{RHS}$ in Theorem 3.4")
+    #     X = df[tag[5 + 0]].values.astype(DTY_FLT)
+    #     Ys = df[[tag[5 + 1], tag[5 + 3], tag[5 + 4]]
+    #             ].values.astype(DTY_FLT)
+    #     fig = plt.figure(figsize=_setup_config['L-NT'])
+    #     plt.plot(X, X, 'k--', label=r'$f(x)=x$')
+    #     plt.plot(X, Ys[:, 0] * 2., '.', label=annots[1])
+    #     plt.plot(X, Ys[:, 1] * 4., '.', label=annots[2])
+    #     plt.plot(X, Ys[:, 2], '.', label=annots[3])
+    #     plt.xlabel(annots[0])
+    #     plt.legend(loc='best')
+    #     _setup_figsize(fig, figsize='M-WS')
+    #     _setup_figshow(fig, figname=fgn + '_all')
+    #
+    #     annots = (
+    #         r"$\mathcal{L}_{err}(\mathbf{wv}_\rho)$",
+    #         r"$2\mathbb{E}_\rho[\mathcal{L}_{err}(f)]$",
+    #         r"$4\mathbb{E}_{\rho^2}[\mathcal{L}_{err}(f,f^\prime)]$",
+    #         r"$\mathrm{RHS}$ in Theorem 3.4")
+    #     X = df[tag[0]].values.astype(DTY_FLT)
+    #     Ys = df[[tag[1], tag[3], tag[4]]].values.astype(DTY_FLT)
+    #     # ind = np.arange(len(X))
+    #     fig = plt.figure(figsize=_setup_config['L-NT'])
+    #     # plt.plot(ind, X, 'r.', label=annots[0])
+    #     # plt.plot(ind, Ys[:, 0], '.', label=annots[1])
+    #     # plt.plot(ind, Ys[:, 1], '.', label=annots[2])
+    #     # plt.plot(ind, Ys[:, 2], '.', label=annots[3])
+    #     plt.plot(X, X, 'k--', label=f'$f(x)=x$')  # 'b--'
+    #     plt.plot(X, Ys[:, 0], '.', label=annots[1])
+    #     plt.plot(X, Ys[:, 1], '.', label=annots[2])
+    #     plt.plot(X, Ys[:, 2], '.', label=annots[3])
+    #     plt.xlabel(annots[0])
+    #     plt.legend(loc='best')
+    #     _setup_figsize(fig, figsize='M-WS')
+    #     _setup_figshow(fig, figname=fgn + '_err_all')
+    #     return
+
+    def verify_theorem36(self, df, tag, fgn):  # ,omit=False):
+        annots = [
+            r"$\hat{\mathcal{L}}_{bias}(\mathbf{wv}_\rho) +\sqrt{\frac{1}{2n}+\ln\frac{|\mathcal{F}|}{\delta}}$",
+            # r"$\mathrm{RHS}$ in Theorem 3.6",
+            r"$\mathcal{L}_{bias}(\mathbf{wv}_\rho)$", ]
+        df_Y, df_X = df[tag[2]], df[tag[3]] + df[tag[4]]
+        self.plot_scatter_chart(
+            df_X, df_Y, fgn + '_pac_thm5', ant=annots)
+
+        annots = [
+            r"$\hat{\mathcal{L}}_{err}(\mathbf{wv}_\rho) +\sqrt{\frac{1}{2n}+\ln\frac{|\mathcal{F}|}{\delta}}$",
+            r"$\mathcal{L}_{err}(\mathbf{wv}_\rho)$", ]
+        df_Y, df_X = df[tag[0]], df[tag[1]] + df[tag[4]]
+        self.plot_scatter_chart(
+            df_X, df_Y, fgn + '_err_thm5', annots)
+        return
+
+    def verify_theorem35(self, df, tag, fgn):
+        annots = [
+            r"$\hat{\mathcal{L}}_{bias}(f,S) +\sqrt{\frac{1}{2n}+\ln\frac{1}{\delta}}$",
+            # r"$\mathrm{RHS}$ in Theorem 3.5",
+            r"$\mathcal{L}_{bias}(f)$", ]  # r"$\mathcal{L}_{fair}(f)$",
+        df_Y, df_X = df[tag[2]], df[tag[3]] + df[tag[4]]
+        self.plot_scatter_chart(
+            df_X, df_Y, fgn + '_pac_thm6', ant=annots)
+
+        annots = [
+            r"$\hat{\mathcal{L}}_{err}(f,S) +\sqrt{\frac{1}{2n}+\ln\frac{1}{\delta}}$",
+            r"$\mathcal{L}_{err}(f)$", ]
+        df_Y, df_X = df[tag[0]], df[tag[1]] + df[tag[4]]
+        self.plot_scatter_chart(
+            df_X, df_Y, fgn + '_err_thm6', annots)
+        return
+
+
+# -------------------------------------
