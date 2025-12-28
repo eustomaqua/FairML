@@ -489,18 +489,35 @@ gather = args.gather
 if trial_type.endswith('exp11g'):
     # case = OracleGatheredDrawing(trial_type, nb_iter, **kwargs)
     nb_cls, delt, eta = args.nb_cls, 0.01, .6  # 17,
-    xlsx_name = f'_pms_delt{int(delt*100)}_eta{int(eta*100)}'
-    xlsx_name = f'{trial_type}_nk{nb_iter}nf{nb_cls}{xlsx_name}'
-    from pyfair.facil.utils_const import _get_tmp_name_ens
-    shet_name = _get_tmp_name_ens(name_ens)
-    shet_name = f'{trial_type[-6:]}_{shet_name}'
     iterator = CorrFigCK_bounds(
         name_ens, nb_cls, nb_pru='', nb_iter=args.nb_iter,
         figname='gck')  # 'exp11g'
+    xlsx_name = f'_pms_delt{int(delt*100)}_eta{int(eta*100)}'
+    xlsx_name = f'{trial_type}_nk{nb_iter}nf{nb_cls}{xlsx_name}'
+    from pyfair.facil.utils_const import _get_tmp_name_ens
+    if gather:
+        raw_dfs, shet_name = [], ''
+        for name_ens in ['Bagging', 'AdaBoostM1', 'SAMME']:
+            shet_name = "{}_{}".format(
+                trial_type[-6:], _get_tmp_name_ens(name_ens))
+            raw_dfs.append(
+                iterator.load_raw_dataset(xlsx_name, shet_name))
+        iterator.schedule_mspaint_gather(raw_dfs)
+        del raw_dfs, shet_name, xlsx_name, iterator, nb_cls, delt, eta
+        sys.exit()
+    shet_name = _get_tmp_name_ens(name_ens)
+    shet_name = f'{trial_type[-6:]}_{shet_name}'
     raw_df = iterator.load_raw_dataset(xlsx_name, shet_name)
     iterator.schedule_mspaint(raw_df)
+    fgn = f'{iterator._figname}_{shet_name[-3:]}_tst'
+    os.remove(f'{fgn}_ck_thm1.pdf')
+    os.remove(f'{fgn}_ck_thm3.pdf')
+    os.remove(f'{fgn}_rl_col8.pdf')
+    os.remove(f'{fgn}_rl_col7.pdf')
+    os.remove(f'{fgn}_lem2.pdf')
+    os.remove(f'{fgn}_ck_thm4.pdf')
     del xlsx_name, shet_name, delt, eta
-    del iterator, raw_df, nb_cls
+    del iterator, raw_df, nb_cls, fgn
     sys.exit()
 
 if trial_type.endswith('expt10'):
@@ -547,5 +564,6 @@ python wp1_main_plot.py -exp mCV_expt10 --name-ens Bagging --nb-iter 2 --nb-cls 
 """
 
 """
-python wp1_main_plot.py -exp mCV_exp11g --nb-cls 17 --name-ens *  # --gather
+python wp1_main_plot.py -exp mCV_exp11g --nb-cls 17 --name-ens *
+python wp1_main_plot.py -exp mCV_exp11g --nb-cls 17 --gather
 """

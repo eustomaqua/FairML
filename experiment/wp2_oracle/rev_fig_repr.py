@@ -1077,7 +1077,7 @@ class CorrFigCK_bounds(GraphSetup):
         if ('_ck' in fgn) or ('_rl' in fgn) or (
                 '_pac' in fgn) or ('_lem' in fgn):
             multi_lin_reg_without_distr(
-                X, [Y], [''], ant, fgn + '_alt',  # [ant[1]],
+                X, [Y], [''], ant, fgn,  # +'_alt', # [ant[1]],
                 figsize='S-NT',  # if '_pac' in fgn else 'S-WS',
                 snspec='sty8a')  # 'sty4','sty3a','sty3b'
         if '_lem' in fgn:
@@ -1088,7 +1088,8 @@ class CorrFigCK_bounds(GraphSetup):
             kws['diff'] = .05
             kws['base'] = .05
         kws['locate'] = 'upper left'
-        scatter_id_chart(X, Y, fgn, **kws)
+        rmk = '' if ('_err' in fgn) or ('_re' in fgn) else '_prev'
+        scatter_id_chart(X, Y, f"{fgn}{rmk}", **kws)
         return
 
     def obtn_dat_bnds(self, dframe, nb_set, id_set, tag):
@@ -1133,27 +1134,69 @@ class CorrFigCK_bounds(GraphSetup):
         self.verify_theorem36(df_raw, tag_pac, fgn[:-4])
         self.verify_theorem35(
             df_tmp, tag_alt[0] + [tag_pac[-1], ], fgn[:-4])
-        pdb.set_trace()
+        # pdb.set_trace()
 
+        rmk = '_prev'  # ''
         if omit:
-            os.remove(f'{fgn}_ck_thm1.pdf')
-            os.remove(f'{fgn}_ck_thm3.pdf')
-            os.remove(f'{fgn}_ck_thm4.pdf')
-            os.remove(f'{fgn}_rl_col7.pdf')
-            os.remove(f'{fgn}_rl_col8.pdf')
+            os.remove(f'{fgn}_ck_thm1{rmk}.pdf')
+            os.remove(f'{fgn}_ck_thm3{rmk}.pdf')
+            # os.remove(f'{fgn}_ck_thm4{rmk}.pdf')
+            os.remove(f'{fgn}_rl_col7{rmk}.pdf')
+            os.remove(f'{fgn}_rl_col8{rmk}.pdf')
             os.remove(f'{fgn[:-4]}_err_thm5.pdf')
             os.remove(f'{fgn[:-4]}_err_thm6.pdf')
-            os.remove(f'{fgn[:-4]}_pac_thm5.pdf')
-            os.remove(f'{fgn[:-4]}_pac_thm6.pdf')
-            os.remove(f'{fgn}_lem2_als.pdf')
+            os.remove(f'{fgn[:-4]}_pac_thm5{rmk}.pdf')
+            os.remove(f'{fgn[:-4]}_pac_thm6{rmk}.pdf')
+            # os.remove(f'{fgn}_lem2_als.pdf')
 
-            os.remove(f'{fgn}_lem2.pdf')
-            os.remove(f'{fgn}_err_thm1.pdf')
-            os.remove(f'{fgn}_err_thm3.pdf')
-            os.remove(f'{fgn}_err_thm4.pdf')
-            os.remove(f'{fgn}_thm1.pdf')
-            os.remove(f'{fgn}_thm3.pdf')
-            os.remove(f'{fgn}_thm4.pdf')
+        # os.remove(f'{fgn}_lem2{rmk}.pdf')
+        # os.remove(f'{fgn}_err_thm1.pdf')
+        # os.remove(f'{fgn}_err_thm3.pdf')
+        # os.remove(f'{fgn}_err_thm4.pdf')
+        os.remove(f'{fgn}_thm1{rmk}.pdf')
+        os.remove(f'{fgn}_thm3{rmk}.pdf')
+        os.remove(f'{fgn}_thm4{rmk}.pdf')
+        return
+
+    def schedule_mspaint_gather(self, raw_dfs):
+        df_bnd, df_pac, df_pac_alt = [], [], []
+        _, tag, tag_pac, tag_alt = self.prepare_graph()
+        tmp_pac_alt = np.array(tag_alt).reshape(-1).tolist()
+        for i, raw_dframe in enumerate(raw_dfs):
+            nb_set, id_set = self.recap_sub_data(raw_dframe)
+            fgn = f'{self._figname}_tst'
+            df_bnd.append(self.obtn_dat_bnds(
+                raw_dframe, nb_set, id_set, tag))
+            tmp = self.obtn_dat_bnds(
+                raw_dframe, nb_set, id_set, tag_pac + tmp_pac_alt)
+            df_pac.append(tmp)
+            df_pac_alt.append(self.obtn_dat_pac_coll(
+                tmp, tag_alt, tag_pac))
+        df_bnd = pd.concat(df_bnd, axis=0).reset_index(drop=True)
+        df_pac = pd.concat(df_pac, axis=0).reset_index(drop=True)
+        df_pac_alt = pd.concat(df_pac_alt, axis=0)
+
+        self.verify_theorem31(df_bnd, tag, fgn, True)
+        self.verify_theorem33(df_bnd, tag, fgn, True)
+        self.verify_theorem34(df_bnd, tag, fgn, True)
+        self.verify_lemma32(df_bnd, tag, fgn)
+        os.remove(f'{fgn}_ck_thm1_prev.pdf')
+        os.remove(f'{fgn}_ck_thm3_prev.pdf')
+        os.remove(f'{fgn}_rl_col7_prev.pdf')
+        os.remove(f'{fgn}_rl_col8_prev.pdf')
+        os.remove(f'{fgn}_thm1_prev.pdf')
+        os.remove(f'{fgn}_thm3_prev.pdf')
+        os.remove(f'{fgn}_thm4_prev.pdf')
+        fgn = fgn[:-4]
+        self.verify_theorem36(df_pac, tag_pac, fgn)
+        self.verify_theorem35(df_pac_alt, tag_alt[
+            0] + [tag_pac[-1], ], fgn)
+        os.remove(f'{fgn}_err_thm5.pdf')
+        os.remove(f'{fgn}_err_thm6.pdf')
+        os.remove(f'{fgn}_pac_thm5_prev.pdf')
+        os.remove(f'{fgn}_pac_thm6_prev.pdf')
+        del df_bnd, df_pac, df_pac_alt
+        del fgn  # pdb.set_trace()
         return
 
     def verify_theorem31(self, df, tag, fgn, omit=False):
@@ -1185,7 +1228,7 @@ class CorrFigCK_bounds(GraphSetup):
             # df, tag[1], tag[0], fgn + '_err_thm1', annots)
             df[tag[1]] * 2., df[tag[0]], fgn + '_err_thm1', annots)
         if omit:
-            # os.remove(f"{fgn}_err_thm1.pdf")
+            os.remove(f"{fgn}_err_thm1.pdf")
             os.remove(f"{fgn}_re_thm1.pdf")
         return
 
@@ -1217,7 +1260,7 @@ class CorrFigCK_bounds(GraphSetup):
             # df, tag[3], tag[0], fgn + '_err_thm3', annots)
             df[tag[3]] * 4., df[tag[0]], fgn + '_err_thm3', annots)
         if omit:
-            # os.remove(f"{fgn}_err_thm3.pdf")
+            os.remove(f"{fgn}_err_thm3.pdf")
             os.remove(f"{fgn}_re_thm3.pdf")
         return
 
@@ -1241,10 +1284,12 @@ class CorrFigCK_bounds(GraphSetup):
         if omit:
             os.remove(f"{fgn}_err_lem2.pdf")
             os.remove(f"{fgn}_re_lem2.pdf")
-            os.remove(f"{fgn}_err_lem2_alt.pdf")
+            # os.remove(f"{fgn}_err_lem2_alt.pdf")
+            # os.remove(f"{fgn}_re_lem2_alt.pdf")
             os.remove(f"{fgn}_err_lem2_als.pdf")
-            os.remove(f"{fgn}_re_lem2_alt.pdf")
             os.remove(f"{fgn}_re_lem2_als.pdf")
+        os.remove(f'{fgn}_lem2_prev.pdf')
+        os.remove(f'{fgn}_lem2_als.pdf')
         return
 
     def verify_theorem34(self, df, tag, fgn, omit=False):
@@ -1280,10 +1325,10 @@ class CorrFigCK_bounds(GraphSetup):
             # df, tag[4], tag[0], fgn + '_err_thm4', annots)
             df[tag[4]], df[tag[0]], fgn + '_err_thm4', annots)
         if omit:
-            # os.remove(f"{fgn}_err_thm4.pdf")
+            os.remove(f"{fgn}_err_thm4.pdf")
             os.remove(f"{fgn}_re_thm4.pdf")
-            os.remove(f"{fgn}_ckp_thm4.pdf")
-            os.remove(f"{fgn}_ckp_thm4_alt.pdf")
+            os.remove(f"{fgn}_ckp_thm4_prev.pdf")  # _ckp_thm4
+            os.remove(f"{fgn}_ckp_thm4.pdf")   # _ckp_thm4_alt
         return
 
     # def verify_bounds(self, df, tag, fgn, omit=False):
