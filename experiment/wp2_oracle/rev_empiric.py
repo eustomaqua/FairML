@@ -1516,7 +1516,7 @@ class Correct311_gather(Correct311CK_theorem):
         name_cls = INDIVIDUALS[abbr_cls]
         coef, clfs, _ = EnsembleAlgorithm(
             self._name_ens, name_cls, self._nb_cls, X_trn, y_trn)
-        ut = time.time()
+        ut = time.time() - ut
 
         y_insp = [j.predict(X_trn).tolist() for j in clfs]
         y_pred = [j.predict(X_tst).tolist() for j in clfs]

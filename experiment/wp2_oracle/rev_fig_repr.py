@@ -1158,7 +1158,7 @@ class CorrFigCK_bounds(GraphSetup):
         os.remove(f'{fgn}_thm4{rmk}.pdf')
         return
 
-    def schedule_mspaint_gather(self, raw_dfs):
+    def schedule_mspaint_gather(self, raw_dfs, verbose=False):
         df_bnd, df_pac, df_pac_alt = [], [], []
         _, tag, tag_pac, tag_alt = self.prepare_graph()
         tmp_pac_alt = np.array(tag_alt).reshape(-1).tolist()
@@ -1184,9 +1184,10 @@ class CorrFigCK_bounds(GraphSetup):
         os.remove(f'{fgn}_ck_thm3_prev.pdf')
         os.remove(f'{fgn}_rl_col7_prev.pdf')
         os.remove(f'{fgn}_rl_col8_prev.pdf')
-        os.remove(f'{fgn}_thm1_prev.pdf')
-        os.remove(f'{fgn}_thm3_prev.pdf')
-        os.remove(f'{fgn}_thm4_prev.pdf')
+        if not verbose:
+            os.remove(f'{fgn}_thm1_prev.pdf')
+            os.remove(f'{fgn}_thm3_prev.pdf')
+            os.remove(f'{fgn}_thm4_prev.pdf')
         fgn = fgn[:-4]
         self.verify_theorem36(df_pac, tag_pac, fgn)
         self.verify_theorem35(df_pac_alt, tag_alt[
