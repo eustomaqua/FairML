@@ -1080,6 +1080,10 @@ class CorrFigCK_bounds(GraphSetup):
                 X, [Y], [''], ant, fgn,  # +'_alt', # [ant[1]],
                 figsize='S-NT',  # if '_pac' in fgn else 'S-WS',
                 snspec='sty8a')  # 'sty4','sty3a','sty3b'
+        else:  # thm1|3|4
+            multi_lin_reg_without_distr(
+                X, [Y], [''], ant, fgn, figsize='S-NT',
+                snspec='sty3e')  # 'sty3b')
         if '_lem' in fgn:
             multi_lin_reg_without_distr(X, [Y], [
                 ''], ant, fgn + '_als', snspec='sty8b')  # 'sty3a')

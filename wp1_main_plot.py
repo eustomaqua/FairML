@@ -504,6 +504,8 @@ if trial_type.endswith('exp11g'):
             raw_dfs.append(
                 iterator.load_raw_dataset(xlsx_name, shet_name))
         iterator.schedule_mspaint_gather(raw_dfs, args.draw)
+        fgn = f'{iterator._figname}_tst'
+        os.remove(f'{fgn}_ck_thm4_prev.pdf')
         del raw_dfs, shet_name, xlsx_name, iterator, nb_cls, delt, eta
         sys.exit()
     shet_name = _get_tmp_name_ens(name_ens)
