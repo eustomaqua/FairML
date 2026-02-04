@@ -2,7 +2,7 @@
 
 
 import numpy as np
-import pdb
+# import pdb
 from pyfair.facil.ensem_voting import weighted_voting
 from pyfair.facil.utils_const import check_equal, check_zero
 
@@ -106,5 +106,6 @@ def test_previous_dr():
 
     pac_1 = pac_indiv(n, 0.1)
     pac_2 = pac_ensem(n, 0.1, nf)
-    pdb.set_trace()
+    assert 0 <= pac_1 <= 1 and 0 <= pac_2 <= 1
+    # pdb.set_trace()
     return

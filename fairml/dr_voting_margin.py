@@ -5,15 +5,14 @@
 #   Oracle bounds concerning fairness for weighted voting
 
 
+# import pdb
 import numpy as np
-import pdb
-
-from pyfair.facil.utils_timer import fantasy_timer
 from pyfair.facil.utils_const import check_zero
-from pyfair.facil.ensem_voting import weighted_voting
 
-from fairml.discriminative_risk import (
-    hat_L_fair, hat_L_loss, tandem_fair, E_rho_L_loss_f)
+# from pyfair.facil.utils_timer import fantasy_timer
+# from pyfair.facil.ensem_voting import weighted_voting
+# from fairml.discriminative_risk import (
+#     hat_L_fair, hat_L_loss, tandem_fair, E_rho_L_loss_f)
 
 
 # =====================================

@@ -5,7 +5,6 @@
 from pyfair.facil.utils_saver import elegant_print
 from pyfair.facil.utils_remark import (
     AVAILABLE_NAME_PRUNE, LATEST_NAME_PRUNE)
-
 # Experiments
 from pyfair.facil.utils_const import _get_tmp_name_ens
 
@@ -33,8 +32,8 @@ from fairml.dr_pareto_optimal import (
     Pareto_Optimal_EPAF_Pruning, _bi_objectives, POAF_PEP,
     Centralised_EPAF_Pruning, Distributed_EPAF_Pruning)
 
-from pyfair.facil.utils_const import check_zero, unique_column
-from pyfair.facil.utils_saver import elegant_print
+from pyfair.facil.utils_const import unique_column  # check_zero,
+# from pyfair.facil.utils_saver import elegant_print
 from pyfair.marble.metric_fair import (
     marginalised_pd_mat, prev_unpriv_grp_one, prev_unpriv_grp_two,
     prev_unpriv_grp_thr, prev_unpriv_unaware, prev_unpriv_manual)
@@ -408,13 +407,13 @@ class ExperimentSetup(DataSetup):
                 csv_w.writerow([''] * 7 + i_ens)
         del res_all
 
-        '''
-        tim_elapsed = (time.time() - since) / 60
-        elegant_print(
-            "Total Time Cost: {:.0f}h {:.2f}m, i.e., {:.10f} hour(s)"
-            ".".format(tim_elapsed // 60,
-                       tim_elapsed % 60, tim_elapsed / 60 ), logger)
-        '''
+        # '''
+        # tim_elapsed = (time.time() - since) / 60
+        # elegant_print(
+        #     "Total Time Cost: {:.0f}h {:.2f}m, i.e., {:.10f} hour(s)"
+        #     ".".format(tim_elapsed // 60,
+        #                tim_elapsed % 60, tim_elapsed / 60 ), logger)
+        # '''
         tim_elapsed = time.time() - since
         elegant_print(" Duration: {:.0f} min {:.2f} sec".format(
             tim_elapsed // 60, tim_elapsed % 60), logger)

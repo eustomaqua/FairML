@@ -6,7 +6,7 @@ import json
 import os
 import time
 import numpy as np
-import pdb
+# import pdb
 import pandas as pd
 
 from pyfair.facil.utils_const import DTY_FLT, _get_tmp_document
@@ -710,7 +710,8 @@ class GatherF_Prunings(PlotF_Prunings):
 
 
 class Renew_PlotF_Prunings(PlotF_Prunings):
-    def renew_schedule_msgraph(self):
+    def renew_schedule_msgraph(self, res_data, res_all, optional_data,
+                               figname='', jt=False, logger=None):
         return
 
 

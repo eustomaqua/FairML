@@ -12,7 +12,6 @@ import sys
 import time
 import numpy as np
 import pandas as pd
-import pdb
 
 from pyfair.facil.utils_saver import (get_elogger, rm_ehandler,
                                       elegant_print)

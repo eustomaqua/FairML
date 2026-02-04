@@ -39,8 +39,8 @@ def test_my_DR():
         hat_L_objt, tandem_objt, cal_L_obj_v1, cal_L_obj_v2,
         perturb_numpy_ver, perturb_pandas_ver)
 
-    ans = hat_L_fair(y_hat, hx_qtb)[0]
-    res = hat_L_loss(y_hat, y_trn)[0]
+    ans = hat_L_fair(y_hat, hx_qtb)  # [0]
+    res = hat_L_loss(y_hat, y_trn)   # [0]
     err = float(1. - np.mean(np.equal(y_trn, y_hat)))
     assert check_equal(err, res)
 
@@ -61,7 +61,7 @@ def test_my_DR():
     res = cal_L_obj_v2(yt_hat, yt_hat_qtb, y_trn, coef)
     ans = cal_L_obj_v1(yt_hat, yt_hat_qtb, y_trn, coef)
     assert check_equal(res, ans)  # res == ans
-    import pandas as pd
+    # import pandas as pd
 
     X = np.random.randint(5, size=(5, 4))
     X_qtb, _ = perturb_numpy_ver(X, [2, 1], [1, 1], ratio=.97)
