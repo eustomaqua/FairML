@@ -140,36 +140,36 @@ if __name__ == '__main__':
     annot = 'MSE'
     ap = r'$\Delta(MSE)$'  # annot_prime
     counterfactual_fairness_case(score, att1, att2, annot, ap)
-    '''
-    score = rmse
-    annot, ap = 'RMSE', r'$\Delta(RMSE)$'
-    counterfactual_fairness_case(score, att1, att2, annot, ap)
-    '''
+    # '''
+    # score = rmse
+    # annot, ap = 'RMSE', r'$\Delta(RMSE)$'
+    # counterfactual_fairness_case(score, att1, att2, annot, ap)
+    # '''
 
 
 # Empirical results in manuscript
-"""
-python wp1_case_plot.py
-"""
+# """
+# python wp1_case_plot.py
+# """
 
 # Empirical results not in use
-"""
-python wp1_main_plot.py --draw -exp mCV_expt4 -dat german
-python wp1_main_plot.py --draw -exp mCV_expt4 -dat adult
-python wp1_main_plot.py --draw -exp mCV_expt4 -dat ppr
-python wp1_main_plot.py --draw -exp mCV_expt4 -dat ppvr
-
-python wp1_main_plot.py --draw -exp mCV_expt6 --nb-pru 7 -dat *ricci
-python wp1_main_plot.py --draw -exp mCV_expt4 -dat **german
-python wp1_main_plot.py --draw -exp mCV_expt5 --gather
-python wp1_main_plot.py --draw -exp mCV_expt5 -dat german
-
-python wp1_main_plot.py -exp mCV_expt11 --nb-cls 11 --name-ens *
-python wp1_main_plot.py -exp mCV_expt3 --nb-cls 21 --name-ens Bagging
-python wp1_main_plot.py -exp mCV_expt3 --nb-cls 11 --name-ens AdaBoostM1
-python wp1_main_plot.py -exp mCV_expt3 --nb-cls 11 --name-ens SAMME
-python wp1_main_plot.py -exp mCV_expt10 --name-ens Bagging --nb-iter 1
-
-python wp1_main_plot.py --draw -exp mCV_expt1 -dat **
-python wp1_main_plot.py --draw -exp mCV_expt2 -dat ** --ratio .5
-"""
+# """
+# python wp1_main_plot.py --draw -exp mCV_expt4 -dat german
+# python wp1_main_plot.py --draw -exp mCV_expt4 -dat adult
+# python wp1_main_plot.py --draw -exp mCV_expt4 -dat ppr
+# python wp1_main_plot.py --draw -exp mCV_expt4 -dat ppvr
+#
+# python wp1_main_plot.py --draw -exp mCV_expt6 --nb-pru 7 -dat *ricci
+# python wp1_main_plot.py --draw -exp mCV_expt4 -dat **german
+# python wp1_main_plot.py --draw -exp mCV_expt5 --gather
+# python wp1_main_plot.py --draw -exp mCV_expt5 -dat german
+#
+# python wp1_main_plot.py -exp mCV_expt11 --nb-cls 11 --name-ens *
+# python wp1_main_plot.py -exp mCV_expt3 --nb-cls 21 --name-ens Bagging
+# python wp1_main_plot.py -exp mCV_expt3 --nb-cls 11 --name-ens AdaBoostM1
+# python wp1_main_plot.py -exp mCV_expt3 --nb-cls 11 --name-ens SAMME
+# python wp1_main_plot.py -exp mCV_expt10 --name-ens Bagging --nb-iter 1
+#
+# python wp1_main_plot.py --draw -exp mCV_expt1 -dat **
+# python wp1_main_plot.py --draw -exp mCV_expt2 -dat ** --ratio .5
+# """

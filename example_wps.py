@@ -108,17 +108,17 @@ def get_grp_fairness(y, y_hat, pos_lbl, non_sa):
     bias_grp2 = calc_fair_group(*bias_grp2)
     bias_grp3 = calc_fair_group(*bias_grp3)
 
-    '''
-    _, _, g1_Cm, g0_Cm = marginalised_pd_mat(
-        y, y_hat, pos_lbl, non_sa)
-    comp_grp1 = prev_unpriv_grp_one(g1_Cm, g0_Cm)
-    comp_grp2 = prev_unpriv_grp_two(g1_Cm, g0_Cm)
-    comp_grp3 = prev_unpriv_grp_thr(g1_Cm, g0_Cm)
-    comp_grp1 = calc_fair_group(*comp_grp1)
-    comp_grp2 = calc_fair_group(*comp_grp2)
-    comp_grp3 = calc_fair_group(*comp_grp3)
-    pdb.set_trace()
-    '''
+    # '''
+    # _, _, g1_Cm, g0_Cm = marginalised_pd_mat(
+    #     y, y_hat, pos_lbl, non_sa)
+    # comp_grp1 = prev_unpriv_grp_one(g1_Cm, g0_Cm)
+    # comp_grp2 = prev_unpriv_grp_two(g1_Cm, g0_Cm)
+    # comp_grp3 = prev_unpriv_grp_thr(g1_Cm, g0_Cm)
+    # comp_grp1 = calc_fair_group(*comp_grp1)
+    # comp_grp2 = calc_fair_group(*comp_grp2)
+    # comp_grp3 = calc_fair_group(*comp_grp3)
+    # pdb.set_trace()
+    # '''
     return bias_grp1, bias_grp2, bias_grp3
 
 
@@ -129,30 +129,30 @@ bias_tst = [get_grp_fairness(
 # pdb.set_trace()
 
 
-'''
-print("\n\n")
-print("(Original) ensemble accuracy:")
-print("Training set:\t {:.5f} vs. {:.5f} aft perturbation".format(
-    get_accuracy(y_trn, hens_trn), get_accuracy(y_trn, hx_qtb_trn)))
-print(" Testing set:\t {:.5f} vs. {:.5f} aft perturbation".format(
-    get_accuracy(y_tst, hens_tst), get_accuracy(y_tst, hx_qtb_tst)))
-
-print("Discriminative risk:")
-print(" on training set:\t {:.5f}  & loss {:.5f}".format(
-    hat_L_fair(hens_trn, hx_qtb_trn), hat_L_loss(hens_trn, y_trn)))
-print("  on testing set:\t {:.5f}  & loss {:.5f}".format(
-    hat_L_fair(hens_tst, hx_qtb_tst), hat_L_loss(hens_tst, y_tst)))
-del hens_trn, hens_tst, hx_qtb_trn, hx_qtb_tst
-
-elegant_print([
-    "\n\n(Original) ensemble:",
-    "|                      | Training set | Test set |",
-    "|----------------------|--------------|----------|",
-    "| Accuracy             |   {:.8f}   | {:.8f} |",
-    "| acc aft perturbation |   {:.8f}   | {:.8f} |",
-    "| Discriminative risk  |   {:.8f}   | {:.8f} |",
-    "|   0/1 loss function  |   {:.8f}   | {:.8f} |"], None)
-'''
+# '''
+# print("\n\n")
+# print("(Original) ensemble accuracy:")
+# print("Training set:\t {:.5f} vs. {:.5f} aft perturbation".format(
+#     get_accuracy(y_trn, hens_trn), get_accuracy(y_trn, hx_qtb_trn)))
+# print(" Testing set:\t {:.5f} vs. {:.5f} aft perturbation".format(
+#     get_accuracy(y_tst, hens_tst), get_accuracy(y_tst, hx_qtb_tst)))
+#
+# print("Discriminative risk:")
+# print(" on training set:\t {:.5f}  & loss {:.5f}".format(
+#     hat_L_fair(hens_trn, hx_qtb_trn), hat_L_loss(hens_trn, y_trn)))
+# print("  on testing set:\t {:.5f}  & loss {:.5f}".format(
+#     hat_L_fair(hens_tst, hx_qtb_tst), hat_L_loss(hens_tst, y_tst)))
+# del hens_trn, hens_tst, hx_qtb_trn, hx_qtb_tst
+#
+# elegant_print([
+#     "\n\n(Original) ensemble:",
+#     "|                      | Training set | Test set |",
+#     "|----------------------|--------------|----------|",
+#     "| Accuracy             |   {:.8f}   | {:.8f} |",
+#     "| acc aft perturbation |   {:.8f}   | {:.8f} |",
+#     "| Discriminative risk  |   {:.8f}   | {:.8f} |",
+#     "|   0/1 loss function  |   {:.8f}   | {:.8f} |"], None)
+# '''
 
 elegant_print([
     "\n\nEnsemble (originally):",

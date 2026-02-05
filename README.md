@@ -17,7 +17,7 @@ https://readthedocs.org/projects/fairml/
 
 ### Getting started
 
-https://fairml.readthedocs.io/en/latest/
+<https://fairml.readthedocs.io/en/latest/>
 
 
 

@@ -106,7 +106,7 @@ class PlotD_Measures(PlotA_Measures):
         new_data = self.prepare_graph(new_data)[:, :, 56:, :]
 
         # data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
-        _, _, _, _, nb_iter, _ = res_all[0]
+        # _, _, _, _, nb_iter, _ = res_all[0]
         sensitive_attributes = res_all[1]
         ensemble_methods = res_all[-1]
         ensemble_methods = [i.replace(
@@ -168,15 +168,15 @@ class PlotD_Measures(PlotA_Measures):
             # key = ["DP", "EO", "PQP", "DR"]  # or "FQ (ours)"
             key = BLFAIR
 
-        '''
-        if mark.endswith("norm"):
-            pass
-        elif mark.endswith("advr"):
-            idx = [i + 13 for i in idx]
-        elif mark.endswith("abs_"):
-            idx = [i + 26 for i in idx]
-        # mode = "ascend" if mark == "fair" else "descend"
-        '''
+        # '''
+        # if mark.endswith("norm"):
+        #     pass
+        # elif mark.endswith("advr"):
+        #     idx = [i + 13 for i in idx]
+        # elif mark.endswith("abs_"):
+        #     idx = [i + 26 for i in idx]
+        # # mode = "ascend" if mark == "fair" else "descend"
+        # '''
         if mark.endswith("advr"):
             idx = [i + 13 for i in idx]
         elif mark.endswith("abs_"):
@@ -248,7 +248,7 @@ class PlotE_Measures(PlotD_Measures):
         new_data = self.prepare_graph(new_data)[:, :, idx, :]
 
         # data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
-        _, _, nb_cls, _, nb_iter, _ = res_all[0]
+        _, _, _, _, nb_iter, _ = res_all[0]
         ensemble_methods = res_all[-1]
         ensemble_methods = [
             i.replace('FPR', 'fpr').replace('FNR', 'fnr')
@@ -427,7 +427,7 @@ class PlotF_Prunings(PlotD_Measures):
         new_data = self.prepare_graph(new_data)[:, idx, :]
 
         # data_name, binary, nb_cls, nb_pru, nb_iter, _ = res_all[0]
-        data_name, _, _, _, nb_iter, _ = res_all[0]
+        data_name, _, _, _, _, _ = res_all[0]
         sensitive_attributes = res_all[1]
         name_ens_set, name_pru_set = res_all[3], res_all[4]  # -4/-3
         domestic_key = ['{} & {}'.format(
@@ -778,7 +778,7 @@ class PlotB_Measures(GraphSetup):
         new_data = self.prepare_graph(res_data)[:, :, :, 30:, :]
 
         # data_name, binary, nb_cls, nb_pru, nb_iter, _ = res_all[0]
-        data_name, _, _, nb_pru, nb_iter, _ = res_all[0]
+        _, _, _, nb_pru, nb_iter, _ = res_all[0]
         sensitive_attributes = res_all[1]
         name_ens_set, abbr_cls_set = res_all[3], res_all[4]
         rank_pru_set = res_all[-1]  # name_pru based on ranking

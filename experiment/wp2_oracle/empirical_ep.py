@@ -97,14 +97,14 @@ class PartD_ImprovedPruning(EnsembleSetup):
     def R(self):
         return self._R_steps
 
-    '''
-    @property
-    def logger(self):
-        return self._logger
-    @logger.setter
-    def logger(self, value):
-        self._logger = value
-    '''
+    # '''
+    # @property
+    # def logger(self):
+    #     return self._logger
+    # @logger.setter
+    # def logger(self, value):
+    #     self._logger = value
+    # '''
 
     def prepare_trial(self):
         length = len(self._set_pru_name + self._set_pru_late)

@@ -327,7 +327,7 @@ def perturb_numpy_ver(X, sen_att, priv_val, ratio=.5):
             if X_qtb[i, sa] != pv:
                 X_qtb[i, sa] = pv
             else:
-                X_qtb[i, sa] = np.random.choice(un) 
+                X_qtb[i, sa] = np.random.choice(un)
 
     return X_qtb  # np.ndarray
 
@@ -345,11 +345,11 @@ def perturb_pandas_ver(X, sen_att, priv_val, ratio=.5):
             sa_list.remove(pv)
 
     X_qtb = X.copy()
-    '''
-    num, dim = len(X_qtb), len(sen_att)
-    if dim > 1:
-        new_attr_name = '-'.join(sen_att)
-    '''
+    # '''
+    # num, dim = len(X_qtb), len(sen_att)
+    # if dim > 1:
+    #     new_attr_name = '-'.join(sen_att)
+    # '''
     dim = len(sen_att)
 
     for i, ti in enumerate(X.index):

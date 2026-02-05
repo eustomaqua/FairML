@@ -145,8 +145,8 @@ class PlotC_Revised_TheoremsLemma(GraphSetup):
 
     def verify_bounds(self, df, kw):
         import matplotlib.pyplot as plt
-        ''' tag_trn = ['AI', 'AK', 'AM', 'AO']
-        tag_tst = ['AW', 'AY', 'BA', 'BC'] '''
+        # ''' tag_trn = ['AI', 'AK', 'AM', 'AO']
+        # tag_tst = ['AW', 'AY', 'BA', 'BC'] '''
 
         annots = (
             r"$\mathcal{L}_{bias}(\mathbf{wv}_\rho)$",
@@ -522,9 +522,9 @@ class PlotH_ImprovePruning(GraphSetup):
         A1_data, A2_data, Jt_data = pd_concat_sens_raw(
             raw_dframe, tag_col, nb_set, index)
         new_avg = pd.concat([A1_data[0], A2_data[0], Jt_data[0]])
-        '''
-        new_raw = pd.concat([A1_data[3], A2_data[3], Jt_data[3]])
-        '''
+        # '''
+        # new_raw = pd.concat([A1_data[3], A2_data[3], Jt_data[3]])
+        # '''
         tmp = _get_tmp_name_ens(self._name_ens)
         fn = '_'.join([self._figname, tmp])
         self.compare_aggregated_fair(new_avg, fn + "_whole_avg")
@@ -1140,8 +1140,8 @@ class TableHGather_ImprovePruning(PlotH_ImprovePruning):
             bak = wtl_or_cmp[:, j]
             w = sum([1 if i == 'W' else 0 for i in bak])
             t = sum([1 if i == 'T' else 0 for i in bak])
-            l = sum([1 if i == 'L' else 0 for i in bak])
-            form.append(r"\'{}/{}/{}".format(w, t, l))
+            ll = sum([1 if i == 'L' else 0 for i in bak])
+            form.append(r"\'{}/{}/{}".format(w, t, ll))
         return form
 
     def common_wtl_avg(self, U_raw, nb_set, index, tag_col,
@@ -1590,6 +1590,7 @@ class PlotJ_LambdaEffect(GraphSetup):
     def schedule_mspaint(self, raw_dframe, abbr_cls=None):
         nb_set, id_set, index = self.recap_sub_data(raw_dframe)
         tag_col = self.prepare_graph()
+        assert len(id_set) - 1 == nb_set
 
         if abbr_cls is not None:
             dframe = raw_dframe[abbr_cls]
@@ -1695,13 +1696,13 @@ class PlotJ_LambdaEffect(GraphSetup):
             ind_jt = self.pick_up_set_idx(index, i, 0)
             # if not verbose:
             #     ind_jt = ind_jt[: 1]
-            for l, ind in enumerate(ind_jt):
+            for ll, ind in enumerate(ind_jt):
                 # if l > 0 and (not verbose):
                 #     continue
 
                 nkw = "_".join([
                     # kw, "itr{}".format(l), "set{}".format(i)])
-                    "iter{}".format(l), "set{}".format(i), kw])
+                    "iter{}".format(ll), "set{}".format(i), kw])
                 tdf = dframe.loc[ind][tag_col]
 
                 # CROPPED

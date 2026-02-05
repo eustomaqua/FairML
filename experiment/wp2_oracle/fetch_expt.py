@@ -32,7 +32,7 @@ from fairml.dr_pareto_optimal import (
     Pareto_Optimal_EPAF_Pruning, _bi_objectives, POAF_PEP,
     Centralised_EPAF_Pruning, Distributed_EPAF_Pruning)
 
-from pyfair.facil.utils_const import unique_column  # check_zero,
+# from pyfair.facil.utils_const import unique_column  # check_zero,
 # from pyfair.facil.utils_saver import elegant_print
 from pyfair.marble.metric_fair import (
     marginalised_pd_mat, prev_unpriv_grp_one, prev_unpriv_grp_two,
@@ -479,14 +479,14 @@ class ExperimentSetup(DataSetup):
             self._iterator.nb_cls, self._iterator.nb_pru,
             self._nb_iter])
         for k, (i_trn, i_tst) in enumerate(split_idx):
-            '''
-            X_trn = X.iloc[i_trn]
-            y_trn = y.iloc[i_trn]
-            Xp_trn = Xp.iloc[i_trn]
-            X_tst = X.iloc[i_tst]
-            y_tst = y.iloc[i_tst]
-            Xp_tst = Xp.iloc[i_tst]
-            '''
+            # '''
+            # X_trn = X.iloc[i_trn]
+            # y_trn = y.iloc[i_trn]
+            # Xp_trn = Xp.iloc[i_trn]
+            # X_tst = X.iloc[i_tst]
+            # y_tst = y.iloc[i_tst]
+            # Xp_tst = Xp.iloc[i_tst]
+            # '''
 
             X_trn, Xd_trn, y_trn, gones_trn, jt_trn = transform_perturbed(
                 X, Xp, y, i_trn, belongs_priv, ptb_with_joint)

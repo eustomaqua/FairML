@@ -63,7 +63,7 @@ class PlotD_Measures(GraphSetup):
         new_data = self.prepare_graph(new_data)[:, :, 56:, :]
 
         # data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
-        _, _, _, _, nb_iter, _ = res_all[0]
+        # _, _, _, _, nb_iter, _ = res_all[0]
         sensitive_attributes = res_all[1]
         ensemble_methods = res_all[-1]
         ensemble_methods = [i.replace(
@@ -124,15 +124,15 @@ class PlotD_Measures(GraphSetup):
             idx = [50, 51, 52, 54]
             key = ["DP", "EO", "PQP", "DR"]  # or "FQ (ours)"
 
-        '''
-        if mark.endswith("norm"):
-            pass
-        elif mark.endswith("advr"):
-            idx = [i + 13 for i in idx]
-        elif mark.endswith("abs_"):
-            idx = [i + 26 for i in idx]
-        # mode = "ascend" if mark == "fair" else "descend"
-        '''
+        # '''
+        # if mark.endswith("norm"):
+        #     pass
+        # elif mark.endswith("advr"):
+        #     idx = [i + 13 for i in idx]
+        # elif mark.endswith("abs_"):
+        #     idx = [i + 26 for i in idx]
+        # # mode = "ascend" if mark == "fair" else "descend"
+        # '''
         if mark.endswith("advr"):
             idx = [i + 13 for i in idx]
         elif mark.endswith("abs_"):
@@ -207,7 +207,7 @@ class PlotE_Measures(GraphSetup):
         new_data = self.prepare_graph(new_data)[:, :, idx, :]
 
         # data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
-        _, _, nb_cls, _, nb_iter, _ = res_all[0]
+        _, _, _, _, nb_iter, _ = res_all[0]
         ensemble_methods = res_all[-1]
         ensemble_methods = [
             i.replace('FPR', 'fpr').replace('FNR', 'fnr')
@@ -335,28 +335,28 @@ class GatherE_Measures(PlotE_Measures):
         return
 
 
-"""
-def _little_helper(name, sensitive_attributes=list()):
-    name_ens_set = ['Bagging', 'AdaBoostM1', 'SAMME']
-    if "Entire" in name:
-        return name.replace(" & Entire", "")
-    for i in name_ens_set:
-        if i in name:
-            name = name.replace("{} & ".format(i), "")
-            break
-    name = name.replace(":2", "")
-    name = name.replace(":3", "")
-    name = name.replace("POEPAF", "POAF")
-    name = name.replace("POPEP", "POAF")
-    for i in sensitive_attributes:
-        if i in name:
-            name = name.replace(" via {}".format(i), "")
-            break
-    name = name.replace(" (fpr)", "")
-    name = name.replace(" (fnr)", "")
-    name = name.replace("LightGBM", "lightGBM")
-    return name
-"""
+# """
+# def _little_helper(name, sensitive_attributes=list()):
+#     name_ens_set = ['Bagging', 'AdaBoostM1', 'SAMME']
+#     if "Entire" in name:
+#         return name.replace(" & Entire", "")
+#     for i in name_ens_set:
+#         if i in name:
+#             name = name.replace("{} & ".format(i), "")
+#             break
+#     name = name.replace(":2", "")
+#     name = name.replace(":3", "")
+#     name = name.replace("POEPAF", "POAF")
+#     name = name.replace("POPEP", "POAF")
+#     for i in sensitive_attributes:
+#         if i in name:
+#             name = name.replace(" via {}".format(i), "")
+#             break
+#     name = name.replace(" (fpr)", "")
+#     name = name.replace(" (fnr)", "")
+#     name = name.replace("LightGBM", "lightGBM")
+#     return name
+# """
 
 
 class PlotF_Prunings(GraphSetup):
@@ -1118,6 +1118,7 @@ class CorrFigCK_bounds(GraphSetup):
     def schedule_mspaint(self, raw_dframe, omit=True):
         nb_set, id_set = self.recap_sub_data(raw_dframe)
         tag_trn, tag_tst, tag_pac, tag_alt = self.prepare_graph()
+        assert len(tag_trn) == len(tag_tst)
 
         from pyfair.facil.utils_const import _get_tmp_name_ens
         tmp = _get_tmp_name_ens(self._name_ens)
@@ -1167,7 +1168,7 @@ class CorrFigCK_bounds(GraphSetup):
         df_bnd, df_pac, df_pac_alt = [], [], []
         _, tag, tag_pac, tag_alt = self.prepare_graph()
         tmp_pac_alt = np.array(tag_alt).reshape(-1).tolist()
-        for i, raw_dframe in enumerate(raw_dfs):
+        for _, raw_dframe in enumerate(raw_dfs):  # i,
             nb_set, id_set = self.recap_sub_data(raw_dframe)
             fgn = f'{self._figname}_tst'
             df_bnd.append(self.obtn_dat_bnds(

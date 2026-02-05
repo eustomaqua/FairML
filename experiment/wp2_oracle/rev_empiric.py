@@ -205,53 +205,53 @@ class ClassifierSetup:
             y_tst, y_pred, yq_pred, priv_tst, positive_label)
         return ans_trn + ans_tst  # .shape: (60,)= (30*2,)
 
-    '''
-    def count_pruning(self, clf, name_ens, name_pru, nb_pru,
-                      X_trn, y_trn, Xd_trn, sa_trn,
-                      X_tst, y_tst, Xd_tst, sa_tst,
-                      positive_label, dist=1, n_m=2, lam=.5):
-        y_insp = [ind.predict(X_trn).tolist() for ind in clf.estimators_]
-        y_pred = [ind.predict(X_tst).tolist() for ind in clf.estimators_]
-        yq_insp = [ind.predict(Xd_trn).tolist() for ind in clf.estimators_]
-        yq_pred = [ind.predict(Xd_tst).tolist() for ind in clf.estimators_]
-        if name_ens == "bagging":
-            coef = np.ones(len(clf.estimators_))
-        elif name_ens == "adaboost":
-            # coef = clf.estimator_weights_
-            coef = 1 - clf.estimator_errors_
-        coef /= np.sum(coef)
-        coef = coef.tolist()
-
-        if name_pru == "POEPAF":
-            H = Pareto_Optimal_EPAF_Pruning(
-                y_trn, y_insp, yq_insp, coef, nb_pru, lam)
-        elif name_pru == "EPAF-C":
-            H = Centralised_EPAF_Pruning(
-                y_trn, y_insp, yq_insp, coef, nb_pru, lam)
-        elif name_pru == "EPAF-D":
-            H = Distributed_EPAF_Pruning(
-                y_trn, y_insp, yq_insp, coef, nb_pru, lam, n_m)
-        elif name_pru == "POPEP":
-            H = POAF_PEP(y_trn, y_insp, yq_insp, coef, lam, nb_pru)
-
-        ys_insp = np.array(y_insp)[H].tolist()
-        ys_pred = np.array(y_pred)[H].tolist()
-        yr_insp = np.array(yq_insp)[H].tolist()
-        yr_pred = np.array(yq_pred)[H].tolist()
-        coef = np.array(coef)[H].tolist()
-
-        fens_trn = self.majority_vote(y_trn, ys_insp, coef)
-        fens_tst = self.majority_vote(y_tst, ys_pred, coef)
-        fqtb_trn = self.majority_vote(y_trn, yr_insp, coef)
-        fqtb_tst = self.majority_vote(y_tst, yr_pred, coef)
-
-        ans_trn = self.count_single_member(
-          y_trn, fens_trn, fqtb_trn, sa_trn, positive_label)
-        ans_tst = self.count_single_member(
-          y_tst, fens_tst, fqtb_tst, sa_tst, positive_label)
-        # TODO: revise, no need to do so many times of pruning
-        return ans_trn + ans_tst  # .shape: (48,)= (24*2,)
-    '''
+    # '''
+    # def count_pruning(self, clf, name_ens, name_pru, nb_pru,
+    #                   X_trn, y_trn, Xd_trn, sa_trn,
+    #                   X_tst, y_tst, Xd_tst, sa_tst,
+    #                   positive_label, dist=1, n_m=2, lam=.5):
+    #     y_insp = [ind.predict(X_trn).tolist() for ind in clf.estimators_]
+    #     y_pred = [ind.predict(X_tst).tolist() for ind in clf.estimators_]
+    #     yq_insp = [ind.predict(Xd_trn).tolist() for ind in clf.estimators_]
+    #     yq_pred = [ind.predict(Xd_tst).tolist() for ind in clf.estimators_]
+    #     if name_ens == "bagging":
+    #         coef = np.ones(len(clf.estimators_))
+    #     elif name_ens == "adaboost":
+    #         # coef = clf.estimator_weights_
+    #         coef = 1 - clf.estimator_errors_
+    #     coef /= np.sum(coef)
+    #     coef = coef.tolist()
+    #
+    #     if name_pru == "POEPAF":
+    #         H = Pareto_Optimal_EPAF_Pruning(
+    #             y_trn, y_insp, yq_insp, coef, nb_pru, lam)
+    #     elif name_pru == "EPAF-C":
+    #         H = Centralised_EPAF_Pruning(
+    #             y_trn, y_insp, yq_insp, coef, nb_pru, lam)
+    #     elif name_pru == "EPAF-D":
+    #         H = Distributed_EPAF_Pruning(
+    #             y_trn, y_insp, yq_insp, coef, nb_pru, lam, n_m)
+    #     elif name_pru == "POPEP":
+    #         H = POAF_PEP(y_trn, y_insp, yq_insp, coef, lam, nb_pru)
+    #
+    #     ys_insp = np.array(y_insp)[H].tolist()
+    #     ys_pred = np.array(y_pred)[H].tolist()
+    #     yr_insp = np.array(yq_insp)[H].tolist()
+    #     yr_pred = np.array(yq_pred)[H].tolist()
+    #     coef = np.array(coef)[H].tolist()
+    #
+    #     fens_trn = self.majority_vote(y_trn, ys_insp, coef)
+    #     fens_tst = self.majority_vote(y_tst, ys_pred, coef)
+    #     fqtb_trn = self.majority_vote(y_trn, yr_insp, coef)
+    #     fqtb_tst = self.majority_vote(y_tst, yr_pred, coef)
+    #
+    #     ans_trn = self.count_single_member(
+    #       y_trn, fens_trn, fqtb_trn, sa_trn, positive_label)
+    #     ans_tst = self.count_single_member(
+    #       y_tst, fens_tst, fqtb_tst, sa_tst, positive_label)
+    #     # TODO: revise, no need to do so many times of pruning
+    #     return ans_trn + ans_tst  # .shape: (48,)= (24*2,)
+    # '''
 
 
 # =====================================
