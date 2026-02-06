@@ -57,7 +57,7 @@ from experiment.wp2_oracle.fetch_data import DataSetup
 
 from pyfair.facil.ensem_voting import weighted_voting
 from fairml.dr_voting_margin import (  # Erho_intermediate,
-    E_rho_summary, Erl_summary, pac_indiv, pac_ensem)
+    E_rho_summary, Erl_summary, pac_indiv, pac_ensem, pac_kl_gibbs)
 import pdb
 
 
@@ -1597,9 +1597,12 @@ class Correct311_update(Correct311_gather):
         # return res_acc + res_adv + res + res_far + res_new
         return res_acc + res + res_far + res_new  # 25|32
 
+    # def check_kldiv(self, coef, ):
+    #     return
+
     def prepare_trial(self, nb_cls):
-        num = 1 + (5 * 2 + 12 * 2 + 6) + 4 * nb_cls + 25 * 2 * 2
-        csv_row_1 = unique_column(12 + num)
+        num = (5 * 2 + 12 * 2 + 6) + 4 * nb_cls + 3 + 25 * 2 * 2
+        csv_row_1 = unique_column(12 + 1 + num)
         csv_row_4c = ['T(ens)']
         csv_row_4c += ['loss:l', 'r1', 'l2', 'r3', 'r4'] * 2
         csv_row_4c += ['bias:l', 'r1', 'l2', 'r3', 'r4',
@@ -1610,6 +1613,7 @@ class Correct311_update(Correct311_gather):
         for i in range(nb_cls):
             csv_row_4c.extend([
                 f'f{i+1}:', '', 'bias:tst', 'bias:trn'])
+        csv_row_4c.extend(['kl(Qn|Q0)', 'loose', 'tight'])
         tmp = ['acc', 'p', 'r/sen', 'spe', 'f1', 'g_mean', 'dp']
         csv_row_4c.extend((tmp * 2 + [
             'grp1', 'grp2', 'grp3', 'delta(DR):..'] + tmp) * 4)
@@ -1620,6 +1624,7 @@ class Correct311_update(Correct311_gather):
         csv_row_3c += [''] * 6
         for i in range(nb_cls):
             csv_row_3c.extend([f'clf#{i+1}:loss x2', '', '', ''])
+        csv_row_3c.extend(['Gibbs(bnd)', '', ''])
         csv_row_3c.extend(([
             'normal_perf'] + [''] * 6 + ['delta_perf'] + [''] * 6 + [
             'grp_fair', '', '', 'delt:DR'] + ['delt:acc,..'] + [''] * 6) * 4)
@@ -1627,6 +1632,7 @@ class Correct311_update(Correct311_gather):
         csv_row_2c += ['Loss'] + [''] * 9 + ['Bias/fair'] + [''] * 23
         csv_row_2c += ['PAC bounds'] + [''] * 4 + [
             'PAC individual'] + [''] * 4 * nb_cls
+        csv_row_2c.extend(['PAC-Bayes bounds', '', ''])
         csv_row_2c.extend([
             'sen-att-1 (trn)'] + [''] * 24 + ['sen-att-1 (tst)'] + [''] * 24 + [
             'sen-att-2 (trn)'] + [''] * 24 + ['sen-att-2 (tst)'] + [''] * 24)
@@ -1688,6 +1694,7 @@ class Correct311_update(Correct311_gather):
             y_tst, y_pred, yq_pred, fens_tst, fqtb_tst,
             coef, delt))  # [:6])
         # pdb.set_trace()
+        res_iter.extend(pac_kl_gibbs(len(y_trn), delt, coef))
         n_a = len(gones_trn)
         for i in range(n_a):
             res_iter.extend(self.check_grp_fair(
@@ -1696,7 +1703,7 @@ class Correct311_update(Correct311_gather):
                 y_tst, fens_tst, fqtb_tst, gones_tst[i], positive_label))
         if n_a == 1:
             res_iter.extend([''] * 25 * 2)
-        return res_iter  # (141+4*nf,)= (1 +40+4*nf +50*2,)
+        return res_iter  # (141+4*nf+3,)= (1 +40+4*nf +50*2+3,)
 
 
 # -------------------------------------

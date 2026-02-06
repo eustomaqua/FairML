@@ -2,7 +2,7 @@
 
 
 import numpy as np
-# import pdb
+import pdb
 from pyfair.facil.ensem_voting import weighted_voting
 from pyfair.facil.utils_const import check_equal, check_zero
 
@@ -11,7 +11,7 @@ from fairml.dr_voting_margin import (
     Erho_intermediate, E_rho_mrg1order, E_rho_mrg2order,
     E_rho_Ctandem, E_rho_summary, Erl_summary,
     E_rl_intermediate, Erl_mrg1order, Erl_mrg2order,
-    pac_ensem, pac_indiv)
+    pac_ensem, pac_indiv, pac_kl_gibbs)
 
 from fairml.discriminative_risk import (
     hat_L_fair, tandem_fair, ell_fair_x)
@@ -107,5 +107,7 @@ def test_previous_dr():
     pac_1 = pac_indiv(n, 0.1)
     pac_2 = pac_ensem(n, 0.1, nf)
     assert 0 <= pac_1 <= 1 and 0 <= pac_2 <= 1
+    pac_3 = pac_kl_gibbs(n, 0.1, wgt)
+    assert pac_3[2] <= pac_3[1]  # tighter bound
     # pdb.set_trace()
     return

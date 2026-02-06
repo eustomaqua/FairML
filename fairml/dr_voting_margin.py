@@ -7,6 +7,7 @@
 
 # import pdb
 import numpy as np
+from pyfair.marble.data_distance import KL_div  # import scipy
 from pyfair.facil.utils_const import check_zero
 
 # from pyfair.facil.utils_timer import fantasy_timer
@@ -193,6 +194,24 @@ def pac_ensem(nb_trn, delt, nf):
     tmp = tmp / (2. * nb_trn)
     tmp = np.sqrt(tmp)
     return tmp.tolist()
+
+
+def pac_kl_gibbs(nb_trn, delt, coef):
+    nf = len(coef)
+    wgt0 = np.ones(nf) / nf
+    kl = KL_div(coef, wgt0.tolist())
+    # kl = scipy.stats.entropy(coef, wgt0)
+
+    n = float(nb_trn)
+    delt = check_zero(delt)
+    ep_c = np.log((1 + 4. * n) / delt)
+    ep_c = (kl + ep_c) / check_zero(2. * n)
+    ep_c = np.sqrt(ep_c).tolist()
+
+    ep_d = np.log(2. * np.sqrt(n) / delt)
+    ep_d = (kl + ep_d) / check_zero(2. * n)
+    ep_d = np.sqrt(ep_d).tolist()
+    return kl, ep_c, ep_d
 
 
 # -------------------------------------

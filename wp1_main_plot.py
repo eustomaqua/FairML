@@ -32,8 +32,11 @@ from experiment.wp2_oracle.fvote_draw import (
     PlotK_PACGeneralisation)
 from experiment.wp2_oracle.fvote_draw import PlotD_ImprovePruning  # legacy
 from experiment.wp2_oracle.fvote_addtl import FairVoteDrawing
-from experiment.wp2_oracle.rev_fig_repr import FVre_Drawing
-from experiment.wp2_oracle.rev_fig_repr import CorrFigCK_bounds
+# from experiment.wp2_oracle.rev_fig_repr import FVre_Drawing
+from experiment.wp2_oracle.rev_fig_repr import (
+    FVre_Drawing, CorrFigCK_bounds, CorrFigCK_bndupd)
+from pyfair.facil.utils_const import _get_tmp_name_ens
+import pdb
 
 
 # ----------------------------------
@@ -494,7 +497,7 @@ if trial_type.endswith('exp11g'):
         figname='gck')  # 'exp11g'
     xlsx_name = f'_pms_delt{int(delt*100)}_eta{int(eta*100)}'
     xlsx_name = f'{trial_type}_nk{nb_iter}nf{nb_cls}{xlsx_name}'
-    from pyfair.facil.utils_const import _get_tmp_name_ens
+    # from pyfair.facil.utils_const import _get_tmp_name_ens
     if gather:
         raw_dfs, shet_name = [], ''
         for name_ens in ['Bagging', 'AdaBoostM1', 'SAMME']:
@@ -518,6 +521,35 @@ if trial_type.endswith('exp11g'):
     os.remove(f'{fgn}_rl_col7.pdf')
     os.remove(f'{fgn}_lem2.pdf')
     os.remove(f'{fgn}_ck_thm4.pdf')
+    del xlsx_name, shet_name, delt, eta
+    del iterator, raw_df, nb_cls, fgn
+    sys.exit()
+elif trial_type.endswith('exp11h'):
+    nb_cls, delt, eta = args.nb_cls, 0.03, .6
+    iterator = CorrFigCK_bndupd(
+        name_ens, nb_cls, nb_pru='', nb_iter=nb_iter,
+        figname='gck')  # args.nb_iter
+    # xlsx_name = f'_pms_delt{int(delt*100)}_eta{int(eta*100)}'
+    xlsx_name = f'_pms_eta{int(eta * 100)}'
+    xlsx_name = f'{trial_type}_nk{nb_iter}nf{nb_cls}{xlsx_name}'
+    if gather:
+        raw_dfs, shet_name = [], ''
+        for name_ens in ['Bagging', 'AdaBoostM1']:  # , 'SAMME']:
+            shet_name = "{}_{}".format(trial_type[
+                -6:], _get_tmp_name_ens(name_ens))
+            shet_name = f'delt{int(delt * 100)}_' + shet_name
+            raw_dfs.append(iterator.load_raw_dataset(
+                xlsx_name, shet_name))
+        iterator.schedule_mspaint_gather(raw_dfs, args.draw)
+        del raw_dfs, shet_name, xlsx_name, iterator
+        del nb_cls, delt, eta
+        sys.exit()
+    shet_name = _get_tmp_name_ens(name_ens)
+    shet_name = f'{trial_type[-6:]}_{shet_name}'
+    raw_df = iterator.load_raw_dataset(xlsx_name, shet_name)
+    iterator.schedule_mspaint(raw_df)
+    fgn = f'{iterator._figname}_{shet_name[-3:]}_tst'
+    pdb.set_trace()
     del xlsx_name, shet_name, delt, eta
     del iterator, raw_df, nb_cls, fgn
     sys.exit()
@@ -568,4 +600,5 @@ python wp1_main_plot.py -exp mCV_expt10 --name-ens Bagging --nb-iter 2 --nb-cls 
 """
 python wp1_main_plot.py -exp mCV_exp11g --nb-cls 17 --name-ens *
 python wp1_main_plot.py -exp mCV_exp11g --nb-cls 11 --gather # --draw
+python wp1_main_plot.py -exp mCV_exp11h --nb-cls 11 ..|--gather
 """
