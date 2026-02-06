@@ -561,7 +561,10 @@ rho = float(nb_pru) / nb_cls
 if args.add_expt:
     kwargs = {}
     if trial_type.endswith(
-            'expt11') or trial_type.endswith('exp11g'):
+            'expt11') or trial_type.endswith(
+            'exp11g') or trial_type.endswith(
+            'exp11h'):
+        logged = True        # 'exp11h', kwargs['logged']
         kwargs['delt'] = args.delta    # 'delta'
         kwargs['name_ens'] = args.name_ens
         kwargs['abbr_cls'] = args.abbr_cls
@@ -643,4 +646,6 @@ warnings.filterwarnings('ignore')
 python wp1_main_exec.py -add --logged -exp mCV_expt3 --name-ens Bagging --abbr-cls DT --nb-cls 11 -dat ricci
 python wp1_main_exec.py -add --logged -exp mCV_expt11 --name-ens Bagging --abbr-cls DT --nb-cls 11 --delta 1e-6 --eta .6 -dat ricci -nk 2
 python -W ignore wp1_main_exec.py -add --logged -exp mCV_exp11g --name-ens Bagging --nb-cls 11 --delta 0.01 --eta .6 -dat ricci -nk 2
+
+python -W ignore wp1_main_exec.py -add -exp mCV_exp11h --name-ens Bagging --nb-cls 11 --delta .02 --eta .6 -dat ricci -nk 2
 """

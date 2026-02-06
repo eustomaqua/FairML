@@ -58,7 +58,7 @@ from experiment.wp2_oracle.fetch_data import DataSetup
 from pyfair.facil.ensem_voting import weighted_voting
 from fairml.dr_voting_margin import (  # Erho_intermediate,
     E_rho_summary, Erl_summary, pac_indiv, pac_ensem)
-# import pdb
+import pdb
 
 
 # =====================================
@@ -1545,6 +1545,160 @@ class Correct311_gather(Correct311CK_theorem):
         return res_iter
 
 
+def _thm_acc(y, y_hat, pos_val):
+    tmp = contingency_table(y, y_hat, pos_val)
+    res = []  # tp,fp,fn,tn
+    res.append(calc_accuracy(*tmp))
+    res.append(calc_precision(*tmp))
+    sen = calc_recall(*tmp)  # calc_sensitivity
+    spe = calc_specificity(*tmp)
+    res.extend([sen, spe, calc_f1_score(*tmp),
+                imba_geometric_mean(sen, spe),
+                imba_discriminant_power(sen, spe)])
+    return res
+
+
+def _thm_far(y, y_hat, non_sa, pos_val):
+    _, _, g1_Cm, g0_Cm = marginalised_pd_mat(
+        y, y_hat, pos_val, non_sa)
+    tmp_1 = unpriv_group_one(g1_Cm, g0_Cm)
+    tmp_2 = unpriv_group_two(g1_Cm, g0_Cm)
+    tmp_3 = unpriv_group_thr(g1_Cm, g0_Cm)
+    tmp_1 = abs(tmp_1[0] - tmp_1[1])
+    tmp_2 = abs(tmp_2[0] - tmp_2[1])
+    tmp_3 = abs(tmp_3[0] - tmp_3[1])
+    return [tmp_1, tmp_2, tmp_3]  # ,hat_L_fair(y_hat,y_qtb)]
+
+
+def _thm_diff(y, y_hat, y_qtb, non_sa, pos_val):
+    y_g1, y_g0 = y[non_sa], y[~non_sa]
+    hx_g1, hx_g0 = y_hat[non_sa], y_hat[~non_sa]
+    # t_g1 = contingency_table(y_g1, hx_g1, pos_val)
+    # t_g0 = contingency_table(y_g0, hx_g0, pos_val)
+    t_g1 = _thm_acc(y_g1, hx_g1, pos_val)
+    t_g0 = _thm_acc(y_g0, hx_g0, pos_val)
+    ans = [abs(i - j) for i, j in zip(t_g1, t_g0)]
+
+    fq_g1, fq_g0 = y_qtb[non_sa], y_qtb[~non_sa]
+    t_g1 = hat_L_fair(hx_g1, fq_g1)
+    t_g0 = hat_L_fair(hx_g0, fq_g0)
+    # ans.append(abs(t_g1 - t_g0))
+    ans = [abs(t_g1 - t_g0)] + ans
+    return ans
+
+
+class Correct311_update(Correct311_gather):
+    def check_grp_fair(self, y, y_hat, y_qtb, non_sa, pos_val):
+        res_acc = _thm_acc(y, y_hat, pos_val)  # non_sa,
+        res_adv = _thm_acc(y, y_qtb, pos_val)  # non_sa,
+        res = [abs(i - j) for i, j in zip(res_acc, res_adv)]
+        res_far = _thm_far(y, y_hat, non_sa, pos_val)
+        res_new = _thm_diff(y, y_hat, y_qtb, non_sa, pos_val)
+        # return res_acc + res_adv + res + res_far + res_new
+        return res_acc + res + res_far + res_new  # 25|32
+
+    def prepare_trial(self, nb_cls):
+        num = 1 + (5 * 2 + 12 * 2 + 6) + 4 * nb_cls + 25 * 2 * 2
+        csv_row_1 = unique_column(12 + num)
+        csv_row_4c = ['T(ens)']
+        csv_row_4c += ['loss:l', 'r1', 'l2', 'r3', 'r4'] * 2
+        csv_row_4c += ['bias:l', 'r1', 'l2', 'r3', 'r4',
+                       'bnd_r1', 'bnd_r2', 'bnd_r3',
+                       'brl_r4', 'brl_r5', 'brl_l5', 'brl_r6'] * 2
+        csv_row_4c += ['loss:tst,trn;', '', 'bias:tst,trn;', '',
+                       'bnd:ens,ind', '']
+        for i in range(nb_cls):
+            csv_row_4c.extend([
+                f'f{i+1}:', '', 'bias:tst', 'bias:trn'])
+        tmp = ['acc', 'p', 'r/sen', 'spe', 'f1', 'g_mean', 'dp']
+        csv_row_4c.extend((tmp * 2 + [
+            'grp1', 'grp2', 'grp3', 'delta(DR):..'] + tmp) * 4)
+
+        csv_row_3c = ['']
+        csv_row_3c += ['training'] + [''] * 4 + ['test'] + [
+            ''] * 4 + ['training'] + [''] * 11 + ['test'] + [''] * 11
+        csv_row_3c += [''] * 6
+        for i in range(nb_cls):
+            csv_row_3c.extend([f'clf#{i+1}:loss x2', '', '', ''])
+        csv_row_3c.extend(([
+            'normal_perf'] + [''] * 6 + ['delta_perf'] + [''] * 6 + [
+            'grp_fair', '', '', 'delt:DR'] + ['delt:acc,..'] + [''] * 6) * 4)
+        csv_row_2c = ['Ensem']
+        csv_row_2c += ['Loss'] + [''] * 9 + ['Bias/fair'] + [''] * 23
+        csv_row_2c += ['PAC bounds'] + [''] * 4 + [
+            'PAC individual'] + [''] * 4 * nb_cls
+        csv_row_2c.extend([
+            'sen-att-1 (trn)'] + [''] * 24 + ['sen-att-1 (tst)'] + [''] * 24 + [
+            'sen-att-2 (trn)'] + [''] * 24 + ['sen-att-2 (tst)'] + [''] * 24)
+        csv_row_2c[-1] = '[END]'
+        csv_row_3c[-1] = '[END]'
+        return csv_row_1, csv_row_2c, csv_row_3c, csv_row_4c
+
+    # def check_grp_fair(self, y, yt, coef, fens, yqtb, fqtb):
+    #     return
+    # def _grp_fair(self, y, hx, hx_qtb, non_sa, pos_val):
+    #     pass
+
+    def schedule_content(self,  # nb_cls,lam=.5,
+                         X_trn, y_trn, Xd_trn, gones_trn,
+                         X_tst, y_tst, Xd_tst, gones_tst,
+                         eta=.6, delt=1 - .05, positive_label=1):
+        res_curr = []
+        for abbr_cls in self._abbr_cls_set:
+            res_iter = self.sched_subproc(
+                abbr_cls,
+                X_trn, y_trn, Xd_trn, gones_trn,
+                X_tst, y_tst, Xd_tst, gones_tst,
+                eta, delt, positive_label)  # pos_val=1)
+            res_curr.append(res_iter)
+        return res_curr  # .size=(11, 1+40 +100)
+
+    def sched_subproc(self, abbr_cls,
+                      X_trn, y_trn, Xd_trn, gones_trn,
+                      X_tst, y_tst, Xd_tst, gones_tst,
+                      eta, delt, positive_label=1):
+        ut = time.time()
+        name_cls = INDIVIDUALS[abbr_cls]
+        coef, clfs, _ = EnsembleAlgorithm(
+            self._name_ens, name_cls, self._nb_cls, X_trn, y_trn)
+        ut = time.time() - ut
+
+        y_insp = [j.predict(X_trn).tolist() for j in clfs]
+        y_pred = [j.predict(X_tst).tolist() for j in clfs]
+        yq_insp = [j.predict(Xd_trn).tolist() for j in clfs]
+        yq_pred = [j.predict(Xd_tst).tolist() for j in clfs]
+        fens_trn = weighted_voting(y_insp, coef)
+        fens_tst = weighted_voting(y_pred, coef)
+        fqtb_trn = weighted_voting(yq_insp, coef)
+        fqtb_tst = weighted_voting(yq_pred, coef)
+        fens_trn, fens_tst = np.array(fens_trn), np.array(fens_tst)
+        fqtb_trn, fqtb_tst = np.array(fqtb_trn), np.array(fqtb_tst)
+
+        res_iter = [ut]  # +5*2 +12*2 +6
+        res_iter.extend(self.verify_inspiration(
+            y_trn.tolist(), y_insp, coef, fens_trn))  # .tolist()))
+        res_iter.extend(self.verify_inspiration(
+            y_tst.tolist(), y_pred, coef, fens_tst))  # .tolist()))
+        res_iter.extend(self.verify_theorem(
+            y_trn.tolist(), y_insp, coef, fens_trn, yq_insp, fqtb_trn, eta))
+        res_iter.extend(self.verify_theorem(
+            y_tst.tolist(), y_pred, coef, fens_tst, yq_pred, fqtb_tst, eta))
+        res_iter.extend(self.verify_paclemma(
+            y_trn, y_insp, yq_insp, fens_trn, fqtb_trn,
+            y_tst, y_pred, yq_pred, fens_tst, fqtb_tst,
+            coef, delt))  # [:6])
+        # pdb.set_trace()
+        n_a = len(gones_trn)
+        for i in range(n_a):
+            res_iter.extend(self.check_grp_fair(
+                y_trn, fens_trn, fqtb_trn, gones_trn[i], positive_label))
+            res_iter.extend(self.check_grp_fair(
+                y_tst, fens_tst, fqtb_tst, gones_tst[i], positive_label))
+        if n_a == 1:
+            res_iter.extend([''] * 25 * 2)
+        return res_iter  # (141+4*nf,)= (1 +40+4*nf +50*2,)
+
+
 # -------------------------------------
 # Experimental design
 #
@@ -1569,7 +1723,8 @@ class FairVoteEmpirical(DataSetup):
             self._log_document = '_'.join([
                 trial_type, f'nf{nb_cls}nk{nb_iter}',
                 self._log_document, 'pms'])
-        elif trial_type.endswith('exp11g'):
+        elif trial_type[-6:] in ('exp11g', 'exp11h'):
+            # elif trial_type.endswith('exp11g'):
             self._log_document = '_'.join([
                 trial_type, f'nk{nb_iter}nf{nb_cls}',
                 self._log_document, 'pms'])
@@ -1601,7 +1756,8 @@ class FairVoteEmpirical(DataSetup):
             nmens_tmp = _get_tmp_name_ens(name_ens)
             self._log_document += f'_{nmens_tmp}_{abbr_cls}'
             self._nb_pru = ''
-        elif trial_type.endswith('exp11g'):  # cor
+        elif trial_type[-6:] in ('exp11g', 'exp11h'):
+            # elif trial_type.endswith('exp11g'):  # cor
             self._delt, self._eta, self._nb_pru = delt, eta, ''
             nmens_tmp = _get_tmp_name_ens(name_ens)
             self._log_document += f'_{nmens_tmp}_delt{int(delt*100)}_eta{int(eta*100)}'
@@ -1632,6 +1788,8 @@ class FairVoteEmpirical(DataSetup):
             self._iterator = Correct311CK_theorem(name_ens, abbr_cls)
         elif trial_type.endswith('exp11g'):
             self._iterator = Correct311_gather(name_ens, nb_cls)
+        elif trial_type.endswith('exp11h'):
+            self._iterator = Correct311_update(name_ens, nb_cls)
 
     # def __del__(self):
     #     pass
@@ -1749,7 +1907,9 @@ class FairVoteEmpirical(DataSetup):
         csv_row_2b = ["#sens_attr", "name_ens", "abbr_cls",
                       "name_pru", "#iter", "#eval"]
         if self._trial_type.endswith(
-                'expt11') or self._trial_type.endswith('exp11g'):
+                'expt11') or self._trial_type.endswith(
+                'exp11g') or self._trial_type.endswith(
+                'exp11h'):
             (csv_row_1, csv_r2c, csv_r3c,
              csv_r4c) = self._iterator.prepare_trial(self._nb_cls)
         else:
@@ -1873,7 +2033,7 @@ class FairVoteEmpirical(DataSetup):
             for k in range(1, self._nb_iter):
                 csv_w.writerow([
                     ''] * 5 + [k, '', '', '', '', k, ''] + res_data[k])
-        elif self._trial_type[-6:] in ['exp11g', ]:
+        elif self._trial_type[-6:] in ['exp11g', 'exp11h', ]:
             csv_w.writerow(res_all[0] + [res_all[1], '', ''])
             for j, abbr_cls in enumerate(res_all[-1]):
                 k = 0
@@ -1992,7 +2152,8 @@ class FairVoteEmpirical(DataSetup):
             res_all.append([self._name_ens])
             res_all.append([self._abbr_cls])
             # res_all.append(['Ensem'] + ['rank.' + i for i in CRITERIA])
-        elif self._trial_type.endswith('exp11g'):
+        elif self._trial_type[-6:] in ('exp11g', 'exp11h'):
+            # elif self._trial_type.endswith('exp11g'):
             res_all.append([self._name_ens])
             res_all.append(self._iterator._abbr_cls_set)
             # pdb.set_trace()
@@ -2132,6 +2293,11 @@ class FairVoteEmpirical(DataSetup):
             res_iter = self._iterator.schedule_content(
                 X_trn, y_trn, Xd_trn, X_tst, y_tst, Xd_tst,
                 self._eta, self._delt)
+        elif self._trial_type[-6:] in ('exp11h',):  # 'exp11g'
+            res_iter = self._iterator.schedule_content(
+                X_trn, y_trn, Xd_trn, gones_trn,
+                X_tst, y_tst, Xd_tst, gones_tst,
+                self._eta, self._delt, positive_label)
 
         tim_elapsed = time.time() - since
         elegant_print(["Iteration {}, Consumed {}".format(
