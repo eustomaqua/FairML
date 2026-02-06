@@ -201,6 +201,8 @@ def pac_kl_gibbs(nb_trn, delt, coef):
     wgt0 = np.ones(nf) / nf
     kl = KL_div(coef, wgt0.tolist())
     # kl = scipy.stats.entropy(coef, wgt0)
+    # if np.isnan(kl):
+    #     pdb.set_trace()
 
     n = float(nb_trn)
     delt = check_zero(delt)

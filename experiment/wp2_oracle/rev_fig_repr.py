@@ -1549,6 +1549,22 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
         # os.remove(f'{fgn}_pac_{rmk}_prev.pdf')
         return
 
+    def verify_theorem_kl(self, df, tag, fgn):
+        annots = [
+            r"$\hat{\mathcal{L}}_\text{bias}(Q_n,S) +\sqrt{\frac{ \mathrm{KL}(Q_n\|Q_0)+\ln(\frac{1+4n}{\delta}) }{2n}}$",
+            r"$\mathcal{L}_\text{bias}(Q_n)$", ]
+        df_Y = df[tag[2]]
+        df_X = df[tag[3]] + df[tag[-2]]
+        df_X = df_X.fillna(0.)  # fgn +
+        self.plot_scatter_chart(
+            df_X, df_Y, f'{fgn}_kl_thm9', ant=annots)
+        annots[0] = r"$\hat{\mathcal{L}}_\text{bias}(Q_n,S) +\sqrt{\frac{ \mathrm{KL}(Q_n\|Q_0)+\ln(\frac{2\sqrt{n}}{\delta}) }{2n}}$"
+        df_X = df[tag[3]] + df[tag[-1]]
+        df_X = df_X.fillna(0.)
+        self.plot_scatter_chart(
+            df_X, df_Y, f'{fgn}_kl_thm10', annots)
+        return
+
     def verify_lemma32(self, df, tag, fgn, omit=True):
         annots = (
             r"$\mathbb{E}_{\rho^2}[\mathit{\boldsymbol{L}}_{bias}(f,f^\prime)]$",
@@ -1574,8 +1590,10 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
         # pdb.set_trace()
         return
 
-    def prepare_graph(self):
+    def prepare_graph(self, verbose=True):  # False):
         num = (17 * 2 + 6) + 4 * self._nb_cls + 25 * 4
+        if verbose:
+            num = num + 3
         csv_row_1 = unique_column(12 + 1 + num)
 
         # pms = csv_row_1[: 12 + 1]  # params last: Ensem/ut
@@ -1585,12 +1603,15 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
         tmp_pac_alt = csv_row_1[47 + 6: -100]
         tmp_sen_att = csv_row_1[-100:]
 
+        if verbose:
+            tag_pac += tmp_pac_alt[-3:]
+            tmp_pac_alt = tmp_pac_alt[:-3]
+
         tag_trn = tmp_loss[:5] + tmp_bias[:12]
         tag_tst = tmp_loss[5:] + tmp_bias[12:]
         tag_pac_alt = []
         for i in range(self._nb_cls):
             tag_pac_alt.append(tmp_pac_alt[i * 4: (i + 1) * 4])
-        # pdb.set_trace()
         tag_trn += tmp_sen_att[:25] + tmp_sen_att[50:75]
         tag_tst += tmp_sen_att[25:50] + tmp_sen_att[75:]
         del tmp_loss, tmp_bias, tmp_pac_alt
@@ -1611,8 +1632,8 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
             raw_dframe, nb_set, id_set, tag_pac + tmp_pac_alt)
         df_tmp = self.obtn_dat_pac_coll(df_raw, tag_alt, tag_pac)
         self.verify_theo36_35(df_raw, tag_pac, fgn[:-4], 'thm6')
-        self.verify_theo36_35(df_tmp, tag_alt[
-            0] + [tag_pac[-1], ], fgn[:-4], 'thm5')  # _theorem35
+        self.verify_theo36_35(df_tmp, tag_alt[  # _theorem35
+            0] + [tag_pac[:6][-1], ], fgn[:-4], 'thm5')
 
         rmk = '_prev'  # pdb.set_trace()
         # os.remove(f'{fgn}_thm1{rmk}.pdf')
@@ -1645,73 +1666,14 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
                 raw_dframe, nb_set, id_set, tag_pac + tmp_pac_alt)
             df_pac.append(tmp)
             df_pac_alt.append(self.obtn_dat_pac_coll(
-                tmp, tag_alt, tag_pac))
+                tmp, tag_alt, tag_pac[:-3]))
         df_bnd = pd.concat(df_bnd, axis=0).reset_index(drop=True)
         df_pac = pd.concat(df_pac, axis=0).reset_index(drop=True)
         df_pac_alt = pd.concat(df_pac_alt, axis=0)
         fgn = f'{self._figname}_tst'
 
-        tsa1, tsa2 = tag[-50:-25], tag[-25:]
-        tag = tag[:-50]  # tag_sa{n}
-        df_tmp = []
-        for i, raw_dframe in enumerate(raw_dfs):
-            nb_set, id_set = self.recap_sub_data(raw_dframe)
-            tmp = self.obtn_dat_diff(raw_dframe, nb_set, id_set,
-                                     tag, tsa1, tsa2)
-            # tmp = self.obtn_dat_bnds(
-            #     raw_dframe, nb_set, id_set, tag + tsa1 + tsa2)
-            # df_tmp.append(tmp[tag + tsa1])
-            # if i == 0:
-            #     continue
-            # tmp = tmp[tag + tsa2].rename(columns={
-            #     j2: j1 for j1, j2 in zip(tsa1, tsa2)})
-            # df_tmp.append(tmp)
-
-            df_tmp.append(self.obtn_dat_diff(
-                raw_dframe, nb_set, id_set, tag, tsa1, tsa2))
-        # # df_tmp = df_bnd[tag + tsa1]
-        # # df_tmp = df_bnd[tag + tag2]
-        # # tag = tag[:-50]  # tag_sa{n}
-        df_tmp = pd.concat(df_tmp, axis=0)
-        X = df_tmp[tsa1[7:14][0]].values.astype(DTY_FLT)
-        Xs = df_tmp[tsa1[7:14]].values.astype(DTY_FLT).T
-        Ys = df_tmp[tsa1[14:17] + tag[5:6] + tsa1[
-            17:18]].values.astype(DTY_FLT).T
-        W = df_tmp[tsa1[14 + 4:][0]].values.astype(DTY_FLT)
-        Ws = df_tmp[tsa1[14 + 4:]].values.astype(DTY_FLT).T
-        annots = (r'$\Delta$(Accuracy)', 'Fairness Measure')
-        antZs = list(BLFAIR) + [
-            # r'$\mathit{\boldsymbol{L}}_\text{bias}(f)$']
-            r'$\mathit{\boldsymbol{L}}^\prime_\text{bias}$']
-        fgn += '_rho'  # '_corr(elation)'
-        kw = {'ind_hv': 'v', 'identity': False}  # kws
-        multiple_scatter_chart(
-            X, Ys[:-1], annots, antZs[:-1], fgn, **kw)
-        multiple_scatter_chart(
-            X, Ys, annots, antZs, fgn + '_alt', **kw)
-        if not verbose:
-            multiple_scatter_chart(
-                W, Ys, annots, antZs, fgn + '_new', **kw)
-        key = ['acc', 'p', 'r', 'spe', 'f1', 'g_mean', 'dp']
-        key = [r'$\Delta$(%s)' % i for i in key]
-        key[4] = r'$\Delta(\mathrm{f}_1)$'
-        fgn = fgn[:-4] + '_oo'  # '_confusion' (O.o)
-        kw = {'figsize': 'M-WS', 'cmap_name': 'Blues', 'rotate': 0}
-        analogous_confusion_extended(Ys[
-            :-1], Xs[:-2], antZs[:-1], key[:-2], fgn, **kw)
-        if not verbose:
-            analogous_confusion_extended(Ys[:-1], Ws[
-                :-2], antZs[:-1], key[:-2], fgn + '_phrase', **kw)
-        kw['figsize'] = 'L-NT'  # 'L-ET'
-        kw['rotate'] = 34
-        fgn += 'ny'
-        key[-2] = r'$\Delta(\bar{g})$'
-        analogous_confusion_extended(Ys, Xs, antZs, key, fgn, **kw)
-        if not verbose:
-            analogous_confusion_extended(
-                Ys, Ws, antZs, key, fgn + '_phrase', **kw)
-        fgn = fgn[:-5]  # before fgn[:-3]
-        # pdb.set_trace()
+        self.plot_complementary(raw_dfs, tag, fgn, False)
+        # pdb.set_trace()  # pass
 
         rmk = False  # ,True)
         self.verify_theorem31(df_bnd, tag, fgn, rmk)
@@ -1724,9 +1686,10 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
             os.remove(f'{fgn}_err_thm3.pdf')
             # os.remove(f'{fgn}_err_thm4.pdf')
         fgn = fgn[:-4]
+        self.verify_theorem_kl(df_pac, tag_pac, fgn)
         self.verify_theo36_35(df_pac, tag_pac, fgn, 'thm6')
         self.verify_theo36_35(df_pac_alt, tag_alt[
-            0] + [tag_pac[-1], ], fgn, 'thm5')
+            0] + tag_pac[:6][-1:], fgn, 'thm5')
         # pdb.set_trace()
         os.remove(f'{fgn}_err_thm6.pdf')
         os.remove(f'{fgn}_err_thm5.pdf')
@@ -1749,8 +1712,68 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
         df_raw = pd.concat(df_raw, axis=0)
         return df_raw.reset_index(drop=True)
 
-    def plot_():
-        pdb.set_trace()
+    def plot_complementary(self, raw_dfs, tag, fgn, verbose):
+        tsa1, tsa2 = tag[-50:-25], tag[-25:]
+        tag = tag[:-50]  # tag_sa{n}
+        df_tmp = []
+        for i, raw_dframe in enumerate(raw_dfs):
+            nb_set, id_set = self.recap_sub_data(raw_dframe)
+            tmp = self.obtn_dat_diff(raw_dframe, nb_set, id_set,
+                                     tag, tsa1, tsa2)
+            # tmp = self.obtn_dat_bnds(
+            #     raw_dframe, nb_set, id_set, tag + tsa1 + tsa2)
+            # df_tmp.append(tmp[tag + tsa1])
+            # if i == 0:
+            #     continue
+            # tmp = tmp[tag + tsa2].rename(columns={
+            #     j2: j1 for j1, j2 in zip(tsa1, tsa2)})
+            # df_tmp.append(tmp)
+
+            df_tmp.append(self.obtn_dat_diff(
+                raw_dframe, nb_set, id_set, tag, tsa1, tsa2))
+        # # df_tmp = df_bnd[tag + tsa1]
+        # # df_tmp = df_bnd[tag + tag2]
+        # # tag = tag[:-50]  # tag_sa{n}
+
+        df_tmp = pd.concat(df_tmp, axis=0)
+        X = df_tmp[tsa1[7:14][0]].values.astype(DTY_FLT)
+        Xs = df_tmp[tsa1[7:14]].values.astype(DTY_FLT).T
+        Ys = df_tmp[tsa1[14:17] + tag[5:6] + tsa1[
+            17:18]].values.astype(DTY_FLT).T
+        W = df_tmp[tsa1[14 + 4:][0]].values.astype(DTY_FLT)
+        Ws = df_tmp[tsa1[14 + 4:]].values.astype(DTY_FLT).T
+        annots = (r'$\Delta$(Accuracy)', 'Fairness Measure')
+        antZs = list(BLFAIR) + [
+            # r'$\mathit{\boldsymbol{L}}_\text{bias}(f)$']
+            r'$\mathit{\boldsymbol{L}}^\prime_\text{bias}$']
+        fgn += '_rho'  # '_corr(elation)'
+        kw = {'ind_hv': 'v', 'identity': False}  # kws
+        multiple_scatter_chart(
+            X, Ys[:-1], annots, antZs[:-1], fgn, **kw)
+        multiple_scatter_chart(
+            X, Ys, annots, antZs, fgn + '_alt', **kw)
+        if verbose:  # if not verbose:
+            multiple_scatter_chart(
+                W, Ys, annots, antZs, fgn + '_new', **kw)
+        key = ['acc', 'p', 'r', 'spe', 'f1', 'g_mean', 'dp']
+        key = [r'$\Delta$(%s)' % i for i in key]
+        key[4] = r'$\Delta(\mathrm{f}_1)$'
+        fgn = fgn[:-4] + '_oo'  # '_confusion' (O.o)
+        kw = {'figsize': 'M-WS', 'cmap_name': 'Blues', 'rotate': 0}
+        analogous_confusion_extended(Ys[
+            :-1], Xs[:-2], antZs[:-1], key[:-2], fgn, **kw)
+        if verbose:  # if not verbose:
+            analogous_confusion_extended(Ys[:-1], Ws[
+                :-2], antZs[:-1], key[:-2], fgn + '_phrase', **kw)
+        kw['figsize'] = 'L-NT'  # 'L-ET'
+        kw['rotate'] = 34
+        fgn += 'ny'
+        key[-2] = r'$\Delta(\bar{g})$'
+        analogous_confusion_extended(Ys, Xs, antZs, key, fgn, **kw)
+        if verbose:  # if not verbose:
+            analogous_confusion_extended(
+                Ys, Ws, antZs, key, fgn + '_phrase', **kw)
+        fgn = fgn[:-5]  # before fgn[:-3]
         return
 
     def plot_scatter_chart(self, df_X, df_Y, fgn, ant=('X', 'Y')):
@@ -1760,7 +1783,7 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
             multi_lin_reg_without_distr(  # fgn + 'p',
                 X, [Y], [''], ant, fgn, figsize='S-NT',
                 snspec='sty3e')  # 'sty8a')#pdb.set_trace()
-        elif '_ck_thm4' in fgn:
+        elif ('_ck_thm4' in fgn):
             multi_lin_reg_without_distr(
                 X, [Y], [''], ant, fgn, figsize='S-NT',
                 snspec='sty8a')
@@ -1769,7 +1792,8 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
                 snspec='sty3e')
 
         elif ('_ck' in fgn) or ('_rl' in fgn) or (
-                '_pac' in fgn):  # or ('_lem' in fgn):
+                '_pac' in fgn) or ('_kl' in fgn):
+            # or ('_lem' in fgn):
             multi_lin_reg_without_distr(
                 X, [Y], [''], ant, fgn, figsize='S-NT',
                 snspec='sty8a')  # 'sty4','sty3a','sty3b'

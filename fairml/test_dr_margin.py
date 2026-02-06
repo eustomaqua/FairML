@@ -15,6 +15,7 @@ from fairml.dr_voting_margin import (
 
 from fairml.discriminative_risk import (
     hat_L_fair, tandem_fair, ell_fair_x)
+from pyfair.marble.data_distance import KL_div_ver1, KL_div_ver2
 
 
 n, nc, nf = 20, 3, 5
@@ -109,5 +110,5 @@ def test_previous_dr():
     assert 0 <= pac_1 <= 1 and 0 <= pac_2 <= 1
     pac_3 = pac_kl_gibbs(n, 0.1, wgt)
     assert pac_3[2] <= pac_3[1]  # tighter bound
-    # pdb.set_trace()
+    pdb.set_trace()
     return

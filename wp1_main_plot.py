@@ -526,6 +526,7 @@ if trial_type.endswith('exp11g'):
     sys.exit()
 elif trial_type.endswith('exp11h'):
     nb_cls, delt, eta = args.nb_cls, 0.03, .6
+    delt = .1
     iterator = CorrFigCK_bndupd(
         name_ens, nb_cls, nb_pru='', nb_iter=nb_iter,
         figname='gck')  # args.nb_iter
@@ -534,7 +535,7 @@ elif trial_type.endswith('exp11h'):
     xlsx_name = f'{trial_type}_nk{nb_iter}nf{nb_cls}{xlsx_name}'
     if gather:
         raw_dfs, shet_name = [], ''
-        for name_ens in ['Bagging', 'AdaBoostM1']:  # , 'SAMME']:
+        for name_ens in ['Bagging', 'AdaBoostM1', 'SAMME']:
             shet_name = "{}_{}".format(trial_type[
                 -6:], _get_tmp_name_ens(name_ens))
             shet_name = f'delt{int(delt * 100)}_' + shet_name
