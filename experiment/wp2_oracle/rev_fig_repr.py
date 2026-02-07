@@ -1532,7 +1532,7 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
         annots_35 = [
             r"$\hat{\mathit{\boldsymbol{L}}}_{bias}(f,S) +\sqrt{\frac{1}{2n}+\ln\frac{1}{\delta}}$",
             r"$\mathit{\boldsymbol{L}}_{bias}(f)$", ]
-        annots = annots_35 if rmk == 'thm5' else annots_36
+        annots = annots_35 if rmk in ('thm5', 'thm7') else annots_36
         df_Y, df_X = df[tag[2]], df[tag[3]] + df[tag[4]]
         self.plot_scatter_chart(
             df_X, df_Y, fgn + f'_pac_{rmk}', ant=annots)
@@ -1542,7 +1542,7 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
         annots_35 = annots = [
             r"$\hat{\mathit{\boldsymbol{L}}}_{err}(f,S) +\sqrt{\frac{1}{2n}+\ln\frac{1}{\delta}}$",
             r"$\mathit{\boldsymbol{L}}_{err}(f)$", ]
-        annots = annots_36 if rmk == 'thm6' else annots_35
+        annots = annots_36 if rmk in ('thm6', 'thm8') else annots_35
         df_Y, df_X = df[tag[0]], df[tag[1]] + df[tag[4]]
         self.plot_scatter_chart(
             df_X, df_Y, fgn + f'_err_{rmk}', annots)
@@ -1550,17 +1550,23 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
         return
 
     def verify_theorem_kl(self, df, tag, fgn):
+        # https://comate.baidu.com/zh/page/noh4v0vyl7i
+        # https://juejin.cn/post/7116559228352856095
+        # https://blog.csdn.net/qq_35189715/article/details/95937151
+
         annots = [
             r"$\hat{\mathcal{L}}_\text{bias}(Q_n,S) +\sqrt{\frac{ \mathrm{KL}(Q_n\|Q_0)+\ln(\frac{1+4n}{\delta}) }{2n}}$",
             r"$\mathcal{L}_\text{bias}(Q_n)$", ]
         df_Y = df[tag[2]]
         df_X = df[tag[3]] + df[tag[-2]]
-        df_X = df_X.fillna(0.)  # fgn +
+        # df_X = df_X.fillna(0.)  # fgn +
+        df_X.replace([np.inf, np.nan], 0., inplace=True)
         self.plot_scatter_chart(
             df_X, df_Y, f'{fgn}_kl_thm9', ant=annots)
         annots[0] = r"$\hat{\mathcal{L}}_\text{bias}(Q_n,S) +\sqrt{\frac{ \mathrm{KL}(Q_n\|Q_0)+\ln(\frac{2\sqrt{n}}{\delta}) }{2n}}$"
         df_X = df[tag[3]] + df[tag[-1]]
-        df_X = df_X.fillna(0.)
+        # df_X = df_X.fillna(0.)
+        df_X.replace([np.inf, np.nan], 0., inplace=True)
         self.plot_scatter_chart(
             df_X, df_Y, f'{fgn}_kl_thm10', annots)
         return
@@ -1631,9 +1637,12 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
         df_raw = self.obtn_dat_bnds(
             raw_dframe, nb_set, id_set, tag_pac + tmp_pac_alt)
         df_tmp = self.obtn_dat_pac_coll(df_raw, tag_alt, tag_pac)
-        self.verify_theo36_35(df_raw, tag_pac, fgn[:-4], 'thm6')
+        # self.verify_theo36_35(df_raw, tag_pac, fgn[:-4], 'thm6')
+        # self.verify_theo36_35(df_tmp, tag_alt[  # _theorem35
+        #     0] + [tag_pac[:6][-1], ], fgn[:-4], 'thm5')
+        self.verify_theo36_35(df_raw, tag_pac, fgn[:-4], 'thm8')
         self.verify_theo36_35(df_tmp, tag_alt[  # _theorem35
-            0] + [tag_pac[:6][-1], ], fgn[:-4], 'thm5')
+            0] + [tag_pac[:6][-1], ], fgn[:-4], 'thm7')
 
         rmk = '_prev'  # pdb.set_trace()
         # os.remove(f'{fgn}_thm1{rmk}.pdf')
@@ -1643,8 +1652,8 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
         # os.remove(f'{fgn}_ck_thm3{rmk}.pdf')
         # os.remove(f'{fgn}_rl_col7{rmk}.pdf')
         # os.remove(f'{fgn}_rl_col8{rmk}.pdf')
-        os.remove(f'{fgn[:-4]}_err_thm5.pdf')
-        os.remove(f'{fgn[:-4]}_err_thm6.pdf')
+        os.remove(f'{fgn[:-4]}_err_thm7.pdf')  # _thm5
+        os.remove(f'{fgn[:-4]}_err_thm8.pdf')  # _thm6
         # os.remove(f'{fgn[:-4]}_pac_thm5{rmk}.pdf')
         # os.remove(f'{fgn[:-4]}_pac_thm6{rmk}.pdf')
 
@@ -1748,6 +1757,7 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
             r'$\mathit{\boldsymbol{L}}^\prime_\text{bias}$']
         fgn += '_rho'  # '_corr(elation)'
         kw = {'ind_hv': 'v', 'identity': False}  # kws
+        kw['box'] = True
         multiple_scatter_chart(
             X, Ys[:-1], annots, antZs[:-1], fgn, **kw)
         multiple_scatter_chart(
@@ -1773,33 +1783,40 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
         if verbose:  # if not verbose:
             analogous_confusion_extended(
                 Ys, Ws, antZs, key, fgn + '_phrase', **kw)
+        kw['figsize'] = 'L-WS'
+        idx = [0, 1, 2, 3, 5, 6]
+        analogous_confusion_extended(
+            Ys, Xs[idx], antZs, key[:4] + key[5:],
+            fgn + '_shrink', **kw)
         fgn = fgn[:-5]  # before fgn[:-3]
         return
 
-    def plot_scatter_chart(self, df_X, df_Y, fgn, ant=('X', 'Y')):
+    def plot_scatter_chart(self, df_X, df_Y, fgn, ant=(
+            'X', 'Y'), fsz='tiny'):  # 'S-WS'#figsiz='S-NT'
         X = df_X.values.astype(DTY_FLT)
         Y = df_Y.values.astype(DTY_FLT)
         if ('_err_thm4' in fgn) or ('_lem' in fgn):
-            multi_lin_reg_without_distr(  # fgn + 'p',
-                X, [Y], [''], ant, fgn, figsize='S-NT',
+            multi_lin_reg_without_distr(
+                X, [Y], [''], ant, fgn,  # fgn + 'p',
+                figsize='XXS' if '_lem' in fgn else fsz,
                 snspec='sty3e')  # 'sty8a')#pdb.set_trace()
         elif ('_ck_thm4' in fgn):
             multi_lin_reg_without_distr(
-                X, [Y], [''], ant, fgn, figsize='S-NT',
+                X, [Y], [''], ant, fgn, figsize=fsz,
                 snspec='sty8a')
             multi_lin_reg_without_distr(
-                X, [Y], [''], ant, fgn + 'p', figsize='S-NT',
+                X, [Y], [''], ant, fgn + 'p', figsize=fsz,
                 snspec='sty3e')
 
         elif ('_ck' in fgn) or ('_rl' in fgn) or (
                 '_pac' in fgn) or ('_kl' in fgn):
             # or ('_lem' in fgn):
             multi_lin_reg_without_distr(
-                X, [Y], [''], ant, fgn, figsize='S-NT',
+                X, [Y], [''], ant, fgn, figsize=fsz,
                 snspec='sty8a')  # 'sty4','sty3a','sty3b'
         else:  # thm1|3|4
             multi_lin_reg_without_distr(
-                X, [Y], [''], ant, fgn, figsize='S-NT',
+                X, [Y], [''], ant, fgn, figsize=fsz,
                 snspec='sty3e')  # 'sty3b')
         if '_re' not in fgn:
             return  # 'err':  # fgn[-4:-1] in ('thm','col'):

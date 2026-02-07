@@ -2,7 +2,7 @@
 
 
 import numpy as np
-import pdb
+# import pdb
 from pyfair.facil.ensem_voting import weighted_voting
 from pyfair.facil.utils_const import check_equal, check_zero
 
@@ -99,7 +99,7 @@ def test_previous_dr():
     # tmp = ans_r3 - ans_r1 ** 2
     # tmp = tmp / check_zero(tmp + 1. / 4)
     bnd_3 = E_rho_Ctandem(bnd_1, bnd_2)
-    assert ans_l <= bnd_3
+    assert ans_l <= bnd_3  # bug! 0.75<=0.7117825668639496
     bnd1, bnd2, bnd3 = E_rho_summary(y_hat, y_qtb, wgt, nc)
     assert check_equal(bnd_1, bnd1)
     assert check_equal(bnd_2, bnd2)
@@ -110,5 +110,5 @@ def test_previous_dr():
     assert 0 <= pac_1 <= 1 and 0 <= pac_2 <= 1
     pac_3 = pac_kl_gibbs(n, 0.1, wgt)
     assert pac_3[2] <= pac_3[1]  # tighter bound
-    pdb.set_trace()
+    # pdb.set_trace()
     return
