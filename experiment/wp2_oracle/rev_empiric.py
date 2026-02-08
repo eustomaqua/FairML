@@ -58,7 +58,7 @@ from experiment.wp2_oracle.fetch_data import DataSetup
 from pyfair.facil.ensem_voting import weighted_voting
 from fairml.dr_voting_margin import (  # Erho_intermediate,
     E_rho_summary, Erl_summary, pac_indiv, pac_ensem, pac_kl_gibbs)
-import pdb
+# import pdb
 
 
 # =====================================
@@ -326,14 +326,14 @@ class PartA_FairMeasure(ClassifierSetup):
                 X_tst, y_tst, Xd_tst, gones_tst[i],
                 saIndex[i], saValue[i], positive_label)
             res_iter.append(tmp)
-        '''
-        tmp = self.routine_one_sens_attr(
-            nb_cls, logger,
-            X_trn, y_trn, Xd_trn, jt_trn,
-            X_tst, y_tst, Xd_tst, jt_tst,
-            saIndex[-1], saValue[-1], positive_label)
-        res_iter.append(tmp)
-        '''
+        # '''
+        # tmp = self.routine_one_sens_attr(
+        #     nb_cls, logger,
+        #     X_trn, y_trn, Xd_trn, jt_trn,
+        #     X_tst, y_tst, Xd_tst, jt_tst,
+        #     saIndex[-1], saValue[-1], positive_label)
+        # res_iter.append(tmp)
+        # '''
         return res_iter  # .shape: (#attr= 2, 5, 61)
 
     def routine_one_sens_attr(self, nb_cls, logger,

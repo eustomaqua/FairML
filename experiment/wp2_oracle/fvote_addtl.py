@@ -248,7 +248,7 @@ class PlotE_Measures(PlotD_Measures):
         new_data = self.prepare_graph(new_data)[:, :, idx, :]
 
         # data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
-        _, _, _, _, nb_iter, _ = res_all[0]
+        # _, _, _, _, nb_iter, _ = res_all[0]
         ensemble_methods = res_all[-1]
         ensemble_methods = [
             i.replace('FPR', 'fpr').replace('FNR', 'fnr')
@@ -778,7 +778,7 @@ class PlotB_Measures(GraphSetup):
         new_data = self.prepare_graph(res_data)[:, :, :, 30:, :]
 
         # data_name, binary, nb_cls, nb_pru, nb_iter, _ = res_all[0]
-        _, _, _, nb_pru, nb_iter, _ = res_all[0]
+        # nb_iter=res_all[0][4]  # _,_,_,nb_pru,nb_iter,_=res_all[0]
         sensitive_attributes = res_all[1]
         name_ens_set, abbr_cls_set = res_all[3], res_all[4]
         rank_pru_set = res_all[-1]  # name_pru based on ranking

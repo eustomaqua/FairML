@@ -369,31 +369,31 @@ def perturb_pandas_ver(X, sen_att, priv_val, ratio=.5):
     return X_qtb  # pd.DataFrame
 
 
-'''
-def disturb_slightly(X, sen=None, ratio=.4):
-    if (not sen) or (not isinstance(sen, list)):
-        return X
-    dim = np.shape(X)
-    X = np.array(X)
-
-    for i in range(dim[0]):
-        Ti = X[i]
-        Tq = 1 - Ti
-        # T = [q if j else k for k, q, j in zip(Ti, Tq, sens)]
-        Tk = np.random.rand(dim[1])
-        Tk = np.logical_and(Tk, sen)
-        T = [q if k else j for j, q, k in zip(Ti, Tq, Tk)]
-        X[i] = T
-
-    return X.tolist()
-
-
-def disturb_predicts(X, sen, clf, ratio=.4):
-    Xp = disturb_slightly(X, sen, ratio)
-    yt = clf.predict(X).tolist()
-    yp = clf.predict(Xp).tolist()
-    return yt, yp
-'''
+# '''
+# def disturb_slightly(X, sen=None, ratio=.4):
+#     if (not sen) or (not isinstance(sen, list)):
+#         return X
+#     dim = np.shape(X)
+#     X = np.array(X)
+#
+#     for i in range(dim[0]):
+#         Ti = X[i]
+#         Tq = 1 - Ti
+#         # T = [q if j else k for k, q, j in zip(Ti, Tq, sens)]
+#         Tk = np.random.rand(dim[1])
+#         Tk = np.logical_and(Tk, sen)
+#         T = [q if k else j for j, q, k in zip(Ti, Tq, Tk)]
+#         X[i] = T
+#
+#     return X.tolist()
+#
+#
+# def disturb_predicts(X, sen, clf, ratio=.4):
+#     Xp = disturb_slightly(X, sen, ratio)
+#     yt = clf.predict(X).tolist()
+#     yp = clf.predict(Xp).tolist()
+#     return yt, yp
+# '''
 
 
 # -------------------------------------

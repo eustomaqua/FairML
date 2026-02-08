@@ -15,7 +15,7 @@ from fairml.dr_voting_margin import (
 
 from fairml.discriminative_risk import (
     hat_L_fair, tandem_fair, ell_fair_x)
-from pyfair.marble.data_distance import KL_div_ver1, KL_div_ver2
+# from pyfair.marble.data_distance import KL_div_ver1, KL_div_ver2
 
 
 n, nc, nf = 20, 3, 5

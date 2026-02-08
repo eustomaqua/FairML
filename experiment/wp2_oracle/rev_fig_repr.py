@@ -208,7 +208,7 @@ class PlotE_Measures(GraphSetup):
         new_data = self.prepare_graph(new_data)[:, :, idx, :]
 
         # data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
-        _, _, _, _, nb_iter, _ = res_all[0]
+        # _, _, _, _, nb_iter, _ = res_all[0]
         ensemble_methods = res_all[-1]
         ensemble_methods = [
             i.replace('FPR', 'fpr').replace('FNR', 'fnr')
@@ -1644,7 +1644,7 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
         self.verify_theo36_35(df_tmp, tag_alt[  # _theorem35
             0] + [tag_pac[:6][-1], ], fgn[:-4], 'thm7')
 
-        rmk = '_prev'  # pdb.set_trace()
+        # rmk = '_prev'  # pdb.set_trace()
         # os.remove(f'{fgn}_thm1{rmk}.pdf')
         # os.remove(f'{fgn}_thm3{rmk}.pdf')
         # os.remove(f'{fgn}_thm4{rmk}.pdf')
@@ -1727,16 +1727,16 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
         df_tmp = []
         for i, raw_dframe in enumerate(raw_dfs):
             nb_set, id_set = self.recap_sub_data(raw_dframe)
-            tmp = self.obtn_dat_diff(raw_dframe, nb_set, id_set,
-                                     tag, tsa1, tsa2)
-            # tmp = self.obtn_dat_bnds(
-            #     raw_dframe, nb_set, id_set, tag + tsa1 + tsa2)
-            # df_tmp.append(tmp[tag + tsa1])
-            # if i == 0:
-            #     continue
-            # tmp = tmp[tag + tsa2].rename(columns={
-            #     j2: j1 for j1, j2 in zip(tsa1, tsa2)})
-            # df_tmp.append(tmp)
+            # tmp = self.obtn_dat_diff(raw_dframe, nb_set, id_set,
+            #                          tag, tsa1, tsa2)
+            # # tmp = self.obtn_dat_bnds(
+            # #     raw_dframe, nb_set, id_set, tag + tsa1 + tsa2)
+            # # df_tmp.append(tmp[tag + tsa1])
+            # # if i == 0:
+            # #     continue
+            # # tmp = tmp[tag + tsa2].rename(columns={
+            # #     j2: j1 for j1, j2 in zip(tsa1, tsa2)})
+            # # df_tmp.append(tmp)
 
             df_tmp.append(self.obtn_dat_diff(
                 raw_dframe, nb_set, id_set, tag, tsa1, tsa2))

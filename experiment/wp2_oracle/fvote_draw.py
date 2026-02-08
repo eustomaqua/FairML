@@ -1721,10 +1721,10 @@ class PlotJ_LambdaEffect(GraphSetup):
                 return  # continue
 
             ind_jt = self.pick_up_set_idx(index, i, 1)
-            for l, ind in enumerate(ind_jt):
+            for ll, ind in enumerate(ind_jt):
                 nkw = "_".join([
                     # kw, "itr{}".format(l), "set{}".format(i)])
-                    "iter{}".format(l), "set{}".format(i), kw])
+                    "iter{}".format(ll), "set{}".format(i), kw])
                 tdf = dframe.loc[ind][tag_col]
 
                 self.verify_lam_effect_fair(tdf, nkw, tag_col, 1)
@@ -1736,10 +1736,10 @@ class PlotJ_LambdaEffect(GraphSetup):
                 continue
 
             ind_jt = self.pick_up_set_idx(index, i, 2)
-            for l, ind in enumerate(ind_jt):
+            for ll, ind in enumerate(ind_jt):
                 nkw = "_".join([
                     # kw, "itr{}".format(l), "set{}".format(i)])
-                    "iter{}".format(l), "set{}".format(i), kw])
+                    "iter{}".format(ll), "set{}".format(i), kw])
                 tdf = dframe.loc[ind][tag_col]
 
                 self.verify_lam_effect_fair(tdf, nkw, tag_col, 1)
@@ -1748,10 +1748,10 @@ class PlotJ_LambdaEffect(GraphSetup):
                 self.verify_lam_effect_fair(tdf, nkw, tag_col, 4)
 
             ind_jt = self.pick_up_set_idx(index, i, 3)
-            for l, ind in enumerate(ind_jt):
+            for ll, ind in enumerate(ind_jt):
                 nkw = "_".join([
                     # kw, "iter{}".format(l), "set{}".format(i)])
-                    "iter{}".format(l), "set{}".format(i), kw])
+                    "iter{}".format(ll), "set{}".format(i), kw])
                 tdf = dframe.loc[ind][tag_col]
 
                 self.verify_lam_effect_fair(tdf, nkw, tag_col, 1)
@@ -1768,7 +1768,7 @@ class PlotJGather_LambdaEffect(PlotJ_LambdaEffect):
                          nb_lam, trial_type, figname)
 
     def schedule_mspaint(self, raw_dframe):
-        nb_set, id_set, index = self.recap_sub_data(raw_dframe)
+        nb_set, _, index = self.recap_sub_data(raw_dframe)  # id_set,
         tag_col = self.prepare_graph()
 
         for i in range(nb_set):

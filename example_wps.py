@@ -192,20 +192,20 @@ def get_subensemble(yhat_trn, yhat_tst, yp_qtb_trn, yp_qtb_tst,
     hp_qtb_trn = weighted_voting(pru_hqtb_trn, pruned_coef)
     hp_qtb_tst = weighted_voting(pru_hqtb_tst, pruned_coef)
 
-    '''
-    print('\n')
-    print("Pruned sub-ensemble accuracy:")
-    print(f"\tpruning method:\t{method}")  # \n\tH= {H}
-    print("Training set:\t {:.5f} vs. {:.5f} aft perturbation".format(
-        get_accuracy(y_trn, hens_trn), get_accuracy(y_trn, hx_qtb_trn)))
-    print(" Testing set:\t {:.5f} vs. {:.5f} aft perturbation".format(
-        get_accuracy(y_tst, hens_tst), get_accuracy(y_tst, hx_qtb_tst)))
-    print("DR on training set:\t {:.5f}  & loss {:.5f}".format(
-        hat_L_fair(hens_trn, hx_qtb_trn), hat_L_loss(hens_trn, y_trn)))
-    print("DR on testing set :\t {:.5f}  & loss {:.5f}".format(
-        hat_L_fair(hens_tst, hx_qtb_tst), hat_L_loss(hens_tst, y_tst)))
-    print("\tH= {H}")
-    '''
+    # '''
+    # print('\n')
+    # print("Pruned sub-ensemble accuracy:")
+    # print(f"\tpruning method:\t{method}")  # \n\tH= {H}
+    # print("Training set:\t {:.5f} vs. {:.5f} aft perturbation".format(
+    #     get_accuracy(y_trn, hens_trn), get_accuracy(y_trn, hx_qtb_trn)))
+    # print(" Testing set:\t {:.5f} vs. {:.5f} aft perturbation".format(
+    #     get_accuracy(y_tst, hens_tst), get_accuracy(y_tst, hx_qtb_tst)))
+    # print("DR on training set:\t {:.5f}  & loss {:.5f}".format(
+    #     hat_L_fair(hens_trn, hx_qtb_trn), hat_L_loss(hens_trn, y_trn)))
+    # print("DR on testing set :\t {:.5f}  & loss {:.5f}".format(
+    #     hat_L_fair(hens_tst, hx_qtb_tst), hat_L_loss(hens_tst, y_tst)))
+    # print("\tH= {H}")
+    # '''
 
     bias_trn = [get_grp_fairness(
         y_trn, hens_trn, pos_label, i) for i in nsa_idx_trn]
