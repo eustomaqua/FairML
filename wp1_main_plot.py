@@ -526,8 +526,8 @@ if trial_type.endswith('exp11g'):
     sys.exit()
 elif trial_type.endswith('exp11h'):
     nb_cls, delt, eta = args.nb_cls, 0.03, .6
-    delt = .1
-    # delt = .02  # nb_cls, delt, eta = 11, args.delt, .6
+    # delt = .1
+    delt = .02  # nb_cls, delt, eta = 11, args.delt, .6
     iterator = CorrFigCK_bndupd(
         name_ens, nb_cls, nb_pru='', nb_iter=nb_iter,
         figname='gck')  # args.nb_iter

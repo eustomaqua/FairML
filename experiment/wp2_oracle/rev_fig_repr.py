@@ -1561,14 +1561,16 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
         # df_X = df[tag[3]] + df[tag[-2]]
         # # df_X = df_X.fillna(0.)  # fgn +
         # df_X.replace([np.inf, np.nan], 0., inplace=True)
-        df_X = df[tag[3]] + df[tag[-2]].replace(['inf', 'nan'], 0.)
+        df_X = df[tag[3]] + df[tag[
+            -2]].replace(['inf', 'nan', np.nan], 0.)
         self.plot_scatter_chart(
             df_X, df_Y, f'{fgn}_kl_thm9', ant=annots)
         annots[0] = r"$\hat{\mathcal{L}}_\text{bias}(Q_n,S) +\sqrt{\frac{ \mathrm{KL}(Q_n\|Q_0)+\ln(\frac{2\sqrt{n}}{\delta}) }{2n}}$"
         # df_X = df[tag[3]] + df[tag[-1]]
         # # df_X = df_X.fillna(0.)
         # df_X.replace([np.inf, np.nan], 0., inplace=True)
-        df_X = df[tag[3]] + df[tag[-1]].replace(['inf', 'nan'], 0.)
+        df_X = df[tag[3]] + df[tag[
+            -1]].replace(['inf', 'nan', np.nan], 0.)
         self.plot_scatter_chart(
             df_X, df_Y, f'{fgn}_kl_thm10', annots)
         return
@@ -1683,7 +1685,7 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
         df_pac_alt = pd.concat(df_pac_alt, axis=0)
         fgn = f'{self._figname}_tst'
 
-        self.plot_complementary(raw_dfs, tag, fgn, False)
+        # self.plot_complementary(raw_dfs, tag, fgn, False)
         # pdb.set_trace()  # pass
 
         rmk = False  # ,True)
