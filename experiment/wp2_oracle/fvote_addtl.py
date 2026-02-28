@@ -5,6 +5,7 @@ import json
 import os
 import time
 import numpy as np
+import pdb
 
 from pyfair.facil.utils_const import DTY_FLT, _get_tmp_name_ens
 from pyfair.facil.utils_saver import (
@@ -229,6 +230,13 @@ class GatherD_Measures(PlotD_Measures):
             Mat[-4:], Mat[[0, 1, 2, 3, 5]], key[-4:],
             [key[i] for i in [0, 1, 2, 3, 5]], fgn,
             figsize='M-WS', cmap_name='Blues', rotate=0)
+
+        analogous_confusion_extended(
+            # Mat[[-1, -4, -3, -2], :], Mat[-4:],
+            # key[-1:] + key[-4:-1], key[-4:],
+            Mat[-4:], Mat[-4:], key[-4:], key[-4:],
+            figname + '_fairness', figsize='tiny',  # 'S-WS',
+            cmap_name='Greens', rotate=0)
         # pdb.set_trace()
         return
 
@@ -1229,6 +1237,7 @@ class FairVoteDrawing(DataSetup):
                 "pms"])
             if self._trial_type.endswith('expt6'):
                 log_document += "_lam{}".format(int(self._lam * 100))
+            # elegant_print(f'log_document= {log_document}.json')
 
             json_rf = open(os.path.join(
                 CURR_EXPT_DIR, log_document + ".json"), 'r')

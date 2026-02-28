@@ -1536,6 +1536,7 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
         df_Y, df_X = df[tag[2]], df[tag[3]] + df[tag[4]]
         self.plot_scatter_chart(
             df_X, df_Y, fgn + f'_pac_{rmk}', ant=annots)
+        # pdb.set_trace()
         annots_36 = [
             r"$\hat{\mathit{\boldsymbol{L}}}_{err}(\mathbf{wv}_\rho) +\sqrt{\frac{1}{2n}+\ln\frac{|\mathcal{F}|}{\delta}}$",
             r"$\mathit{\boldsymbol{L}}_{err}(\mathbf{wv}_\rho)$", ]
@@ -1700,12 +1701,12 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
             # os.remove(f'{fgn}_err_thm4.pdf')
         fgn = fgn[:-4]
         self.verify_theorem_kl(df_pac, tag_pac, fgn)
-        self.verify_theo36_35(df_pac, tag_pac, fgn, 'thm6')
+        self.verify_theo36_35(df_pac, tag_pac, fgn, 'thm8')  # '6)
         self.verify_theo36_35(df_pac_alt, tag_alt[
-            0] + tag_pac[:6][-1:], fgn, 'thm5')
+            0] + tag_pac[:6][-1:], fgn, 'thm7')  # 'thm5')
         # pdb.set_trace()
-        os.remove(f'{fgn}_err_thm6.pdf')
-        os.remove(f'{fgn}_err_thm5.pdf')
+        os.remove(f'{fgn}_err_thm8.pdf')  # f'{fgn}_err_thm6.pdf')
+        os.remove(f'{fgn}_err_thm7.pdf')  # f'{fgn}_err_thm5.pdf')
         del df_bnd, df_pac, df_pac_alt, fgn
         return
 
