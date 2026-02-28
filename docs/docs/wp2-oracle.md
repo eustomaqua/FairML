@@ -201,6 +201,7 @@ for criterion in ['DP', 'EO', 'PQP']:
 
 The [empirical](https://github.com/eustomaqua/FairML/tree/master/findings) data are released with FairML. To reproduce our [results](https://arxiv.org/pdf/2301.10813), you may do as follows.
 
+<!--
 ```shell
 python wp1_case_plot.py                                                       # Fig. 2
 python wp1_main_plot.py --draw -exp mCV_expt4 --gather  # Fig. 1
@@ -215,4 +216,22 @@ python wp1_main_plot.py -exp mCV_expt8 --name-ens Bagging                       
 python wp1_main_plot.py -exp mCV_expt8 --name-ens AdaBoostM1 --nb-cls 11 --nb-pru 5  # Fig.11 & 13(e-h)
 python wp1_main_plot.py -exp mCV_expt8 --name-ens SAMME --nb-cls 11 --nb-pru 5         # Fig.12 & 13(i-l)
 python wp1_main_plot.py -exp mCV_expt10 --name-ens Bagging --nb-iter 2 --nb-cls 11       # Fig. 7
+```
+-->
+
+```shell
+python wp1_main_plot.py --draw -exp mCV_expt4 --gather             # Fig. 1
+python wp1_case_plot.py                                                                  # Fig. 2
+python wp1_main_plot.py -exp mCV_exp11h --nb-cls 11 --gather    # Fig. 3, 4, 5 & 6
+python wp1_main_plot.py --draw -exp mCV_expt6 --gather --nb-pru 7  # Fig. 7 & 8, and Tables 2 to 3
+python wp1_main_plot.py -exp mCV_expt8 --name-ens Bagging                                            # Fig. 9 & 12(a-d)
+```
+
+Below are the empirical results in the Appendix
+```shell
+python wp1_main_plot.py -exp mCV_expt8 --name-ens AdaBoostM1 --nb-cls 11 --nb-pru 5  # Fig.10 & 12(e-h)
+python wp1_main_plot.py -exp mCV_expt8 --name-ens SAMME --nb-cls 11 --nb-pru 5         # Fig.11 & 12(i-l)
+python wp1_main_plot.py -exp mCV_expt8 --gather                              # Fig. 15 & 14
+python wp1_main_plot.py -exp mCV_expt8 --gather --tab                      # Tables 4 to 8
+python wp1_main_plot.py -exp mCV_expt10 --name-ens Bagging --nb-iter 2 --nb-cls 11       # Fig. 13
 ```

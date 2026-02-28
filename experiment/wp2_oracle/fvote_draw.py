@@ -16,6 +16,7 @@ from pyfair.facil.utils_const import (
     DTY_FLT, unique_column, _get_tmp_name_ens, _get_tmp_document)
 from pyfair.facil.utils_remark import (
     AVAILABLE_ABBR_ENSEM, AVAILABLE_ABBR_CLS)
+from experiment.wp2_oracle.fvote_addtl import BLFAIR
 
 import csv
 import os
@@ -561,16 +562,24 @@ class PlotH_ImprovePruning(GraphSetup):
 
         annots = {
             0: r"aggr.rank.$diff()$",
-            1: r"aggr.rank.$diff(DP_F)$",
-            2: r"aggr.rank.$diff(EO_F)$",
-            3: r"aggr.rank.$diff(PQP_F)$",
+            # 1: r"aggr.rank.$diff(DP_F)$",
+            # 2: r"aggr.rank.$diff(EO_F)$",
+            # 3: r"aggr.rank.$diff(PQP_F)$",
             4: r"aggr.rank.$diff($accuracy$)$",
+
+            1: f"aggr.rank.$diff({BLFAIR[0]}_F)$",
+            2: f"aggr.rank.$diff({BLFAIR[1]}_F)$",
+            3: f"aggr.rank.$diff({BLFAIR[2]}_F)$",
         }
         annots = {
+            1: f"aggr.rank.${BLFAIR[0]}_F$",
+            2: f"aggr.rank.${BLFAIR[1]}_F$",
+            3: f"aggr.rank.${BLFAIR[2]}_F$",
+
             0: r"aggr.rank.$diff()$",
-            1: r"aggr.rank.$DP_F$",
-            2: r"aggr.rank.$EO_F$",
-            3: r"aggr.rank.$PQP_F$",
+            # 1: r"aggr.rank.$DP_F$",
+            # 2: r"aggr.rank.$EO_F$",
+            # 3: r"aggr.rank.$PQP_F$",
             # 4: r"aggr.rank.$\Delta($accuracy$)$",
             4: r"aggr.rank.$diff($accuracy$)$",
         }
@@ -643,9 +652,9 @@ class PlotH_ImprovePruning(GraphSetup):
                 ddof=1).values.astype(DTY_FLT)
 
         annots = [
-            r"$DP_F$",
-            r"$EO_F$",
-            r"$PQP_F$",
+            f"${BLFAIR[0]}_F$",  # r"$DP_F$",
+            f"${BLFAIR[1]}_F$",  # r"$EO_F$",
+            f"${BLFAIR[2]}_F$",  # r"$PQP_F$",
             r"accuracy"
         ]
         annotX = self._sens_dataset[rel_set][rel_jt - 1]
@@ -672,9 +681,9 @@ class PlotH_ImprovePruning(GraphSetup):
             Ys_std[:, (k - 1)] = tdf.std(ddof=1).values.astype(DTY_FLT)
 
         annots = [
-            r"$DP_F$",
-            r"$EO_F$",
-            r"$PQP_F$",
+            f"${BLFAIR[0]}_F$",  # r"$DP_F$",
+            f"${BLFAIR[1]}_F$",  # r"$EO_F$",
+            f"${BLFAIR[2]}_F$",  # r"$PQP_F$",
             r"accuracy"
         ]
         annotX = self._sens_dataset[rel_set][rel_jt - 1]
@@ -714,9 +723,13 @@ class PlotH_ImprovePruning(GraphSetup):
             Ys_std[:, (k + 4)] = tdf.std(ddof=1).values.astype(DTY_FLT)
 
         annots = [
-            r"$diff(DP_F)$",
-            r"$diff(EO_F)$",
-            r"$diff(PQP_F)$",
+            f"$diff({BLFAIR[0]}_F)$",
+            f"$diff({BLFAIR[1]}_F)$",
+            f"$diff({BLFAIR[2]}_F)$",
+
+            # r"$diff(DP_F)$",
+            # r"$diff(EO_F)$",
+            # r"$diff(PQP_F)$",
             r"$diff($accuracy$)$",
             r"$G_1(\mathbf{wv}_\rho)$",
             r"$G_2(\mathbf{wv}_\rho)$",
@@ -800,15 +813,23 @@ class PlotH_ImprovePruning(GraphSetup):
             Ys_std[:, (k - 1)] = tdf.std(axis=0, ddof=1)
 
         annots = [
-            r"$diff(DP_F)$",
-            r"$diff(EO_F)$",
-            r"$diff(PQP_F)$",
+            # r"$diff(DP_F)$",
+            # r"$diff(EO_F)$",
+            # r"$diff(PQP_F)$",
             r"$diff($accuracy$)$",
+
+            f"$diff({BLFAIR[0]}_F)$",
+            f"$diff({BLFAIR[1]}_F)$",
+            f"$diff({BLFAIR[2]}_F)$",
         ]
         annots = [
-            r"$DP_F$",
-            r"$EO_F$",
-            r"$PQP_F$",
+            f"${BLFAIR[0]}_F$",
+            f"${BLFAIR[1]}_F$",
+            f"${BLFAIR[2]}_F$",
+
+            # r"$DP_F$",
+            # r"$EO_F$",
+            # r"$PQP_F$",
             r"$diff($accuracy$)$",
         ]
 
@@ -1045,9 +1066,13 @@ class PlotHGather_ImprovePruning(PlotH_ImprovePruning):
             Ys_std[:, (k + 4)] = tdf.std(axis=0, ddof=1)
 
         annots = [
-            r"$diff(DP_F)$",
-            r"$diff(EO_F)$",
-            r"$diff(PQP_F)$",
+            f"$diff({BLFAIR[0]}_F)$",
+            f"$diff({BLFAIR[1]}_F)$",
+            f"$diff({BLFAIR[2]}_F)$",
+
+            # r"$diff(DP_F)$",
+            # r"$diff(EO_F)$",
+            # r"$diff(PQP_F)$",
             r"$diff($accuracy$)$",
             r"$G_1(\mathbf{wv}_\rho)$",
             r"$G_2(\mathbf{wv}_\rho)$",
@@ -1665,16 +1690,24 @@ class PlotJ_LambdaEffect(GraphSetup):
         annotY = ('Ensem', 'EPAF-C', 'EPAF-D', 'POAF')
 
         annotX = {
-            1: r"$diff(DP_F)$",
-            2: r"$diff(EO_F)$",
-            3: r"$diff(PQP_F)$",
+            # 1: r"$diff(DP_F)$",
+            # 2: r"$diff(EO_F)$",
+            # 3: r"$diff(PQP_F)$",
             4: r"$diff($accuracy$)$",
             0: r"$diff(\cdot)$",
+
+            1: f"$diff({BLFAIR[0]}_F)$",
+            2: f"$diff({BLFAIR[1]}_F)$",
+            3: f"$diff({BLFAIR[2]}_F)$",
         }
         annotX = {
-            1: r"$DP_F$",
-            2: r"$EO_F$",
-            3: r"$PQP_F$",
+            1: f"${BLFAIR[0]}_F$",
+            2: f"${BLFAIR[1]}_F$",
+            3: f"${BLFAIR[2]}_F$",
+
+            # 1: r"$DP_F$",
+            # 2: r"$EO_F$",
+            # 3: r"$PQP_F$",
             4: r"$diff($accuracy$)$",
             0: r"$diff(\cdot)$",
         }
@@ -1833,11 +1866,15 @@ class PlotJGather_LambdaEffect(PlotJ_LambdaEffect):
         annotY = ('Ensem', 'EPAF-C', 'EPAF-D', 'POAF')
 
         annotX = {
-            1: r"$diff(DP_F)$",
-            2: r"$diff(EO_F)$",
-            3: r"$diff(PQP_F)$",
+            # 1: r"$diff(DP_F)$",
+            # 2: r"$diff(EO_F)$",
+            # 3: r"$diff(PQP_F)$",
             4: r"$diff($accuracy$)$",
             0: r"$diff(\cdot)$",
+
+            1: f"$diff({BLFAIR[0]}_F)$",
+            2: f"$diff({BLFAIR[1]}_F)$",
+            3: f"$diff({BLFAIR[2]}_F)$",
         }
 
         mkrs = ('.',) * 4

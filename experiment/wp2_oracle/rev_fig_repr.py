@@ -86,7 +86,7 @@ class PlotD_Measures(GraphSetup):
             alt_data[i] for i in range(num_e)], axis=1)
         X, Ys = alt_data[26], alt_data[[50, 51, 52, 54], :]
         annots = (r"$\Delta$(Accuracy)", "Fairness Measure")
-        annotZs = ('DP', 'EO', 'PQP', 'DR')
+        annotZs = BLFAIR  # ('DP', 'EO', 'PQP', 'DR')
         fgn = figname + "_correlation"
         # multiple_scatter_chart(X, Ys, annots, annotZs, fgn)
         multiple_scatter_chart(X, Ys, annots, annotZs, fgn,
@@ -95,7 +95,7 @@ class PlotD_Measures(GraphSetup):
         Mat = alt_data[[26, 27, 28, 29, 32, 33, 50, 51, 52, 54]]
         key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
         key = [r"$\Delta$({})".format(i) for i in key
-               ] + ["DP", "EO", "PQP", "DR"]
+               ] + BLFAIR  # ["DP", "EO", "PQP", "DR"]
         fgn = figname + "_confusion"
         # pdb.set_trace()
         # analogous_confusion(Mat, key, fgn, normalize=False)
@@ -123,7 +123,7 @@ class PlotD_Measures(GraphSetup):
                    "Matthew", "Cohen"]
         elif mark == "fair":
             idx = [50, 51, 52, 54]
-            key = ["DP", "EO", "PQP", "DR"]  # or "FQ (ours)"
+            key = BLFAIR  # ["DP","EO","PQP","DR"]  # or "FQ (ours)"
 
         # '''
         # if mark.endswith("norm"):
@@ -165,7 +165,7 @@ class GatherD_Measures(PlotD_Measures):
 
         X, Ys = alt_data[26], alt_data[[50, 51, 52, 54], :]
         annots = (r"$\Delta$(Accuracy)", "Fairness Measure")
-        annotZs = ('DP', 'EO', 'PQP', 'DR')
+        annotZs = BLFAIR  # ('DP', 'EO', 'PQP', 'DR')
         fgn = figname + "_correlation"
         multiple_scatter_chart(X, Ys, annots, annotZs, fgn,
                                ind_hv='v', identity=False)
@@ -173,7 +173,7 @@ class GatherD_Measures(PlotD_Measures):
         Mat = alt_data[[26, 27, 28, 29, 32, 33, 50, 51, 52, 54]]
         key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
         key = [r"$\Delta$(%s)" % i for i in key
-               ] + ["DP", "EO", "PQP", "DR"]
+               ] + BLFAIR  # ["DP", "EO", "PQP", "DR"]
         fgn = figname + "_confusion"
 
         Mat_A, Mat_B = Mat[: 6], Mat[6:]
@@ -246,11 +246,11 @@ class PlotE_Measures(GraphSetup):
                 test_J[i] for i in range(num_e)], axis=1)
 
         annots = (r"$\Delta$(Accuracy)", "Fairness Measure")
-        annotZs = ('DP', 'EO', 'PQP', 'DR')
+        annotZs = BLFAIR  # ('DP', 'EO', 'PQP', 'DR')
         fgn_r = figname + "_correlation"
         key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
-        key = [r"$\Delta$(%s)" % i for i in key] + [
-            "DP", "EO", "PQP", "DR"]
+        key = [r"$\Delta$(%s)" % i for i in key
+               ] + BLFAIR  # ["DP","EO","PQP","DR"]
         fgn_f = figname + "_confusion"
 
         if len(sensitive_attributes) == 1:
@@ -321,11 +321,11 @@ class GatherE_Measures(PlotE_Measures):
         alt_data = np.concatenate(alt_data, axis=1)
 
         annots = (r"$\Delta$(Accuracy)", "Fairness Measure")
-        annotZs = ('DP', 'EO', 'PQP', 'DR')
+        annotZs = BLFAIR  # ('DP', 'EO', 'PQP', 'DR')
         fgn_r = figname + "_correlation" + "_{}".format(str(jt)[0])
         key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
-        key = [r"$\Delta$(%s)" % i for i in key] + [
-            "DP", "EO", "PQP", "DR"]
+        key = [r"$\Delta$(%s)" % i for i in key
+               ] + BLFAIR  # ["DP", "EO", "PQP", "DR"]
         fgn_f = figname + "_confusion" + "_{}".format(str(jt)[0])
 
         X, Ys = alt_data[26], alt_data[[50, 51, 52, 54], :]
@@ -438,15 +438,22 @@ class PlotF_Prunings(GraphSetup):
             11: "Cohen",
             12: "random_acc",
 
+            41: BLFAIR[0],
+            43: BLFAIR[1],
+            45: BLFAIR[2],
+            50: BLFAIR[0],
+            51: BLFAIR[1],
+            52: BLFAIR[2],
+
             39: "unaware",  # 39,40, 49 =39+10
-            41: "DP",       # 41,42, 50 =41+9
-            43: "EO",       # 43,44, 51 =53+8
-            45: "PQP",      # 45,46, 52 =45+7
+            # 41: "DP",       # 41,42, 50 =41+9
+            # 43: "EO",       # 43,44, 51 =53+8
+            # 45: "PQP",      # 45,46, 52 =45+7
             47: "manual",   # 47,48, 53 =47+6
             49: "unaware",
-            50: "DP",
-            51: "EO",
-            52: "PQP",
+            # 50: "DP",
+            # 51: "EO",
+            # 52: "PQP",
             53: "manual",
             # 54: r"$\hat{L}_{fair}$",
             # 55: r"$\hat{L}_{err}$",  # loss
@@ -587,15 +594,22 @@ class GatherF_Prunings(PlotF_Prunings):
             13: "Disturbed Acc (%)",
             16: "Disturbed f1",
 
+            41: BLFAIR[0],
+            43: BLFAIR[1],
+            45: BLFAIR[2],
+            50: BLFAIR[0],
+            51: BLFAIR[1],
+            52: BLFAIR[2],
+
             39: "unaware",  # 39,40, 49 =39+10
-            41: "DP",       # 41,42, 50 =41+9
-            43: "EO",       # 43,44, 51 =53+8
-            45: "PQP",      # 45,46, 52 =45+7
+            # 41: "DP",       # 41,42, 50 =41+9
+            # 43: "EO",       # 43,44, 51 =53+8
+            # 45: "PQP",      # 45,46, 52 =45+7
             47: "manual",   # 47,48, 53 =47+6
             49: "unaware",
-            50: "DP",
-            51: "EO",
-            52: "PQP",
+            # 50: "DP",
+            # 51: "EO",
+            # 52: "PQP",
             53: "manual",
             54: r"$L_{fair}$",  # 54: r"$\hat{L}_{fair}$",
             55: r"$L_{err}$",   # 55: r"$\hat{L}_{err}$",  # loss
@@ -686,11 +700,15 @@ class GatherF_Prunings(PlotF_Prunings):
             1: r"aggr.rank.precision",
             2: r"aggr.rank.recall",
             3: r"aggr.rank.f1_score",
-            50: r"aggr.rank.DP",
-            51: r"aggr.rank.EO",
-            52: r"aggr.rank.PQP",
+            # 50: r"aggr.rank.DP",
+            # 51: r"aggr.rank.EO",
+            # 52: r"aggr.rank.PQP",
             54: r"aggr.rank.$L_{fair}$",
             55: r"aggr.rank.$L_{err}$",
+
+            50: f"aggr.rank.{BLFAIR[0]}",
+            51: f"aggr.rank.{BLFAIR[1]}",
+            52: f"aggr.rank.{BLFAIR[2]}",
         }
         kwargs = {"cmap_name": 'GnBu', "rotation": 35}  # 65
         if 50 <= pt_i <= 52:
@@ -741,7 +759,7 @@ class Renew_GatherF_Prunings(GatherF_Prunings):
             new_data, res_all, optional_data, 52)
         _, _, Ys_DR = self.renew_retrieve_dat(
             new_data, res_all, optional_data, 54)
-        Ys_annot = ['DP', 'EO', 'PQP', 'DR']
+        Ys_annot = BLFAIR  # ['DP', 'EO', 'PQP', 'DR']
         self.renew_graph_scatter(Ys_acc, [
             Ys_DP, Ys_EO, Ys_PQP, Ys_DR], Ys_model, Ys_annot,
             verbose=False)

@@ -543,6 +543,9 @@ elif trial_type.endswith('exp11h'):
             raw_dfs.append(iterator.load_raw_dataset(
                 xlsx_name, shet_name))
         iterator.schedule_mspaint_gather(raw_dfs, args.draw)
+        fgn = f'{iterator._figname}_tst'
+        os.remove(f'{fgn}_ck_thm4p.pdf')
+        os.remove(f"{fgn}_err_thm4.pdf")  # gck_tst
         del raw_dfs, shet_name, xlsx_name, iterator
         del nb_cls, delt, eta
         sys.exit()
