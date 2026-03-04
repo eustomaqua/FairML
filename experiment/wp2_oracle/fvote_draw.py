@@ -1615,7 +1615,7 @@ class PlotJ_LambdaEffect(GraphSetup):
     def schedule_mspaint(self, raw_dframe, abbr_cls=None):
         nb_set, id_set, index = self.recap_sub_data(raw_dframe)
         tag_col = self.prepare_graph()
-        assert len(id_set) - 1 == nb_set
+        assert len(id_set) == nb_set  # assert len(id_set) - 1 == nb_set
 
         if abbr_cls is not None:
             dframe = raw_dframe[abbr_cls]
@@ -1648,13 +1648,15 @@ class PlotJ_LambdaEffect(GraphSetup):
 
         annotX = {
             0: r"$\mathcal{L}_{err}(\mathbf{wv}_\rho)$",
+            1: r"$\mathcal{L}_{bias}(\mathbf{wv}_\rho)$",
             # 0: r"$\mathcal{L}_{acc}(\mathbf{wv}_\rho)$",
-            1: r"$\mathcal{L}_{fair}(\mathbf{wv}_\rho)$",
+            # 1: r"$\mathcal{L}_{fair}(\mathbf{wv}_\rho)$",
             2: r"$\mathcal{L}(\mathbf{wv}_\rho)$",
 
             3: r"$G_1(\mathbf{wv}_\rho)$",
             4: r"$G_2(\mathbf{wv}_\rho)$",
-            5: r"$\mathbf{E}[\mathcal{L}_{fair}(f)]$",
+            # 5: r"$\mathbf{E}[\mathcal{L}_{fair}(f)]$",
+            5: r"$\mathbf{E}[\mathcal{L}_{bias}(f)]$",
 
             6: r"Test Accuracy (%)",
             7: r"Precision (%)",
@@ -1828,13 +1830,15 @@ class PlotJGather_LambdaEffect(PlotJ_LambdaEffect):
 
         annotX = {
             0: r"$\mathcal{L}_{err}(\mathbf{wv}_\rho)$",
+            1: r"$\mathcal{L}_{bias}(\mathbf{wv}_\rho)$",
             # 0: r"$\mathcal{L}_{acc}(\mathbf{wv}_\rho)$",
-            1: r"$\mathcal{L}_{fair}(\mathbf{wv}_\rho)$",
+            # 1: r"$\mathcal{L}_{fair}(\mathbf{wv}_\rho)$",
             2: r"$\mathcal{L}(\mathbf{wv}_\rho)$",
 
             3: r"$G_1(\mathbf{wv}_\rho)$",
             4: r"$G_2(\mathbf{wv}_\rho)$",
-            5: r"$\mathbf{E}[\mathcal{L}_{fair}(f)]$",
+            # 5: r"$\mathbf{E}[\mathcal{L}_{fair}(f)]$",
+            5: r"$\mathbf{E}[\mathcal{L}_{bias}(f)]$",
 
             6: r"Test Accuracy (%)",
             7: r"Precision (%)",

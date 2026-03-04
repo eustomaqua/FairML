@@ -1,10 +1,16 @@
 # Discriminative risk (DR)
 
 
+<!--
 We propose a fairness quality measure named *discriminative risk (DR)* to reflect both individual and group fairness aspects. We also investigate its properties and establish the first and second-order oracle bounds concerning fairness to show that fairness can be boosted via ensemble combination with theoretical learning guarantees. The analysis is suitable for both binary and multi-class classification. Furthermore, an ensemble pruning method named *POAF (Pareto optimal ensemble pruning via improving
 accuracy and fairness concurrently)* is also proposed to utilise DR. Comprehensive experiments are conducted to evaluate the effectiveness of the proposed methods.
 
 The full paper entitled *Increasing Fairness via Combination with Learning Guarantees* can be found on [arXiv](https://arxiv.org/pdf/2301.10813). There are also a couple of short versions for dissemination purposes only, see a non-archival [document](https://openreview.net/pdf?id=QHILhNkVUX) and its [poster](https://eustomadew.github.io/posters/2024_m3l_bounds.pdf), as well as [slides'23](https://eustomadew.github.io/slides/pre23_letall.pdf) and [slides'24](https://eustomadew.github.io/slides/pre24_melanie.pdf).
+-->
+
+We propose a fairness quality measure named *discriminative risk (DR)* to reflect both individual and group fairness aspects. We also investigate its properties and establish first and second-order oracle bounds concerning fairness to show that fairness can be boosted via ensemble combination at some time with theoretical learning guarantees. The analysis is suitable for both binary and multi-class classification. 
+Furthermore, an ensemble pruning method named *POAF (Pareto optimal ensemble pruning via improving accuracy and fairness concurrently)* is also proposed to utilise DR. Comprehensive experiments are conducted to evaluate the effectiveness of the proposed methods. 
+The full paper entitled *Improving Fairness with Ensemble Combination: Margin-Dependent Bounds*, available on [OpenReview](https://openreview.net/forum?id=Zgu58Dg2Yb), has been accepted by *the 9th annual ACM Conference on Fairness, Accountability, and Transparency ([FAccT 2026](https://facctconference.org/))*. 
 
 
 ## Methodology
@@ -22,7 +28,15 @@ This equation is defined on one instance, evaluating the risk from an individual
 
 **Oracle bounds and PAC bounds regarding fairness for the weighted voting**
 
+<!--
 If the weighted vote makes a discriminative decision, then *at least a $\rho$-weighted half* of the individual classifiers *have made a discriminative decision* and, therefore, the DR of an ensemble can be bounded by a constant times the DR of the individual classifiers. In other words, there exists a cancellation-of-biases effect in combination, similar to its well-known cancellation-of-error effect. We also provided two PAC bounds regarding fairness to bound the discrepancy between one hypothesis (either an individual classifier or an ensemble)'s empirical DR and its true DR.
+-->
+
+If the ensemble exhibits discriminative risk, it means that the leading gap in the prediction class has been reversed, in other words, *at least half of the votes for the prediction class will be altered*. That is to say, the total weight of the inconsistency between the original prediction and the perturbed prediction has to hold
+
+$$ \ell_\text{bias}(\mathbf{wv}_{\rho}, \mathbf{x}) \leq \mathbb{I}( \phi_\rho(\mathbf{x}) \geq \frac{1}{2}\gamma_\rho(\mathbf{x}) ) \,.$$
+
+We also provided two PAC bounds regarding fairness to bound the discrepancy between one hypothesis (either an individual classifier or an ensemble)'s empirical DR and its true DR, as well as two PAC-Bayes bounds for stochastic ensembles.
 
 
 **POAF for improving accuracy and fairness at the same time**
@@ -220,9 +234,9 @@ python wp1_main_plot.py -exp mCV_expt10 --name-ens Bagging --nb-iter 2 --nb-cls 
 -->
 
 ```shell
-python wp1_main_plot.py --draw -exp mCV_expt4 --gather             # Fig. 1
-python wp1_case_plot.py                                                                  # Fig. 2
-python wp1_main_plot.py -exp mCV_exp11h --nb-cls 11 --gather    # Fig. 3, 4, 5 & 6
+python wp1_main_plot.py --draw -exp mCV_expt4 --gather           # Fig. 1
+python wp1_case_plot.py                                                                # Fig. 2
+python wp1_main_plot.py -exp mCV_exp11h --nb-cls 11 --gather  # Fig. 3, 4, 5 & 6
 python wp1_main_plot.py --draw -exp mCV_expt6 --gather --nb-pru 7  # Fig. 7 & 8, and Tables 2 to 3
 python wp1_main_plot.py -exp mCV_expt8 --name-ens Bagging                                            # Fig. 9 & 12(a-d)
 ```

@@ -575,6 +575,28 @@ elif trial_type[-5:] in ('expt3', 'xpt11', 'expt8'):
 case.trial_one_process()
 
 
+if trial_type[-6:] == 'expt10':
+    fgn = _get_tmp_document(name_ens, nb_cls)
+    fgn = f"iter1_set0_{fgn[:3]}_MLP"
+    pre = trial_type[4:]
+    os.remove(f"{pre}_fair_rel1_{fgn}.pdf")
+    os.remove(f"{pre}_fair_rel2_{fgn}.pdf")
+    os.remove(f"{pre}_fair_rel3_{fgn}.pdf")
+    os.remove(f"{pre}_fair_rel4_{fgn}.pdf")
+    os.remove(f"{pre}_pru_rel0_{fgn}.pdf")
+    os.remove(f"{pre}_pru_rel1_{fgn}.pdf")
+    os.remove(f"{pre}_pru_rel2_{fgn}.pdf")
+    os.remove(f"{pre}_pru_rel6_{fgn}.pdf")
+    # pdb.set_trace()
+elif trial_type.endswith('expt8'):
+    import glob
+    fgn = _get_tmp_document(name_ens, nb_cls)[:3]
+    fgn = f'{trial_type[4:]}_{fgn}_whole_avg'
+    if name_ens.startswith('Bag'):
+        [os.remove(f) for f in glob.glob(f'{fgn}_fair*.pdf')]
+    else:
+        [os.remove(f) for f in glob.glob(f'{fgn}_rel*.pdf')]
+    del fgn
 del screen, logged, trial_type, gather
 del name_ens, nb_cls, nb_pru, nb_iter
 del case, kwargs, args, parser

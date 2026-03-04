@@ -180,6 +180,7 @@ $ rm tmp.tar.gz
 ```shell
 # pip install mkdocs  # 1.6.1
 # pip install mkdocs-material
+
 # cd ~/GitH/FairML
 # mkdocs new docs
 # cd docs

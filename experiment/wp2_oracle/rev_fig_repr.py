@@ -444,6 +444,7 @@ class PlotF_Prunings(GraphSetup):
             50: BLFAIR[0],
             51: BLFAIR[1],
             52: BLFAIR[2],
+            54: r"$L_{bias}$",
 
             39: "unaware",  # 39,40, 49 =39+10
             # 41: "DP",       # 41,42, 50 =41+9
@@ -457,7 +458,7 @@ class PlotF_Prunings(GraphSetup):
             53: "manual",
             # 54: r"$\hat{L}_{fair}$",
             # 55: r"$\hat{L}_{err}$",  # loss
-            54: r"$L_{fair}$",
+            # 54: r"$L_{fair}$",
             55: r"$L_{err}$",
             -3: r"$T_{ens}$",
             -2: r"$T_{pru}$",
@@ -600,6 +601,7 @@ class GatherF_Prunings(PlotF_Prunings):
             50: BLFAIR[0],
             51: BLFAIR[1],
             52: BLFAIR[2],
+            54: r"$L_{bias}$",
 
             39: "unaware",  # 39,40, 49 =39+10
             # 41: "DP",       # 41,42, 50 =41+9
@@ -611,7 +613,7 @@ class GatherF_Prunings(PlotF_Prunings):
             # 51: "EO",
             # 52: "PQP",
             53: "manual",
-            54: r"$L_{fair}$",  # 54: r"$\hat{L}_{fair}$",
+            # 54: r"$L_{fair}$",  # 54: r"$\hat{L}_{fair}$",
             55: r"$L_{err}$",   # 55: r"$\hat{L}_{err}$",  # loss
             -3: r"$T_{ens}$",
             -2: r"$T_{pru}$",
@@ -703,12 +705,13 @@ class GatherF_Prunings(PlotF_Prunings):
             # 50: r"aggr.rank.DP",
             # 51: r"aggr.rank.EO",
             # 52: r"aggr.rank.PQP",
-            54: r"aggr.rank.$L_{fair}$",
+            # 54: r"aggr.rank.$L_{fair}$",
             55: r"aggr.rank.$L_{err}$",
 
             50: f"aggr.rank.{BLFAIR[0]}",
             51: f"aggr.rank.{BLFAIR[1]}",
             52: f"aggr.rank.{BLFAIR[2]}",
+            54: r"aggr.rank.$L_{bias}$",
         }
         kwargs = {"cmap_name": 'GnBu', "rotation": 35}  # 65
         if 50 <= pt_i <= 52:

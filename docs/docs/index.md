@@ -6,9 +6,13 @@ Welcome to the **FairML**'s documentation.
 
 We release our code in the [FairML](https://github.com/eustomaqua/FairML) repository, and this documentation is to help you reproduce our work from
 
-- *Increasing Fairness via Combination with Learning Guarantees* [[arXiv 2301.10813]](https://arxiv.org/abs/2301.10813)
+- *Improving fairness with ensemble combination: Margin-dependent bounds* [[OpenReview]](https://openreview.net/forum?id=Zgu58Dg2Yb)
 
 To get started quickly, see [an example](getting-started.md) here.
+
+<!--
+- *Increasing Fairness via Combination with Learning Guarantees* [[arXiv 2301.10813]](https://arxiv.org/abs/2301.10813)
+-->
 
 
 ## Acknowledgement
