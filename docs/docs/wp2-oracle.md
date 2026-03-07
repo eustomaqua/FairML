@@ -19,9 +19,9 @@ The full paper entitled *Improving Fairness with Ensemble Combination: Margin-De
 
 Following the principle of individual fairness, *the treatment/evaluation of one instance should not change solely due to minor changes in its sensitive attributes* (sen-att-s, aka. the protected attributes). If it happens, this indicates the existence of underlying *discriminative risks*.
 
-Naturally, the *fairness quality* of one hypothesis $f(\cdot)$ can be evaluated by
+Naturally, the *fairness quality* of one hypothesis \\(f(\cdot)\\) can be evaluated by
 
-$$ \ell_\text{bias}(f,\mathbf{x})= \mathbb{I}(\overbrace{ f(\breve{\mathbf{x}}, \mathbf{a})\neq f(\breve{\mathbf{x}}, \underbrace{ \tilde{\mathbf{a}} }_{\hbox{ slightly perturbed version of sen-att-s }} ) }^{ \hbox{$f$ makes a discriminative decision} }) \,.$$
+$$ \small \ell_\text{bias}(f,\mathbf{x})= \mathbb{I}(\overbrace{ f(\breve{\mathbf{x}}, \mathbf{a})\neq f(\breve{\mathbf{x}}, \underbrace{ \tilde{\mathbf{a}} }_{\hbox{ slightly perturbed version of sen-att-s }} ) }^{ \hbox{$f$ makes a discriminative decision} }) \,. $$
 
 This equation is defined on one instance, evaluating the risk from an individual aspect, and the empirical DR over one dataset describes this from a group aspect, as an unbiassed estimation of the true DR over one data distribution. There are no restrictions applying to the type of $f(\cdot)$.
 
@@ -30,11 +30,14 @@ This equation is defined on one instance, evaluating the risk from an individual
 
 <!--
 If the weighted vote makes a discriminative decision, then *at least a $\rho$-weighted half* of the individual classifiers *have made a discriminative decision* and, therefore, the DR of an ensemble can be bounded by a constant times the DR of the individual classifiers. In other words, there exists a cancellation-of-biases effect in combination, similar to its well-known cancellation-of-error effect. We also provided two PAC bounds regarding fairness to bound the discrepancy between one hypothesis (either an individual classifier or an ensemble)'s empirical DR and its true DR.
+
+https://blog.csdn.net/excnies/article/details/149239259
+https://blog.csdn.net/gitblog_00624/article/details/150637633
 -->
 
-If the ensemble exhibits discriminative risk, it means that the leading gap in the prediction class has been reversed, in other words, *at least half of the votes for the prediction class will be altered*. That is to say, the total weight of the inconsistency between the original prediction and the perturbed prediction has to hold
+If the ensemble exhibits discriminative risk, it means that the leading gap in the prediction class has been reversed, in other words, *at least half of the votes for the prediction class will be altered*. That is to say, the total weight of the inconsistency between the original prediction and the perturbed prediction has to hold 
 
-$$ \ell_\text{bias}(\mathbf{wv}_{\rho}, \mathbf{x}) \leq \mathbb{I}( \phi_\rho(\mathbf{x}) \geq \frac{1}{2}\gamma_\rho(\mathbf{x}) ) \,.$$
+$$ \ell_\text{bias}(\mathbf{wv}_{\rho}, \mathbf{x}) \leq \mathbb{I}( \phi_\rho(\mathbf{x}) \geq \frac{1}{2}\gamma_\rho(\mathbf{x}) ) \,.  $$
 
 We also provided two PAC bounds regarding fairness to bound the discrepancy between one hypothesis (either an individual classifier or an ensemble)'s empirical DR and its true DR, as well as two PAC-Bayes bounds for stochastic ensembles.
 
