@@ -546,6 +546,8 @@ elif trial_type.endswith('exp11h'):
         fgn = f'{iterator._figname}_tst'
         os.remove(f'{fgn}_ck_thm4p.pdf')
         os.remove(f"{fgn}_err_thm4.pdf")  # gck_tst
+        os.remove(f'{fgn[:-4]}_kl_thm9.pdf')   # new results
+        os.remove(f'{fgn[:-4]}_kl_thm10.pdf')  # new results
         del raw_dfs, shet_name, xlsx_name, iterator
         del nb_cls, delt, eta
         sys.exit()

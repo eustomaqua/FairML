@@ -10,7 +10,7 @@ The full paper entitled *Increasing Fairness via Combination with Learning Guara
 
 We propose a fairness quality measure named *discriminative risk (DR)* to reflect both individual and group fairness aspects. We also investigate its properties and establish first and second-order oracle bounds concerning fairness to show that fairness can be boosted via ensemble combination at some time with theoretical learning guarantees. The analysis is suitable for both binary and multi-class classification. 
 Furthermore, an ensemble pruning method named *POAF (Pareto optimal ensemble pruning via improving accuracy and fairness concurrently)* is also proposed to utilise DR. Comprehensive experiments are conducted to evaluate the effectiveness of the proposed methods. 
-The full paper entitled *Improving Fairness with Ensemble Combination: Margin-Dependent Bounds*, available on [OpenReview](https://openreview.net/forum?id=Zgu58Dg2Yb), has been accepted by *the 9th annual ACM Conference on Fairness, Accountability, and Transparency ([FAccT 2026](https://facctconference.org/))*. 
+The full paper entitled *Improving Fairness with Ensemble Combination: Margin-Dependent Bounds*, available on [OpenReview](https://openreview.net/forum?id=Zgu58Dg2Yb), has been accepted by *the ninth annual ACM Conference on Fairness, Accountability, and Transparency ([FAccT 2026](https://facctconference.org/2026/index.html))*. 
 
 
 ## Methodology
