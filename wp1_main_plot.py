@@ -595,9 +595,13 @@ elif trial_type.endswith('expt8'):
     fgn = _get_tmp_document(name_ens, nb_cls)[:3]
     fgn = f'{trial_type[4:]}_{fgn}_whole_avg'
     if name_ens.startswith('Bag'):
-        [os.remove(f) for f in glob.glob(f'{fgn}_fair*.pdf')]
+        # [os.remove(f) for f in glob.glob(f'{fgn}_fair*.pdf')]
+        for f in glob.glob(f'{fgn}_fair*.pdf'):
+            os.remove(f)
     else:
-        [os.remove(f) for f in glob.glob(f'{fgn}_rel*.pdf')]
+        for f in glob.glob(f'{fgn}_rel*.pdf'):
+            os.remove(f)
+        # [os.remove(f) for f in glob.glob(f'{fgn}_rel*.pdf')]
     del fgn
 del screen, logged, trial_type, gather
 del name_ens, nb_cls, nb_pru, nb_iter

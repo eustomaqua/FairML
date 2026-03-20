@@ -45,10 +45,20 @@ def test_voting_margin():
     mrg_3 = E_rho_Ctandem(mrg_1[0], mrg_2[0])
     mrg_4 = E_rho_summary(y_hat, y_qtb, wgt, nc)
 
+    assert check_equal(mrg_4[0], mrg_1[0])
+    assert check_equal(mrg_4[1], mrg_2[0])
+    assert check_equal(mrg_4[2], mrg_3)
+    assert isinstance(mrg_3, float)
+
     r0 = E_rl_intermediate(gamma, eta)
     mrg_1 = Erl_mrg1order(y_hat, y_qtb, wgt, eta, r0)
     mrg_2 = Erl_mrg2order(y_hat, y_qtb, wgt, eta, r0)
     tmp = Erl_summary(y_hat, y_qtb, wgt, eta, nc)
+
+    assert isinstance(mrg_1[0], float)
+    assert isinstance(mrg_2[0], float)
+    assert check_equal(tmp[0], mrg_1[0])
+    assert check_equal(tmp[1], mrg_2[0])
     # pdb.set_trace()
     return
 
@@ -66,9 +76,11 @@ def test_previous_dr():
     delt, gamm = Erho_intermediate(y_hat, y_qtb, wgt, nc=nc)
     bnd_1, btmp = E_rho_mrg1order(delt, gamm)
     assert ans_l <= 2. * bnd_1
+    assert isinstance(btmp, list)
     r0 = E_rl_intermediate(gamm, eta)
     brl_1, btmp = Erl_mrg1order(y_hat, y_qtb, wgt, eta, r0)
     assert ans_l <= 2. * brl_1
+    assert isinstance(btmp, float)
     # pdb.set_trace()
 
     # Theorem 3.3
@@ -79,8 +91,10 @@ def test_previous_dr():
     assert ans_l <= 4. * ans_r3
     bnd_2, btmp = E_rho_mrg2order(delt, gamm)
     assert ans_l <= 4. * bnd_2
+    assert isinstance(btmp, list)
     brl_2, btmp = Erl_mrg2order(y_hat, y_qtb, wgt, eta, r0)
     assert ans_l <= 4. * brl_2
+    assert isinstance(btmp, float)
     # pdb.set_trace()
 
     # Lemma 3.2
@@ -110,5 +124,6 @@ def test_previous_dr():
     assert 0 <= pac_1 <= 1 and 0 <= pac_2 <= 1
     pac_3 = pac_kl_gibbs(n, 0.1, wgt)
     assert pac_3[2] <= pac_3[1]  # tighter bound
+    assert isinstance(ans_r4, float)
     # pdb.set_trace()
     return
