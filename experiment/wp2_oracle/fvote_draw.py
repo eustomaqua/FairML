@@ -780,12 +780,12 @@ class PlotH_ImprovePruning(GraphSetup):
         assert 1 <= rel_jt <= 3
         if rel_set == 0:
             assert rel_jt == 1
-        '''
-        if rel_set == 0:
-            assert rel_jt == 1
-        else:
-            assert 1 <= rel_jt <= 3
-        '''
+        # '''
+        # if rel_set == 0:
+        #     assert rel_jt == 1
+        # else:
+        #     assert 1 <= rel_jt <= 3
+        # '''
         ind_sens = np.add(ind, rel_jt).tolist()
         Ys_avg = np.zeros((len(name_pru), 4))
         Ys_std = np.zeros((len(name_pru), 4))

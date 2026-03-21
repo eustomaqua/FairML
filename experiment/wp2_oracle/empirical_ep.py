@@ -520,32 +520,25 @@ class PartG_ImprovedPruning(PartD_ImprovedPruning):
         since = time.time()
         if name_pru == 'POEPAF':
             H = Pareto_Optimal_EPAF_Pruning(
-                y_trn, y_insp, yq_insp, self._weight, self._nb_pru,
-                self._lam, dist)
+                y_trn, y_insp, yq_insp, self._weight, self._nb_pru, self._lam, dist)
         elif name_pru == 'EPAF-C':
             H = Centralised_EPAF_Pruning(
-                y_trn, y_insp, yq_insp, self._weight, self._nb_pru,
-                self._lam)
+                y_trn, y_insp, yq_insp, self._weight, self._nb_pru, self._lam)
         elif name_pru == 'EPAF-D':
             H = Distributed_EPAF_Pruning(
-                y_trn, y_insp, yq_insp, self._weight, self._nb_pru,
-                self._lam, n_m)
+                y_trn, y_insp, yq_insp, self._weight, self._nb_pru, self._lam, n_m)
         elif name_pru == 'POPEP':
-            H = POAF_PEP(y_trn, y_insp, yq_insp, self._weight,
-                         self._lam, self._nb_pru)
+            H = POAF_PEP(y_trn, y_insp, yq_insp, self._weight, self._lam, self._nb_pru)
         else:
-            raise ValueError("No such pruning proposed `{}`".format(
-                name_pru))
+            raise ValueError("No such pruning proposed `{}`".format(name_pru))
 
         tim_elapsed = time.time() - since
         since = time.time()
-
         ys_insp = np.array(y_insp)[H].tolist()
         ys_pred = np.array(y_pred)[H].tolist()
         yr_insp = np.array(yq_insp)[H].tolist()
         yr_pred = np.array(yq_pred)[H].tolist()
         coef = np.array(self._weight)[H].tolist()
-
         fens_trn = self.majority_vote(y_trn, ys_insp, coef)
         fens_tst = self.majority_vote(y_tst, ys_pred, coef)
         fqtb_trn = self.majority_vote(y_trn, yr_insp, coef)
@@ -562,13 +555,11 @@ class PartG_ImprovedPruning(PartD_ImprovedPruning):
         del ys_insp, yr_insp, fens_trn, fqtb_trn
         del ys_pred, yr_pred, fens_tst, fqtb_tst
         del coef
-
         ans_A1 = trn_A1 + tst_A1  # 10*2 =20
         ans_A2 = trn_A2 + tst_A2  # 10*2 =20
         ans_Jt = trn_Jt + tst_Jt  # 10*2 =20
         del trn_A1, trn_A2, trn_Jt
         del tst_A1, tst_A2, tst_Jt
-
         tmp_pru = [tim_elapsed / 60, (time.time() - since) / 60, len(H)]
         tmp_pru.extend(tmp_trn + tmp_tst)  # 3+10*2 =23
         del tmp_trn, tmp_tst, since, tim_elapsed

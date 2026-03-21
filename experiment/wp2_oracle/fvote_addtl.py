@@ -257,9 +257,8 @@ class PlotE_Measures(PlotD_Measures):
         # data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
         # _, _, _, _, nb_iter, _ = res_all[0]
         ensemble_methods = res_all[-1]
-        ensemble_methods = [
-            i.replace('FPR', 'fpr').replace('FNR', 'fnr')
-            if 'FairGBM' in i else i for i in ensemble_methods]
+        ensemble_methods = [i.replace('FPR', 'fpr').replace(
+            'FNR', 'fnr') if 'FairGBM' in i else i for i in ensemble_methods]
         idx = [0, 1, 2, 3, 4, 6]
         ensemble_methods = [ensemble_methods[i] for i in idx]
 
@@ -285,21 +284,16 @@ class PlotE_Measures(PlotD_Measures):
         test_A = np.concatenate([  # (56, 5* 1|2 *7)
             test_A[i] for i in range(num_e)], axis=1)
         if len(sensitive_attributes) > 1:
-            test_B = np.concatenate([
-                test_B[i] for i in range(num_s)], axis=2)
-            test_B = np.concatenate([
-                test_B[i] for i in range(num_e)], axis=1)
-            test_J = np.concatenate([
-                test_J[i] for i in range(num_s)], axis=2)
-            test_J = np.concatenate([
-                test_J[i] for i in range(num_e)], axis=1)
+            test_B = np.concatenate([test_B[i] for i in range(num_s)], axis=2)
+            test_B = np.concatenate([test_B[i] for i in range(num_e)], axis=1)
+            test_J = np.concatenate([test_J[i] for i in range(num_s)], axis=2)
+            test_J = np.concatenate([test_J[i] for i in range(num_e)], axis=1)
 
         annots = ("$\\Delta$(Accuracy)", "Fairness Measure")
         annotZs = BLFAIR  # ('DP', 'EO', 'PQP', 'DR')
         fgn_r = figname + "_correlation"
         key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
-        key = ["$\\Delta$(%s)" % i for i in key
-               ] + BLFAIR  # ["DP", "EO", "PQP", "DR"]
+        key = ["$\\Delta$(%s)" % i for i in key] + BLFAIR  # ["DP","EO","PQP","DR"]
         fgn_f = figname + "_confusion"
         if len(sensitive_attributes) == 1:
             alt_data = [test_A]
@@ -315,10 +309,8 @@ class PlotE_Measures(PlotD_Measures):
         X = [i[26] for i in alt_data]
         Ys = [i[[50, 51, 52, 54], :] for i in alt_data]
         multiple_scatter_alternative(
-            X, Ys, sensitive_attributes, annots, annotZs,
-            fgn_r, box=True)
-        Mat = [i[[26, 27, 28, 29, 32, 33,
-                  50, 51, 52, 54]] for i in alt_data]
+            X, Ys, sensitive_attributes, annots, annotZs, fgn_r, box=True)
+        Mat = [i[[26, 27, 28, 29, 32, 33, 50, 51, 52, 54]] for i in alt_data]
         analogous_confusion_alternative(
             Mat, sensitive_attributes, key, fgn_f)
         return
@@ -646,7 +638,6 @@ class GatherF_Prunings(PlotF_Prunings):
             12: "random_acc",
             13: "Disturbed Acc (%)",
             16: "Disturbed f1",
-
             41: BLFAIR[0],
             43: BLFAIR[1],
             45: BLFAIR[2],
@@ -666,9 +657,7 @@ class GatherF_Prunings(PlotF_Prunings):
             55: r"$L_{err}$",   # 55: r"$\hat{L}_{err}$",  # loss
             -3: r"$T_{ens}$",
             -2: r"$T_{pru}$",
-            -1: r"$T_{all}$",  # "Time Cost (sec)",
-        }
-
+            -1: r"$T_{all}$", }  # "Time Cost (sec)",
         self.tabulate_output(new_data, res_all, optional_data, 0,
                              figname, logger=logger)
         self.tabulate_output(new_data, res_all, optional_data, 3,

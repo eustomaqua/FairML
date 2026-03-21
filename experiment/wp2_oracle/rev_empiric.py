@@ -341,7 +341,6 @@ class PartA_FairMeasure(ClassifierSetup):
                               X_tst, y_tst, Xd_tst, non_sa_tst,
                               sa_idx, sa_val, positive_label):
         res_attr = []
-
         ut = time.time()
         clf = BaggingClassifier(n_estimators=nb_cls)
         clf.fit(X_trn, y_trn)
@@ -349,9 +348,7 @@ class PartA_FairMeasure(ClassifierSetup):
         res_attr.append(self.count_scores(
             clf,
             X_trn, y_trn, Xd_trn, non_sa_trn,
-            X_tst, y_tst, Xd_tst, non_sa_tst,
-            positive_label) + [ut, ])
-
+            X_tst, y_tst, Xd_tst, non_sa_tst, positive_label) + [ut, ])
         ut = time.time()
         clf = AdaBoostClassifier(n_estimators=nb_cls)
         clf.fit(X_trn, y_trn)
@@ -359,8 +356,7 @@ class PartA_FairMeasure(ClassifierSetup):
         res_attr.append(self.count_scores(
             clf,
             X_trn, y_trn, Xd_trn, non_sa_trn,
-            X_tst, y_tst, Xd_tst, non_sa_tst,
-            positive_label) + [ut, ])
+            X_tst, y_tst, Xd_tst, non_sa_tst, positive_label) + [ut, ])
 
         ut = time.time()
         # clf = lightgbm.LGBMClassifier(n_estimators=nb_cls)
@@ -368,10 +364,8 @@ class PartA_FairMeasure(ClassifierSetup):
         clf.fit(X_trn, y_trn)
         ut = time.time() - ut
         res_attr.append(self.count_scores(
-            clf,
-            X_trn, y_trn, Xd_trn, non_sa_trn,
-            X_tst, y_tst, Xd_tst, non_sa_tst,
-            positive_label) + [ut, ])
+            clf, X_trn, y_trn, Xd_trn, non_sa_trn,
+            X_tst, y_tst, Xd_tst, non_sa_tst, positive_label) + [ut, ])
 
         for constraint_type in ["FPR", "FNR", "FPR,FNR"]:
             ut = time.time()
@@ -380,22 +374,16 @@ class PartA_FairMeasure(ClassifierSetup):
             clf.fit(X_trn, y_trn, constraint_group=~non_sa_trn)
             ut = time.time() - ut
             res_attr.append(self.count_scores(
-                clf,
-                X_trn, y_trn, Xd_trn, non_sa_trn,
-                X_tst, y_tst, Xd_tst, non_sa_tst,
-                positive_label) + [ut, ])
+                clf, X_trn, y_trn, Xd_trn, non_sa_trn,
+                X_tst, y_tst, Xd_tst, non_sa_tst, positive_label) + [ut])
 
         ut = time.time()
-        clf = AdaFair(n_estimators=nb_cls,
-                      saIndex=sa_idx, saValue=sa_val)
+        clf = AdaFair(n_estimators=nb_cls, saIndex=sa_idx, saValue=sa_val)
         clf.fit(X_trn, y_trn)
         ut = time.time() - ut
         res_attr.append(self.count_scores(
-            clf,
-            X_trn, y_trn, Xd_trn, non_sa_trn,
-            X_tst, y_tst, Xd_tst, non_sa_tst,
-            positive_label) + [ut, ])
-
+            clf, X_trn, y_trn, Xd_trn, non_sa_trn,
+            X_tst, y_tst, Xd_tst, non_sa_tst, positive_label) + [ut, ])
         return res_attr  # .shape: (5,61)= (5,48+5*2+1+2)
 
 
@@ -532,27 +520,27 @@ class PartB_FairMeasure(ClassifierSetup):
                          # saIndex, saValue,
                          positive_label, lam):
         res_iter = []
-        tmp = self.routine_each_ensemble('bagging', '', nb_cls, nb_pru, logger,
-                                         X_trn, y_trn, Xd_trn, gones_trn, jt_trn,
-                                         X_tst, y_tst, Xd_tst, gones_tst, jt_tst,
-                                         positive_label, lam)
+        tmp = self.routine_each_ensemble(
+            'bagging', '', nb_cls, nb_pru, logger,
+            X_trn, y_trn, Xd_trn, gones_trn, jt_trn,
+            X_tst, y_tst, Xd_tst, gones_tst, jt_tst, positive_label, lam)
         res_iter.append(tmp)
 
         for abbr_cls in ALG_NAMES[1:]:
-            tmp = self.routine_each_ensemble('bagging', abbr_cls, nb_cls, nb_pru, logger,
-                                             X_trn, y_trn, Xd_trn, gones_trn, jt_trn,
-                                             X_tst, y_tst, Xd_tst, gones_tst, jt_tst,
-                                             positive_label, lam)
+            tmp = self.routine_each_ensemble(
+                'bagging', abbr_cls, nb_cls, nb_pru, logger,
+                X_trn, y_trn, Xd_trn, gones_trn, jt_trn,
+                X_tst, y_tst, Xd_tst, gones_tst, jt_tst, positive_label, lam)
             res_iter.append(tmp)
 
-        '''
-        tmp = self.routine_each_ensemble(
-            'AdaBoost', '', nb_cls, nb_pru, logger,
-            X_trn, y_trn, Xd_trn, gones_trn, jt_trn,
-            X_tst, y_tst, Xd_tst, gones_tst, jt_tst,
-            positive_label, lam)
-        res_iter.append(tmp)
-        '''
+        # '''
+        # tmp = self.routine_each_ensemble(
+        #     'AdaBoost', '', nb_cls, nb_pru, logger,
+        #     X_trn, y_trn, Xd_trn, gones_trn, jt_trn,
+        #     X_tst, y_tst, Xd_tst, gones_tst, jt_tst,
+        #     positive_label, lam)
+        # res_iter.append(tmp)
+        # '''
         return res_iter  # .shape (1+(11-1)+1, #attr=1/3, 8, 63)
 
     def routine_each_ensemble(
@@ -583,30 +571,22 @@ class PartB_FairMeasure(ClassifierSetup):
         fens_tst = clf.predict(X_tst)
         fqtb_trn = clf.predict(Xd_trn)
         fqtb_tst = clf.predict(Xd_tst)
-
-        y_insp = [ind.predict(
-            X_trn).tolist() for ind in clf.estimators_]
-        y_pred = [ind.predict(
-            X_tst).tolist() for ind in clf.estimators_]
-        yq_insp = [ind.predict(
-            Xd_trn).tolist() for ind in clf.estimators_]
-        yq_pred = [ind.predict(
-            Xd_tst).tolist() for ind in clf.estimators_]
+        y_insp = [ind.predict(X_trn).tolist() for ind in clf.estimators_]
+        y_pred = [ind.predict(X_tst).tolist() for ind in clf.estimators_]
+        yq_insp = [ind.predict(Xd_trn).tolist() for ind in clf.estimators_]
+        yq_pred = [ind.predict(Xd_tst).tolist() for ind in clf.estimators_]
 
         res_iter = []
         if len(jt_trn) == 0:
             ans_trn = self.count_single_member(
-                y_trn, fens_trn, fqtb_trn, gones_trn[0],
-                positive_label)
+                y_trn, fens_trn, fqtb_trn, gones_trn[0], positive_label)
             ans_tst = self.count_single_member(
-                y_tst, fens_tst, fqtb_tst, gones_tst[0],
-                positive_label)
+                y_tst, fens_tst, fqtb_tst, gones_tst[0], positive_label)
             res_ens = [ans_trn + ans_tst + [ut, '', '']]
             tmp = self.routine_rank_pruning(
                 nb_pru, coef, logger,
                 y_trn, y_insp, yq_insp, gones_trn[0],
-                y_tst, y_pred, yq_pred, gones_tst[0],
-                positive_label, lam)
+                y_tst, y_pred, yq_pred, gones_tst[0], positive_label, lam)
             res_ens.extend(tmp)  # .shape (8,63)= (1+7, 30*2+3)
             res_iter.append(res_ens)
             return res_iter  # .shape: (#attr=1, 8, 63)
@@ -614,17 +594,14 @@ class PartB_FairMeasure(ClassifierSetup):
         sa_len = len(gones_trn)
         for i in range(sa_len):
             ans_trn = self.count_single_member(
-                y_trn, fens_trn, fqtb_trn, gones_trn[i],
-                positive_label)
+                y_trn, fens_trn, fqtb_trn, gones_trn[i], positive_label)
             ans_tst = self.count_single_member(
-                y_tst, fens_tst, fqtb_tst, gones_tst[i],
-                positive_label)
+                y_tst, fens_tst, fqtb_tst, gones_tst[i], positive_label)
             res_ens = [ans_trn + ans_tst + [''] * 3]
             tmp = self.routine_rank_pruning(
                 nb_pru, coef, logger,
                 y_trn, y_insp, yq_insp, gones_trn[i],
-                y_tst, y_pred, yq_pred, gones_tst[i],
-                positive_label, lam)
+                y_tst, y_pred, yq_pred, gones_tst[i], positive_label, lam)
             res_ens.extend(tmp)
             res_iter.append(res_ens)
         ans_trn = self.count_single_member(
@@ -635,8 +612,7 @@ class PartB_FairMeasure(ClassifierSetup):
         tmp = self.routine_rank_pruning(
             nb_pru, coef, logger,
             y_trn, y_insp, yq_insp, jt_trn,
-            y_tst, y_pred, yq_pred, jt_tst,
-            positive_label, lam)
+            y_tst, y_pred, yq_pred, jt_tst, positive_label, lam)
         res_ens.extend(tmp)
         res_iter.append(res_ens)
         return res_iter  # .shape (#attr=3, 8, 63)
@@ -1235,7 +1211,6 @@ class PartF_FairPruning(PartE_FairPruning):
             y_tst, y_pred, yq_pred, gones_tst, jt_tst,
             positive_label, lam, ut)
         res_ens.extend(tmp)
-
         return res_ens  # .shape (1+5,339)
 
     # def subroute_ensemble(self, coef,
@@ -1247,44 +1222,34 @@ class PartF_FairPruning(PartE_FairPruning):
     def routine_each_pruning(self, wgt, nb_cls, nb_pru, logger,
                              y_trn, y_insp, yq_insp, tag_trn, jt_trn,
                              y_tst, y_pred, yq_pred, tag_tst, jt_tst,
-                             # positive_label, lam=.5, n_m=2, dist=1,
-                             # ut=0):
+                             # positive_label, lam=.5, n_m=2, dist=1, ut=0):
                              positive_label, lam=.5, ut=0):
         res_pru = []
-
         us = time.time()
         H = Centralised_EPAF_Pruning(
             y_trn, y_insp, yq_insp, wgt, nb_pru, lam)
         us = time.time() - us
         tmp = self.subroute_pruning(
-            H, wgt,
-            y_trn, y_insp, yq_insp, tag_trn, jt_trn,
-            y_tst, y_pred, yq_pred, tag_tst, jt_tst,
-            positive_label)
+            H, wgt, y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+            y_tst, y_pred, yq_pred, tag_tst, jt_tst, positive_label)
         res_pru.append(tmp + [ut, us, ut + us])
         del H, us, tmp
-
         us = time.time()
         H = Distributed_EPAF_Pruning(
             y_trn, y_insp, yq_insp, wgt, nb_pru, lam, n_m=2)
         us = time.time() - us
         tmp = self.subroute_pruning(
-            H, wgt,
-            y_trn, y_insp, yq_insp, tag_trn, jt_trn,
-            y_tst, y_pred, yq_pred, tag_tst, jt_tst,
-            positive_label)
+            H, wgt, y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+            y_tst, y_pred, yq_pred, tag_tst, jt_tst, positive_label)
         res_pru.append(tmp + [ut, us, ut + us])
         del H, us, tmp
-
         us = time.time()
         H = Distributed_EPAF_Pruning(
             y_trn, y_insp, yq_insp, wgt, nb_pru, lam, n_m=3)
         us = time.time() - us
         tmp = self.subroute_pruning(
-            H, wgt,
-            y_trn, y_insp, yq_insp, tag_trn, jt_trn,
-            y_tst, y_pred, yq_pred, tag_tst, jt_tst,
-            positive_label)
+            H, wgt, y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+            y_tst, y_pred, yq_pred, tag_tst, jt_tst, positive_label)
         res_pru.append(tmp + [ut, us, ut + us])
         del H, us, tmp
 
@@ -1293,25 +1258,18 @@ class PartF_FairPruning(PartE_FairPruning):
             y_trn, y_insp, yq_insp, wgt, nb_pru, lam, dist=1)
         us = time.time() - us
         tmp = self.subroute_pruning(
-            H, wgt,
-            y_trn, y_insp, yq_insp, tag_trn, jt_trn,
-            y_tst, y_pred, yq_pred, tag_tst, jt_tst,
-            positive_label)
+            H, wgt, y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+            y_tst, y_pred, yq_pred, tag_tst, jt_tst, positive_label)
         res_pru.append(tmp + [ut, us, ut + us])
         del H, us, tmp
-
         us = time.time()
-        H = POAF_PEP(
-            y_trn, y_insp, yq_insp, wgt, 1. - lam, nb_pru)
+        H = POAF_PEP(y_trn, y_insp, yq_insp, wgt, 1. - lam, nb_pru)
         us = time.time() - us
         tmp = self.subroute_pruning(
-            H, wgt,
-            y_trn, y_insp, yq_insp, tag_trn, jt_trn,
-            y_tst, y_pred, yq_pred, tag_tst, jt_tst,
-            positive_label)
+            H, wgt, y_trn, y_insp, yq_insp, tag_trn, jt_trn,
+            y_tst, y_pred, yq_pred, tag_tst, jt_tst, positive_label)
         res_pru.append(tmp + [ut, us, ut + us])
         del H, us, tmp
-
         return res_pru  # .shape (5,339)= (1+2+2,56*6+3)
 
     def subroute_pruning(self, H, wgt,
@@ -1352,8 +1310,7 @@ class Correct311CK_theorem(PartC_FairMeasure):  # ClassifierSetup):
     #                      delt=1 - 0.05):
     #     pass
 
-    def schedule_content(self,
-                         nb_cls,  # nb_pru, logger, # pos_label,
+    def schedule_content(self, nb_cls,  # nb_pru, logger, # pos_label,
                          X_trn, y_trn, Xd_trn,  # gones_trn, jt_trn,
                          X_tst, y_tst, Xd_tst,  # gones_tst, jt_tst,
                          lam=.5, eta=0.6, delt=1 - 0.05):

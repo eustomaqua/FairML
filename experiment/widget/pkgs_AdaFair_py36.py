@@ -616,20 +616,18 @@ class AdaFair(BaseWeightBoosting, ClassifierMixin):
                     else:
                         fp_non_protected += 1
 
-        '''
-        pdb.set_trace()
-        tpr_protected = tp_protected / (tp_protected + fn_protected)
-        tnr_protected = tn_protected / (tn_protected + fp_protected)
-
-        tpr_non_protected = tp_non_protected / (tp_non_protected + fn_non_protected)
-        tnr_non_protected = tn_non_protected / (tn_non_protected + fp_non_protected)
-        '''
+        # '''
+        # pdb.set_trace()
+        # tpr_protected = tp_protected / (tp_protected + fn_protected)
+        # tnr_protected = tn_protected / (tn_protected + fp_protected)
+        #
+        # tpr_non_protected = tp_non_protected / (tp_non_protected + fn_non_protected)
+        # tnr_non_protected = tn_non_protected / (tn_non_protected + fp_non_protected)
+        # '''
         tpr_protected = tp_protected / check_zero(tp_protected + fn_protected)
         tnr_protected = tn_protected / check_zero(tn_protected + fp_protected)
-        tpr_non_protected = tp_non_protected / check_zero(
-            tp_non_protected + fn_non_protected)
-        tnr_non_protected = tn_non_protected / check_zero(
-            tn_non_protected + fp_non_protected)
+        tpr_non_protected = tp_non_protected / check_zero(tp_non_protected + fn_non_protected)
+        tnr_non_protected = tn_non_protected / check_zero(tn_non_protected + fp_non_protected)
 
         diff_tpr = tpr_non_protected - tpr_protected
         diff_tnr = tnr_non_protected - tnr_protected

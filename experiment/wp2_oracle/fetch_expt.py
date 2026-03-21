@@ -440,11 +440,9 @@ class ExperimentSetup(DataSetup):
         return
 
     def trial_one_dataset(self, logger):
-        processed_data = preprocess(
-            self._dataset, self._data_frame, logger)
+        processed_data = preprocess(self._dataset, self._data_frame, logger)
         disturbed_data = adversarial(
             self._dataset, self._data_frame, self._ratio, logger)
-
         processed_Xy = processed_data['numerical-binsensitive']
         disturbed_Xy = disturbed_data['numerical-binsensitive']
         X, y = transform_X_and_y(self._dataset, processed_Xy)
@@ -458,7 +456,6 @@ class ExperimentSetup(DataSetup):
         elegant_print("\t BINARY? Y= {}".format(set(y)), logger)
         elegant_print("\t  NB. i.e., {}".format(set(tmp)), logger)
         del tmp
-
         # {tr/bi/mu}_{KF,KFS,mCV}_{trial_part_*}
         if "mCV" in self._trial_type:
             split_idx = manual_cross_valid(self._nb_iter, y)
@@ -473,11 +470,9 @@ class ExperimentSetup(DataSetup):
             raise ValueError("No proper CV (cross-validation).")
 
         res_all = []
-        res_all.append([
-            self._dataset.dataset_name, len(set(y)),
-            self._iterator.name_ens, self._iterator.abbr_cls,
-            self._iterator.nb_cls, self._iterator.nb_pru,
-            self._nb_iter])
+        res_all.append([self._dataset.dataset_name, len(set(y)),
+                        self._iterator.name_ens, self._iterator.abbr_cls,
+                        self._iterator.nb_cls, self._iterator.nb_pru, self._nb_iter])
         for k, (i_trn, i_tst) in enumerate(split_idx):
             # '''
             # X_trn = X.iloc[i_trn]
@@ -487,7 +482,6 @@ class ExperimentSetup(DataSetup):
             # y_tst = y.iloc[i_tst]
             # Xp_tst = Xp.iloc[i_tst]
             # '''
-
             X_trn, Xd_trn, y_trn, gones_trn, jt_trn = transform_perturbed(
                 X, Xp, y, i_trn, belongs_priv, ptb_with_joint)
             X_tst, Xd_tst, y_tst, gones_tst, jt_tst = transform_perturbed(
