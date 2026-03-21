@@ -1323,7 +1323,10 @@ class CorrFigCK_bounds(GraphSetup):
         annots = [
             r"$\mathrm{RHS}$ in Theorem 3.3",  # $\mathbf{RHS}$
             r"$\mathcal{L}_{bias}(\mathbf{wv}_\rho)$"]
-        annots[0] = r"$\frac{ \mathbb{E}_{\rho^2}[\mathcal{L}_{bias}(f,f')] -\mathbb{E}_\rho[\mathcal{L}_{bias}(f)]^2 }{ \mathbb{E}_{\rho^2}[\mathcal{L}_{bias}(f,f')] -\mathbb{E}_\rho[\mathcal{L}_{bias}(f)]+\frac{1}{4} }$"
+        annots[0] = (
+            r"$\frac{ \mathbb{E}_{\rho^2}[\mathcal{L}_{bias}(f,f')] "
+            r"-\mathbb{E}_\rho[\mathcal{L}_{bias}(f)]^2 }{ \mathbb{E}_{\rho^2}[\mathcal{L}_{bias}(f,f')] "
+            r"-\mathbb{E}_\rho[\mathcal{L}_{bias}(f)]+\frac{1}{4} }$")
         df_Y, df_X = df[tag[5]], df[tag[5 + 4]]  # tag[9]
         df_Z = (df[tag[5 + 1]] < 1. / 2).values
         self.plot_scatter_chart(
@@ -1332,7 +1335,10 @@ class CorrFigCK_bounds(GraphSetup):
             df_Y[df_Z], df_X[df_Z], fgn + '_re_thm4', annots[::-1])
 
         # annots[0] = r"$\mathrm{RHS}$ in Theorem 3.3"
-        annots[0] = r"$\frac{ \mathbb{E}_\mathcal{D}[\phi_\rho(\mathbf{x})^2/\gamma_\rho(\mathbf{x})^2] -\mathbb{E}_\mathcal{D}[\phi_\rho(\mathbf{x})/\gamma_\rho(\mathbf{x})]^2 }{ \mathbb{E}_\mathcal{D}[\phi_\rho(\mathbf{x})^2/\gamma_\rho(\mathbf{x})^2] -\mathbb{E}_\mathcal{D}[\phi_\rho(\mathbf{x})/\gamma_\rho(\mathbf{x})]+\frac{1}{4} }$"
+        annots[0] = (
+            r"$\frac{ \mathbb{E}_\mathcal{D}[\phi_\rho(\mathbf{x})^2/\gamma_\rho(\mathbf{x})^2] -"
+            r"\mathbb{E}_\mathcal{D}[\phi_\rho(\mathbf{x})/\gamma_\rho(\mathbf{x})]^2 }{ \mathbb{E}_\mathcal{D}[\phi_\rho(\mathbf{x})^2/\gamma_\rho(\mathbf{x})^2]"
+            r" -\mathbb{E}_\mathcal{D}[\phi_\rho(\mathbf{x})/\gamma_\rho(\mathbf{x})]+\frac{1}{4} }$")
         annots.append(r'$f(x)=x$')
         df_X = df[tag[5 + 5 + 2]]  # df_Y,=df[tag[5]],
         self.plot_scatter_chart(
@@ -1347,7 +1353,10 @@ class CorrFigCK_bounds(GraphSetup):
         annots = [
             r"$\mathrm{RHS}$ in Theorem 3.4",  # $\mathbf{RHS}$
             r"$\mathcal{L}_{err}(\mathbf{wv}_\rho)$"]
-        annots[0] = r"$\frac{ \mathbb{E}_{\rho^2}[\mathcal{L}_{err}(f,f')] -\mathbb{E}_\rho[\mathcal{L}_{err}(f)]^2 }{ \mathbb{E}_{\rho^2}[\mathcal{L}_{err}(f,f')] -\mathbb{E}_\rho[\mathcal{L}_{err}(f)]+\frac{1}{4} }$"
+        annots[0] = (
+            r"$\frac{ \mathbb{E}_{\rho^2}[\mathcal{L}_{err}(f,f')] "
+            r"-\mathbb{E}_\rho[\mathcal{L}_{err}(f)]^2 }{ \mathbb{E}_{\rho^2}[\mathcal{L}_{err}(f,f')] "
+            r"-\mathbb{E}_\rho[\mathcal{L}_{err}(f)]+\frac{1}{4} }$")
         self.plot_scatter_chart(
             # df, tag[4], tag[0], fgn + '_err_thm4', annots)
             df[tag[4]], df[tag[0]], fgn + '_err_thm4', annots)
@@ -1511,14 +1520,20 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
         annots = [
             r"$\mathrm{RHS}$ in Theorem 3.3",  # $\mathbf{RHS}$
             r"$\mathit{\boldsymbol{L}}_{bias}(\mathbf{wv}_\rho)$"]
-        annots[0] = r"$\frac{ \mathbb{E}_{\rho^2}[\mathit{\boldsymbol{L}}_{bias}(f,f')] -\mathbb{E}_\rho[\mathit{\boldsymbol{L}}_{bias}(f)]^2 }{ \mathbb{E}_{\rho^2}[\mathit{\boldsymbol{L}}_{bias}(f,f')] -\mathbb{E}_\rho[\mathit{\boldsymbol{L}}_{bias}(f)]+\frac{1}{4} }$"
+        annots[0] = (
+            r"$\frac{ \mathbb{E}_{\rho^2}[\mathit{\boldsymbol{L}}_{bias}(f,f')] "
+            r"-\mathbb{E}_\rho[\mathit{\boldsymbol{L}}_{bias}(f)]^2 }{ \mathbb{E}_{\rho^2}[\mathit{\boldsymbol{L}}_{bias}(f,f')] "
+            r"-\mathbb{E}_\rho[\mathit{\boldsymbol{L}}_{bias}(f)]+\frac{1}{4} }$")
         df_Y, df_X = df[tag[5]], df[tag[5 + 4]]
         df_Z = (df[tag[5 + 1]] < 1. / 2).values
         self.plot_scatter_chart(
             df_X[df_Z], df_Y[df_Z], fgn + '_thm4', ant=annots)
         # self.plot_scatter_chart(
         #     df_Y[df_Z], df_X[df_Z], fgn + '_re_thm4', annots[::-1])
-        annots[0] = r"$\frac{ \mathbb{E}_\mathcal{D}[\phi_\rho(\mathbf{x})^2/\gamma_\rho(\mathbf{x})^2] -\mathbb{E}_\mathcal{D}[\phi_\rho(\mathbf{x})/\gamma_\rho(\mathbf{x})]^2 }{ \mathbb{E}_\mathcal{D}[\phi_\rho(\mathbf{x})^2/\gamma_\rho(\mathbf{x})^2] -\mathbb{E}_\mathcal{D}[\phi_\rho(\mathbf{x})/\gamma_\rho(\mathbf{x})]+\frac{1}{4} }$"
+        annots[0] = (
+            r"$\frac{ \mathbb{E}_\mathcal{D}[\phi_\rho(\mathbf{x})^2/\gamma_\rho(\mathbf{x})^2] -"
+            r"\mathbb{E}_\mathcal{D}[\phi_\rho(\mathbf{x})/\gamma_\rho(\mathbf{x})]^2 }{ \mathbb{E}_\mathcal{D}[\phi_\rho(\mathbf{x})^2/\gamma_\rho(\mathbf{x})^2]"
+            r" -\mathbb{E}_\mathcal{D}[\phi_\rho(\mathbf{x})/\gamma_\rho(\mathbf{x})]+\frac{1}{4} }$")
         annots.append(r'$f(x)=x$')
         df_X = df[tag[5 + 5 + 2]]  # ???
         # self.plot_scatter_chart(
@@ -1532,7 +1547,10 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
         annots = [
             r"$\mathrm{RHS}$ in Theorem 3.4",  # $\mathbf{RHS}$
             r"$\mathit{\boldsymbol{L}}_{err}(\mathbf{wv}_\rho)$"]
-        annots[0] = r"$\frac{ \mathbb{E}_{\rho^2}[\mathit{\boldsymbol{L}}_{err}(f,f')] -\mathbb{E}_\rho[\mathit{\boldsymbol{L}}_{err}(f)]^2 }{ \mathbb{E}_{\rho^2}[\mathit{\boldsymbol{L}}_{err}(f,f')] -\mathbb{E}_\rho[\mathit{\boldsymbol{L}}_{err}(f)]+\frac{1}{4} }$"
+        annots[0] = (
+            r"$\frac{ \mathbb{E}_{\rho^2}[\mathit{\boldsymbol{L}}_{err}(f,f')] "
+            r"-\mathbb{E}_\rho[\mathit{\boldsymbol{L}}_{err}(f)]^2 }{ \mathbb{E}_{\rho^2}[\mathit{\boldsymbol{L}}_{err}(f,f')] "
+            r"-\mathbb{E}_\rho[\mathit{\boldsymbol{L}}_{err}(f)]+\frac{1}{4} }$")
         self.plot_scatter_chart(
             df[tag[4]], df[tag[0]], fgn + '_err_thm4', annots)
         if omit:

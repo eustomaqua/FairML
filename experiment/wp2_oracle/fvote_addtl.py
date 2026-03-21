@@ -861,160 +861,160 @@ class PlotB_Measures(GraphSetup):
         return
 
 
-"""
-class PlotD_Measures(GraphSetup):
-    def __init__(self):
-        pass
-
-    def prepare_graph(self, res_data):
-        new_data = np.zeros_like(res_data).transpose(1, 2, 3, 0)
-        nb_iter, nb_attr, nb_ens, nb_eval = np.shape(res_data)
-        for i in range(nb_attr):
-            for j in range(nb_ens):
-                for k in range(nb_eval):
-                    new_data[i, j, k] = res_data[:, i, j, k]
-        del nb_iter, nb_attr, nb_ens, nb_eval
-        return new_data
-
-    def schedule_mspaint(self, res_data, res_all, figname=""):
-        new_data = np.array(res_data)
-        new_data = self.prepare_graph(new_data)[:, :, 56:, :]
-
-        data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
-        sensitive_attributes = res_all[1]
-        ensemble_methods = res_all[-1]
-        ensemble_methods = [
-            i.replace('FPR', 'fpr').replace('FNR', 'fnr') 
-            if 'FairGBM' in i else i for i in ensemble_methods]
-        idx = [0, 1, 2, 3, 4, 6]
-        ensemble_methods = [ensemble_methods[i] for i in idx]
-
-        for sa, sens_attr in enumerate(sensitive_attributes):
-            fgn = "{}_{}_".format(figname, sens_attr)
-            curr = new_data[sa][idx]
-            del fgn, curr
-
-        num_s, num_e, num_v, _ = new_data.shape
-        alt_data = np.concatenate([
-            new_data[i] for i in range(num_s)], axis=2)
-        alt_data = np.concatenate([
-            alt_data[i] for i in range(num_e)], axis=1)
-        X, Ys = alt_data[26], alt_data[[50, 51, 52, 54], :]
-        annots = ("$\\Delta$(Accuracy)", "Fairness Measure")  # r"$/Delta$"
-        annotZs = ('DP', 'EO', 'PQP', 'DR')
-        fgn = figname + "_correlation"
-        multiple_scatter_chart(X, Ys, annots, annotZs, fgn,
-                               ind_hv='v', identity=False)
-
-        Mat = alt_data[[26, 27, 28, 29, 32, 33, 50, 51, 52, 54]]
-        key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
-        key = ["$\\Delta$({})".format(i) for i in key
-               ] + ["DP", "EO", "PQP", "DR"]  # r"$/Delta$({})"
-        fgn = figname + "_confusion"
-        # analogous_confusion(Mat, key, fgn, normalize=False)
-
-        idx_A = [0, 1, 2, 3, 5]
-        Mat_A, Mat_B = Mat[idx_A], Mat[6:]
-        key_A, key_B = [key[i] for i in idx_A], key[6:]
-        analogous_confusion_extended(Mat_B, Mat_A, key_B, key_A,
-                                     figname + '_confusion_alt',
-                                     cmap_name='PuBu', rotate=0,
-                                     figsize='M-WS')
-        return
-
-    def plot_multiple_hist_chart(self, curr, ens, mark="acc.norm",
-                                 fgn="", ddof=1):
-        if mark.startswith("acc"):  # without sen/spe
-            idx = [0, 1, 2, 3]      # normal
-            # idx = [13, 14, 15, 16]  # adversarial
-            # idx = [26, 27, 28, 29]  # abs()
-            key = ["Accuracy", "Precision", "Recall", "f1_score"]
-        elif mark.startswith("sen"):
-            idx = [6, 7, 8, 10, 11]
-            # idx = [19, 20, 21, 23, 24]
-            # idx = [32, 33, 34, 36, 37]
-            key = ["Sensitivity", "Specificity", "G_mean", "Matthew", "Cohen"]
-        elif mark == "fair":
-            idx = [50, 51, 52, 54]
-            key = ["DP", "EO", "PQP", "DR"]  # or "FQ (ours)"
-
-        if mark.endswith("norm"):
-            pass
-        elif mark.endswith("advr"):
-            idx = [i + 13 for i in idx]
-        elif mark.endswith("abs_"):
-            idx = [i + 26 for i in idx]
-        mode = "ascend" if mark == "fair" else "descend"
-
-        new_curr = curr[:, idx, :]
-        Ys_avg = new_curr.mean(axis=2).T
-        Ys_std = new_curr.std(axis=2, ddof=ddof).T
-        multiple_hist_chart(Ys_avg, Ys_std, key, '', ens,
-                            figname=fgn + mark, rotate=20)
-        return
-
-
-class GatherD_Measures(PlotD_Measures):
-    def schedule_mspaint(self, res_data, res_all,
-                         optional_data, figname=""):
-        # each res_data.shape (#iter,#attr,#ens,#eval) =(5,1|2,7,113)
-        # each new_data.shape (#attr,#ens,#eval,#iter) =(1|2,7,113,5)
-        new_data = [self.prepare_graph(np.array(
-            res_data[i]))[:, :, 56:, :] for i in optional_data]
-
-        alt_data = np.concatenate(new_data, axis=0)
-        num_s, num_e, num_v, _ = alt_data.shape
-        alt_data = np.concatenate([
-            alt_data[i] for i in range(num_s)], axis=2)
-        alt_data = np.concatenate([
-            alt_data[i] for i in range(num_e)], axis=1)
-
-        X, Ys = alt_data[26], alt_data[[50, 51, 52, 54], :]
-        # annots = ("$\\Delta$(Accuracy)", "Fairness Measure")  # r"$/Delta$"
-        annots = ("$\\Delta$(Accuracy)", "Fairness measure")
-        annotZs = ('DP', 'EO', 'PQP', 'DR')
-        fgn = figname + "_correlation"
-        multiple_scatter_chart(X, Ys, annots, annotZs, fgn,
-                               ind_hv='v', identity=False)
-
-        Mat = alt_data[[26, 27, 28, 29, 32, 33, 50, 51, 52, 54]]
-        key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
-        key = ["$\\Delta$(%s)" % i for i in key
-               ] + ["DP", "EO", "PQP", "DR"]
-        fgn = figname + "_confusion"
-        # analogous_confusion(Mat, key, fgn, normalize=False)
-
-        Mat_A, Mat_B = Mat[: 6], Mat[6:]
-        key_A, key_B = key[: 6], key[6:]
-        Mat_C = Mat_A[[0, 1, 2, 3, 5]]
-        key_C = [key_A[i] for i in [0, 1, 2, 3, 5]]  # delta(Sen)
-        analogous_confusion_extended(
-            Mat_B, Mat_C, key_B, key_C, figname + '_confusion_alt',
-            cmap_name='PuBu', rotate=0, figsize='M-WS')
-        return
-
-
-class PlotE_Measures(GraphSetup):
-    def prepare_graph(self, res_data):
-        new_data = np.zeros_like(res_data).transpose(1, 2, 3, 0)
-        nb_iter, nb_attr, nb_ens, nb_eval = np.shape(res_data)
-        for i in range(nb_attr):
-            for j in range(nb_ens):
-                for k in range(nb_eval):
-                    new_data[i, j, k] = res_data[:, i, j, k]
-        del nb_iter, nb_attr, nb_ens, nb_eval
-        return new_data
-
-
-class PlotF_Prunings(GraphSetup):
-    def __init__(self):
-        pass
-
-
-# class Renew_PlotF_Prunings(PlotF_Prunings):
-#     def renew_schedule_msgraph(self):
+# """
+# class PlotD_Measures(GraphSetup):
+#     def __init__(self):
+#         pass
+#
+#     def prepare_graph(self, res_data):
+#         new_data = np.zeros_like(res_data).transpose(1, 2, 3, 0)
+#         nb_iter, nb_attr, nb_ens, nb_eval = np.shape(res_data)
+#         for i in range(nb_attr):
+#             for j in range(nb_ens):
+#                 for k in range(nb_eval):
+#                     new_data[i, j, k] = res_data[:, i, j, k]
+#         del nb_iter, nb_attr, nb_ens, nb_eval
+#         return new_data
+#
+#     def schedule_mspaint(self, res_data, res_all, figname=""):
+#         new_data = np.array(res_data)
+#         new_data = self.prepare_graph(new_data)[:, :, 56:, :]
+#
+#         data_name, binary, nb_cls, _, nb_iter, _ = res_all[0]
+#         sensitive_attributes = res_all[1]
+#         ensemble_methods = res_all[-1]
+#         ensemble_methods = [
+#             i.replace('FPR', 'fpr').replace('FNR', 'fnr') \
+#             if 'FairGBM' in i else i for i in ensemble_methods]
+#         idx = [0, 1, 2, 3, 4, 6]
+#         ensemble_methods = [ensemble_methods[i] for i in idx]
+#
+#         for sa, sens_attr in enumerate(sensitive_attributes):
+#             fgn = "{}_{}_".format(figname, sens_attr)
+#             curr = new_data[sa][idx]
+#             del fgn, curr
+#
+#         num_s, num_e, num_v, _ = new_data.shape
+#         alt_data = np.concatenate([
+#             new_data[i] for i in range(num_s)], axis=2)
+#         alt_data = np.concatenate([
+#             alt_data[i] for i in range(num_e)], axis=1)
+#         X, Ys = alt_data[26], alt_data[[50, 51, 52, 54], :]
+#         annots = ("$\\Delta$(Accuracy)", "Fairness Measure")  # r"$/Delta$"
+#         annotZs = ('DP', 'EO', 'PQP', 'DR')
+#         fgn = figname + "_correlation"
+#         multiple_scatter_chart(X, Ys, annots, annotZs, fgn,
+#                                ind_hv='v', identity=False)
+#
+#         Mat = alt_data[[26, 27, 28, 29, 32, 33, 50, 51, 52, 54]]
+#         key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
+#         key = ["$\\Delta$({})".format(i) for i in key
+#                ] + ["DP", "EO", "PQP", "DR"]  # r"$/Delta$({})"
+#         fgn = figname + "_confusion"
+#         # analogous_confusion(Mat, key, fgn, normalize=False)
+#
+#         idx_A = [0, 1, 2, 3, 5]
+#         Mat_A, Mat_B = Mat[idx_A], Mat[6:]
+#         key_A, key_B = [key[i] for i in idx_A], key[6:]
+#         analogous_confusion_extended(Mat_B, Mat_A, key_B, key_A,
+#                                      figname + '_confusion_alt',
+#                                      cmap_name='PuBu', rotate=0,
+#                                      figsize='M-WS')
 #         return
-"""
+#
+#     def plot_multiple_hist_chart(self, curr, ens, mark="acc.norm",
+#                                  fgn="", ddof=1):
+#         if mark.startswith("acc"):  # without sen/spe
+#             idx = [0, 1, 2, 3]      # normal
+#             # idx = [13, 14, 15, 16]  # adversarial
+#             # idx = [26, 27, 28, 29]  # abs()
+#             key = ["Accuracy", "Precision", "Recall", "f1_score"]
+#         elif mark.startswith("sen"):
+#             idx = [6, 7, 8, 10, 11]
+#             # idx = [19, 20, 21, 23, 24]
+#             # idx = [32, 33, 34, 36, 37]
+#             key = ["Sensitivity", "Specificity", "G_mean", "Matthew", "Cohen"]
+#         elif mark == "fair":
+#             idx = [50, 51, 52, 54]
+#             key = ["DP", "EO", "PQP", "DR"]  # or "FQ (ours)"
+#
+#         if mark.endswith("norm"):
+#             pass
+#         elif mark.endswith("advr"):
+#             idx = [i + 13 for i in idx]
+#         elif mark.endswith("abs_"):
+#             idx = [i + 26 for i in idx]
+#         mode = "ascend" if mark == "fair" else "descend"
+#
+#         new_curr = curr[:, idx, :]
+#         Ys_avg = new_curr.mean(axis=2).T
+#         Ys_std = new_curr.std(axis=2, ddof=ddof).T
+#         multiple_hist_chart(Ys_avg, Ys_std, key, '', ens,
+#                             figname=fgn + mark, rotate=20)
+#         return
+#
+#
+# class GatherD_Measures(PlotD_Measures):
+#     def schedule_mspaint(self, res_data, res_all,
+#                          optional_data, figname=""):
+#         # each res_data.shape (#iter,#attr,#ens,#eval) =(5,1|2,7,113)
+#         # each new_data.shape (#attr,#ens,#eval,#iter) =(1|2,7,113,5)
+#         new_data = [self.prepare_graph(np.array(
+#             res_data[i]))[:, :, 56:, :] for i in optional_data]
+#
+#         alt_data = np.concatenate(new_data, axis=0)
+#         num_s, num_e, num_v, _ = alt_data.shape
+#         alt_data = np.concatenate([
+#             alt_data[i] for i in range(num_s)], axis=2)
+#         alt_data = np.concatenate([
+#             alt_data[i] for i in range(num_e)], axis=1)
+#
+#         X, Ys = alt_data[26], alt_data[[50, 51, 52, 54], :]
+#         # annots = ("$\\Delta$(Accuracy)", "Fairness Measure")  # r"$/Delta$"
+#         annots = ("$\\Delta$(Accuracy)", "Fairness measure")
+#         annotZs = ('DP', 'EO', 'PQP', 'DR')
+#         fgn = figname + "_correlation"
+#         multiple_scatter_chart(X, Ys, annots, annotZs, fgn,
+#                                ind_hv='v', identity=False)
+#
+#         Mat = alt_data[[26, 27, 28, 29, 32, 33, 50, 51, 52, 54]]
+#         key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
+#         key = ["$\\Delta$(%s)" % i for i in key
+#                ] + ["DP", "EO", "PQP", "DR"]
+#         fgn = figname + "_confusion"
+#         # analogous_confusion(Mat, key, fgn, normalize=False)
+#
+#         Mat_A, Mat_B = Mat[: 6], Mat[6:]
+#         key_A, key_B = key[: 6], key[6:]
+#         Mat_C = Mat_A[[0, 1, 2, 3, 5]]
+#         key_C = [key_A[i] for i in [0, 1, 2, 3, 5]]  # delta(Sen)
+#         analogous_confusion_extended(
+#             Mat_B, Mat_C, key_B, key_C, figname + '_confusion_alt',
+#             cmap_name='PuBu', rotate=0, figsize='M-WS')
+#         return
+#
+#
+# class PlotE_Measures(GraphSetup):
+#     def prepare_graph(self, res_data):
+#         new_data = np.zeros_like(res_data).transpose(1, 2, 3, 0)
+#         nb_iter, nb_attr, nb_ens, nb_eval = np.shape(res_data)
+#         for i in range(nb_attr):
+#             for j in range(nb_ens):
+#                 for k in range(nb_eval):
+#                     new_data[i, j, k] = res_data[:, i, j, k]
+#         del nb_iter, nb_attr, nb_ens, nb_eval
+#         return new_data
+#
+#
+# class PlotF_Prunings(GraphSetup):
+#     def __init__(self):
+#         pass
+#
+#
+# # class Renew_PlotF_Prunings(PlotF_Prunings):
+# #     def renew_schedule_msgraph(self):
+# #         return
+# """
 
 
 class Renew_GatherF_Prunings(GatherF_Prunings):

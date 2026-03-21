@@ -663,24 +663,24 @@ class PartB_FairMeasure(ClassifierSetup):
         # res_pru.shape: (1+6 ens+#criteria, 30+30+3)
         return res_pru  # .shape (1+6, 63)
 
-    '''
-    def routine_proposed_item(self, nb_cls, nb_pru, logger,
-                            X_trn, y_trn, Xd_trn, sa_trn,
-                            X_tst, y_tst, Xd_tst, sa_tst,
-                            sa_idx, sa_val, positive_label):
-        res_prop = []
-        
-        >>> func('POEPAF')
-        (98.91268467903137, [0, 2, 3, 5, 9, 11, 20, 21, 22, 28, 30])
-        >>> func('EPAF-C')
-        (0.17669177055358887, [0, 2, 5, 7, 9, 11, 16, 18, 22, 23, 24])
-        >>> func('EPAF-D')
-        (1.0444560050964355, [0, 2, 5, 7, 9, 11, 16, 22, 23, 24, 28])
-        >>> func('POPEP')
-        (41.36838722229004, [9, 11])
-        
-        return res_prop
-    '''
+    # '''
+    # def routine_proposed_item(self, nb_cls, nb_pru, logger,
+    #                         X_trn, y_trn, Xd_trn, sa_trn,
+    #                         X_tst, y_tst, Xd_tst, sa_tst,
+    #                         sa_idx, sa_val, positive_label):
+    #     res_prop = []
+    #
+    #     >>> func('POEPAF')
+    #     (98.91268467903137, [0, 2, 3, 5, 9, 11, 20, 21, 22, 28, 30])
+    #     >>> func('EPAF-C')
+    #     (0.17669177055358887, [0, 2, 5, 7, 9, 11, 16, 18, 22, 23, 24])
+    #     >>> func('EPAF-D')
+    #     (1.0444560050964355, [0, 2, 5, 7, 9, 11, 16, 22, 23, 24, 28])
+    #     >>> func('POPEP')
+    #     (41.36838722229004, [9, 11])
+    #
+    #     return res_prop
+    # '''
 
 
 class PartC_FairMeasure(PartB_FairMeasure):

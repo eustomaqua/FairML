@@ -854,11 +854,11 @@ class PlotH_ImprovePruning(GraphSetup):
         if not partition:
             return
 
-        '''
-        for k, v in raw_dframe.items():
-            # tdf = v.iloc[ind][tag_col]
-            tdf = v.loc[ind][tag_col]
-        '''
+        # '''
+        # for k, v in raw_dframe.items():
+        #     # tdf = v.iloc[ind][tag_col]
+        #     tdf = v.loc[ind][tag_col]
+        # '''
 
     def compare_Chronos_cost(self, df, kw, rel_id,
                              category=None, ind_ens=False):
@@ -895,12 +895,12 @@ class PlotH_ImprovePruning(GraphSetup):
             efficiency[:, k] = speed_up[:, k] / (k + 2)
 
         picked_keys = [r"$n_m = {}$".format(i) for i in [2, 3]]
-        '''
-        scatter_parl_chart(speed_up, picked_keys,
-                       'Speedup', kw + '_sp')
-        scatter_parl_chart(efficiency, picked_keys,
-                       'Efficiency', kw + '_ey')
-        '''
+        # '''
+        # scatter_parl_chart(speed_up, picked_keys,
+        #                'Speedup', kw + '_sp')
+        # scatter_parl_chart(efficiency, picked_keys,
+        #                'Efficiency', kw + '_ey')
+        # '''
 
         scatter_parl_chart(speed_up[:, :1], picked_keys[:1],
                            'Speedup', kw + '_sp2')

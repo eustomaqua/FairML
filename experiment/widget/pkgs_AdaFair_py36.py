@@ -208,8 +208,10 @@ class BaseWeightBoosting(six.with_metaclass(ABCMeta, BaseEnsemble)):
             #
             #
             # if self.debug:
-            #     pos, neg, dp,fp,dn,fn = self.calculate_weights(X, y, sample_weight)
-            #     self.weight_list.append(str(iboost) + "," + str(alpha) + "," + str(pos) + ", " + str(neg) + ", " + str(dp) + ", " + str(fp) + ", " + str(dn) + ", " + str(fn))
+            #     pos, neg, dp, fp, dn, fn = self.calculate_weights(X, y, sample_weight)
+            #     self.weight_list.append(str(iboost) + "," + str(
+            #         alpha) + "," + str(pos) + ", " + str(neg) + ", " + str(
+            #         dp) + ", " + str(fp) + ", " + str(dn) + ", " + str(fn))
             #
             #     self.W_pos += pos/self.n_estimators
             #     self.W_neg += neg/self.n_estimators
@@ -647,7 +649,10 @@ class AdaFair(BaseWeightBoosting, ClassifierMixin):
         elif diff_tpr < 0:
             self.cost_non_protected_negative = (1 + abs(diff_tnr))
 
-        # print str(self.cost_protected_positive) + "," + str(self.cost_non_protected_positive)  + "," + str(self.cost_protected_negative)  + "," + str(self.cost_non_protected_negative)
+        # print str(self.cost_protected_positive) + "," + str(
+        #     self.cost_non_protected_positive)  + "," + str(
+        #     self.cost_protected_negative)  + "," + str(
+        #     self.cost_non_protected_negative)
         self.costs.append(str(diff_tpr) + "," + str(diff_tnr))
 
         return abs((tpr_non_protected - tpr_protected)) + abs((tnr_non_protected - tnr_protected))
@@ -835,7 +840,9 @@ class AdaFair(BaseWeightBoosting, ClassifierMixin):
             test_fairness = self.measure_fairness_for_visualization(
                 self.X_test, self.y_test, self.classes_.take(np.argmax(
                     self.predictions_array_test, axis=1)))
-            self.performance.append((cumulative_balanced_error, cumulative_error, fairness, test_cumulative_balanced_error, test_cumulative_error, test_fairness))
+            self.performance.append((
+                cumulative_balanced_error, cumulative_error, fairness,
+                test_cumulative_balanced_error, test_cumulative_error, test_fairness))
             self.objective.append(cumulative_error * (1 - self.c) + cumulative_balanced_error * self.c + fairness)
             print(iboost)
 

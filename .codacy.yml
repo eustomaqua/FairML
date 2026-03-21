@@ -1,0 +1,18 @@
+---
+exclude_paths:
+  - "Dockerfile"
+  - "docs/javascripts/**"
+  - "docs/docs/**"
+  - "docs/source/conf.py"
+
+# engines:
+#   pylint:
+#     python_version: 2
+#
+# engines:
+#   metric:
+#     exclude_paths:
+#       - "experiment/wp2_oracle/**"
+#     # config:
+#     #   languages:
+#     #     - "python"
