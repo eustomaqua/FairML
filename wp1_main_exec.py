@@ -68,26 +68,21 @@ class OracleEmpirical(ExperimentSetup):
                  epsilon=1e-3, rho=.4, alpha=.5, L=3, R=2,
                  nb_lam = 11, delta=1e-6,
                  screen=True, logged=False):
-        super().__init__(trial_type, data_type,
-                         name_ens, abbr_cls, nb_cls, nb_pru,
-                         nb_iter, ratio, screen, logged)
+        super().__init__(trial_type, data_type, name_ens, abbr_cls, nb_cls,
+                         nb_pru, nb_iter, ratio, screen, logged)
         # trial_type: {mCV, KFS, KF}_part{*n}
         #  data_type: ['ricci', 'german', 'adult', 'ppr', 'ppvr']
         self._delta = 1. - delta
 
         if trial_type.endswith('expt1'):
-            self._iterator = PartA_TheoremsLemma(
-                name_ens, abbr_cls, nb_cls)
+            self._iterator = PartA_TheoremsLemma(name_ens, abbr_cls, nb_cls)
         elif trial_type.endswith('expt2'):
-            self._iterator = PartB_TheoremsLemma(
-                name_ens, abbr_cls, nb_cls)
+            self._iterator = PartB_TheoremsLemma(name_ens, abbr_cls, nb_cls)
         elif trial_type.endswith('expt3'):
-            self._iterator = PartC_TheoremsLemma(
-                name_ens, abbr_cls, nb_cls)
+            self._iterator = PartC_TheoremsLemma(name_ens, abbr_cls, nb_cls)
 
         elif trial_type.endswith('expt11'):
-            self._iterator = PartK_PACGeneralisation(
-                name_ens, abbr_cls, nb_cls)
+            self._iterator = PartK_PACGeneralisation(name_ens, abbr_cls, nb_cls)
 
         # rho: maximum size of pruned ensemble, aka. ratio'
         elif trial_type.endswith('expt4'):
@@ -528,7 +523,7 @@ def default_parameters():
     parser.add_argument(
         '--nb-lam', type=int, default=5, help='Number of lam values')
     parser.add_argument(
-        '--delta', type=float, default=1e-6, help='$1-\delta$')
+        '--delta', type=float, default=1e-6, help='$1-\\delta$')
     parser.add_argument('--eta', type=float, default=.56)
     parser.add_argument(
         '--screen', action='store_true', help='Where to output')

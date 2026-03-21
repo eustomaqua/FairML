@@ -468,7 +468,7 @@ class PartI_LambdaEffect(EnsembleSetup):
         yq_insp = [j.tolist() for j in yq_insp]
         yq_pred = [j.tolist() for j in yq_pred]
         lam_set = np.linspace(0, 1, nb_lam).tolist()
-        elegant_print("\tEffect $\lambda$", logger)
+        elegant_print("\tEffect $\\lambda$", logger)
 
         ans_ens, ans_A1, ans_A2, ans_Jt = [], [], [], []
         for lam in lam_set:

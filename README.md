@@ -11,23 +11,18 @@ https://readthedocs.org/projects/fairml/
 [![Documentation Status](https://readthedocs.org/projects/fairml/badge/?version=latest)](https://fairml.readthedocs.io/en/latest/?badge=latest)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/7676a4d116f447e897b6a4260b5c5f4f)](https://app.codacy.com/gh/eustomaqua/FairML/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)[![Codacy Badge](https://app.codacy.com/project/badge/Grade/7676a4d116f447e897b6a4260b5c5f4f)](https://app.codacy.com/gh/eustomaqua/FairML/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
-
 This is the official repository of "*Theory of Fair Machine Learning* (MSCA, FairML, project no. 101106768)."
 
 **FairML** is released under the [MIT Licence](./LICENSE), with [[documentation]](<https://fairml.readthedocs.io/en/latest/>).
-
 
 <!--
 - Discriminative risk & margin-dependent bounds
   [![arXiv](https://img.shields.io/badge/arXiv-2301.10813-B31B1B.svg)](https://arxiv.org/pdf/2301.10813)
   [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
   [![License: MIT](https://img.shields.io/badge/Licence-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-
 ### Getting started
 
-
 ### Acknowledgements
-
 This research is funded by the European Union (MSCA, FairML, project no. 101106768). 
 
 Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or the European Research Executive Agency. Neither the European Union nor the granting authority can be held responsible for them.
@@ -48,5 +43,4 @@ https://squidfunk.github.io/mkdocs-material/setup/adding-a-git-repository/
 https://one-pig1.github.io/mkdocs/mkdocs/syntax/highlight_code/
 https://blog.csdn.net/m0_63203517/article/details/131946304
 https://cncfstack.com/p/material-for-mkdocs/practices/zh/setup/changing-the-fonts/
-
 -->

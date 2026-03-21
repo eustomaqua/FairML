@@ -2,12 +2,12 @@
 
 We developed [FairML](https://github.com/eustomaqua/FairML) with `Python 3.8` and released the code to help you reproduce our work. Note that the experimental parts must be run on the `Ubuntu` operating system due to FairGBM (one baseline method that we used for comparison).
 
-
 ## Configuration
 
 ### Initialization via Docker
 
 *(1) design an image using the `Dockerfile` file*
+
 ```shell
 # docker --version
 # docker pull continuumio/miniconda3
@@ -21,6 +21,7 @@ docker run -it fairgbm /bin/bash
 ```
 
 *(2) enter the image and install Miniconda3 (with root access)*
+
 ```shell
 cd home
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
@@ -44,12 +45,12 @@ exit
 *(3) create and delete an environment for reproduction (see [Requirements](#requirements))*
 
 *(4) exit from docker and delete the image*
+
 ```shell
 docker ps -a                                  # docker container ps|list
 docker rm <container-id>
 docker image rm <image-name>  # docker rmi <image-id>
 ```
-
 
 ### Initialization on the server
 
@@ -83,9 +84,7 @@ $ yes | rm -r miniconda3
 logout
 ```
 
-
 ## Requirements
-
 
 ### Python packages
 
@@ -125,7 +124,6 @@ rm -r pyfair
 yes | rm -r PyFairness
 ```
 
-
 ## Implementation
 
 ### Executing via Docker
@@ -145,7 +143,6 @@ $ docker exec -it <container-id> /bin/bash
 $ docker cp <container-id>:/root/<folder> /home/yijun/  # copy from docker
 $ docker stop <container-id>
 ```
-
 
 ### Executing on the server
 
@@ -173,7 +170,6 @@ $ rsync -r hendrix:/home/qgl539/tmp.tar.gz .    # copy from server
 $ tar -xzvf tmp.tar.gz                                         # decompression
 $ rm tmp.tar.gz
 ```
-
 
 ## Documentation
 

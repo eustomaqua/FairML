@@ -85,7 +85,7 @@ class PlotD_Measures(GraphSetup):
         alt_data = np.concatenate([
             alt_data[i] for i in range(num_e)], axis=1)
         X, Ys = alt_data[26], alt_data[[50, 51, 52, 54], :]
-        annots = (r"$\Delta$(Accuracy)", "Fairness Measure")
+        annots = ("$\\Delta$(Accuracy)", "Fairness Measure")  # r"$/Delta$"
         annotZs = BLFAIR  # ('DP', 'EO', 'PQP', 'DR')
         fgn = figname + "_correlation"
         # multiple_scatter_chart(X, Ys, annots, annotZs, fgn)
@@ -94,8 +94,8 @@ class PlotD_Measures(GraphSetup):
 
         Mat = alt_data[[26, 27, 28, 29, 32, 33, 50, 51, 52, 54]]
         key = ["Acc", "P", "R", "f1", "Sen", "Spe"]
-        key = [r"$\Delta$({})".format(i) for i in key
-               ] + BLFAIR  # ["DP", "EO", "PQP", "DR"]
+        key = ["$\\Delta$({})".format(i) for i in key
+               ] + BLFAIR  # ["DP", "EO", "PQP", "DR"]  # r"$/Delta$({})"
         fgn = figname + "_confusion"
         # pdb.set_trace()
         # analogous_confusion(Mat, key, fgn, normalize=False)
@@ -546,6 +546,7 @@ class GatherF_Prunings(PlotF_Prunings):
                 '{} via {}'.format(i, sa) for i in name_fa2_set])
         domestic_key = [_little_helper(
             i, sensitive_attributes) for i in domestic_key]
+        # pdb.set_trace()
 
         e_i = [0, ]
         p_i = [0, 1, 2, 5]
@@ -570,55 +571,52 @@ class GatherF_Prunings(PlotF_Prunings):
             ret_idc[s_k] += [168, 169, 170]
         return ret_key, ret_idr, ret_idc, sensitive_attributes
 
-    def schedule_mspaint(self, res_data, res_all,
-                         optional_data, figname="",
+    def schedule_mspaint(self, res_data, res_all, optional_data, figname="",
                          jt=False, logger=None):
         idx = list(range(56, 112)) + list(range(168, 224)) + list(
             range(280, 336)) + list(range(336, 339))
         new_data = {i: self.prepare_graph(np.array(
             res_data[i]))[:, idx, :] for i in optional_data}
         elegant_print("mCV_expt6\n", logger)
-        self._tag = {
-            0: "Accuracy (%)",
-            1: "Precision",
-            2: "Recall",
-            3: "f1_score",
-            4: "fpr",
-            5: "fnr",
-            6: "Sensitivity",
-            7: "Specificity",
-            8: "G_mean",
-            9: "dp",
-            10: "Matthew",
-            11: "Cohen",
-            12: "random_acc",
-            13: "Disturbed Acc (%)",
-            16: "Disturbed f1",
+        self._tag = {0: "Accuracy (%)",
+                     1: "Precision",
+                     2: "Recall",
+                     3: "f1_score",
+                     4: "fpr",
+                     5: "fnr",
+                     6: "Sensitivity",
+                     7: "Specificity",
+                     8: "G_mean",
+                     9: "dp",
+                     10: "Matthew",
+                     11: "Cohen",
+                     12: "random_acc",
+                     13: "Disturbed Acc (%)",
+                     16: "Disturbed f1",
 
-            41: BLFAIR[0],
-            43: BLFAIR[1],
-            45: BLFAIR[2],
-            50: BLFAIR[0],
-            51: BLFAIR[1],
-            52: BLFAIR[2],
-            54: r"$L_{bias}$",
+                     41: BLFAIR[0],
+                     43: BLFAIR[1],
+                     45: BLFAIR[2],
+                     50: BLFAIR[0],
+                     51: BLFAIR[1],
+                     52: BLFAIR[2],
+                     54: r"$L_{bias}$",
 
-            39: "unaware",  # 39,40, 49 =39+10
-            # 41: "DP",       # 41,42, 50 =41+9
-            # 43: "EO",       # 43,44, 51 =53+8
-            # 45: "PQP",      # 45,46, 52 =45+7
-            47: "manual",   # 47,48, 53 =47+6
-            49: "unaware",
-            # 50: "DP",
-            # 51: "EO",
-            # 52: "PQP",
-            53: "manual",
-            # 54: r"$L_{fair}$",  # 54: r"$\hat{L}_{fair}$",
-            55: r"$L_{err}$",   # 55: r"$\hat{L}_{err}$",  # loss
-            -3: r"$T_{ens}$",
-            -2: r"$T_{pru}$",
-            -1: r"$T_{all}$",  # "Time Cost (sec)",
-        }
+                     39: "unaware",  # 39,40, 49 =39+10
+                     # 41: "DP",       # 41,42, 50 =41+9
+                     # 43: "EO",       # 43,44, 51 =53+8
+                     # 45: "PQP",      # 45,46, 52 =45+7
+                     47: "manual",   # 47,48, 53 =47+6
+                     49: "unaware",
+                     # 50: "DP",
+                     # 51: "EO",
+                     # 52: "PQP",
+                     53: "manual",
+                     # 54: r"$L_{fair}$",  # 54: r"$\hat{L}_{fair}$",
+                     55: r"$L_{err}$",   # 55: r"$\hat{L}_{err}$",  # loss
+                     -3: r"$T_{ens}$",
+                     -2: r"$T_{pru}$",
+                     -1: r"$T_{all}$", }  # "Time Cost (sec)",
 
         self.tabulate_output(new_data, res_all, optional_data, 0,
                              figname, logger=logger)
@@ -1784,13 +1782,10 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
         fgn += '_rho'  # '_corr(elation)'
         kw = {'ind_hv': 'v', 'identity': False}  # kws
         kw['box'] = True
-        multiple_scatter_chart(
-            X, Ys[:-1], annots, antZs[:-1], fgn, **kw)
-        multiple_scatter_chart(
-            X, Ys, annots, antZs, fgn + '_alt', **kw)
+        multiple_scatter_chart(X, Ys[:-1], annots, antZs[:-1], fgn, **kw)
+        multiple_scatter_chart(X, Ys, annots, antZs, fgn + '_alt', **kw)
         if verbose:  # if not verbose:
-            multiple_scatter_chart(
-                W, Ys, annots, antZs, fgn + '_new', **kw)
+            multiple_scatter_chart(W, Ys, annots, antZs, fgn + '_new', **kw)
         key = ['acc', 'p', 'r', 'spe', 'f1', 'g_mean', 'dp']
         key = [r'$\Delta$(%s)' % i for i in key]
         key[4] = r'$\Delta(\mathrm{f}_1)$'
@@ -1812,8 +1807,7 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
         kw['figsize'] = 'L-WS'
         idx = [0, 1, 2, 3, 5, 6]
         analogous_confusion_extended(
-            Ys, Xs[idx], antZs, key[:4] + key[5:],
-            fgn + '_shrink', **kw)
+            Ys, Xs[idx], antZs, key[:4] + key[5:], fgn + '_shrink', **kw)
         fgn = fgn[:-5]  # before fgn[:-3]
         return
 
@@ -1828,11 +1822,9 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
                 snspec='sty3e')  # 'sty8a')#pdb.set_trace()
         elif ('_ck_thm4' in fgn):
             multi_lin_reg_without_distr(
-                X, [Y], [''], ant, fgn, figsize=fsz,
-                snspec='sty8a')
+                X, [Y], [''], ant, fgn, figsize=fsz, snspec='sty8a')
             multi_lin_reg_without_distr(
-                X, [Y], [''], ant, fgn + 'p', figsize=fsz,
-                snspec='sty3e')
+                X, [Y], [''], ant, fgn + 'p', figsize=fsz, snspec='sty3e')
 
         elif ('_ck' in fgn) or ('_rl' in fgn) or (
                 '_pac' in fgn) or ('_kl' in fgn):
@@ -1842,8 +1834,7 @@ class CorrFigCK_bndupd(CorrFigCK_bounds):
                 snspec='sty8a')  # 'sty4','sty3a','sty3b'
         else:  # thm1|3|4
             multi_lin_reg_without_distr(
-                X, [Y], [''], ant, fgn, figsize=fsz,
-                snspec='sty3e')  # 'sty3b')
+                X, [Y], [''], ant, fgn, figsize=fsz, snspec='sty3e')  # '3b'
         if '_re' not in fgn:
             return  # 'err':  # fgn[-4:-1] in ('thm','col'):
         # elif '_lem' in fgn:

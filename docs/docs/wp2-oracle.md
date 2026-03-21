@@ -1,6 +1,5 @@
 # Discriminative risk (DR)
 
-
 <!--
 We propose a fairness quality measure named *discriminative risk (DR)* to reflect both individual and group fairness aspects. We also investigate its properties and establish the first and second-order oracle bounds concerning fairness to show that fairness can be boosted via ensemble combination with theoretical learning guarantees. The analysis is suitable for both binary and multi-class classification. Furthermore, an ensemble pruning method named *POAF (Pareto optimal ensemble pruning via improving
 accuracy and fairness concurrently)* is also proposed to utilise DR. Comprehensive experiments are conducted to evaluate the effectiveness of the proposed methods.
@@ -11,7 +10,6 @@ The full paper entitled *Increasing Fairness via Combination with Learning Guara
 We propose a fairness quality measure named *discriminative risk (DR)* to reflect both individual and group fairness aspects. We also investigate its properties and establish first and second-order oracle bounds concerning fairness to show that fairness can be boosted via ensemble combination at some time with theoretical learning guarantees. The analysis is suitable for both binary and multi-class classification. 
 Furthermore, an ensemble pruning method named *POAF (Pareto optimal ensemble pruning via improving accuracy and fairness concurrently)* is also proposed to utilise DR. Comprehensive experiments are conducted to evaluate the effectiveness of the proposed methods. 
 The full paper entitled *Improving Fairness with Ensemble Combination: Margin-Dependent Bounds*, available on [OpenReview](https://openreview.net/forum?id=Zgu58Dg2Yb), has been accepted by *the ninth annual ACM Conference on Fairness, Accountability, and Transparency ([FAccT 2026](https://facctconference.org/2026/index.html))*. 
-
 
 ## Methodology
 
@@ -24,7 +22,6 @@ Naturally, the *fairness quality* of one hypothesis \\(f(\cdot)\\) can be evalua
 $$ \small \ell_\text{bias}(f,\mathbf{x})= \mathbb{I}(\overbrace{ f(\breve{\mathbf{x}}, \mathbf{a})\neq f(\breve{\mathbf{x}}, \underbrace{ \tilde{\mathbf{a}} }_{\hbox{ slightly perturbed version of sen-att-s }} ) }^{ \hbox{$f$ makes a discriminative decision} }) \,. $$
 
 This equation is defined on one instance, evaluating the risk from an individual aspect, and the empirical DR over one dataset describes this from a group aspect, as an unbiassed estimation of the true DR over one data distribution. There are no restrictions applying to the type of $f(\cdot)$.
-
 
 **Oracle bounds and PAC bounds regarding fairness for the weighted voting**
 
@@ -41,7 +38,6 @@ $$ \ell_\text{bias}(\mathbf{wv}_{\rho}, \mathbf{x}) \leq \mathbb{I}( \phi_\rho(\
 
 We also provided two PAC bounds regarding fairness to bound the discrepancy between one hypothesis (either an individual classifier or an ensemble)'s empirical DR and its true DR, as well as two PAC-Bayes bounds for stochastic ensembles.
 
-
 **POAF for improving accuracy and fairness at the same time**
 
 We use the domination concept with DR and the 0/1 loss function as two sub-objectives to be minimised, aiming to construct stronger ensemble classifiers with less accuracy damage. We also came up with two
@@ -49,12 +45,11 @@ extra pruning methods that could be easily implemented,
 named as *EPAF (ensemble pruning via improving accuracy and
 fairness concurrently),* presented in centralised and distributed versions (that is, EPAF-C and EPAF-D).
 
-
-
 ## Usage examples
 <!-- Examples of how to use them -->
 
 (1) Set parameters (changeable)
+
 ```python
 import numpy as np
 # np.random.seed(None)
@@ -67,6 +62,7 @@ n_m = 2        # number of machines in EPAF-D
 ```
 
 (2) load one dataset
+
 ```python
 from fairml.datasets import German, preprocess  # Ricci
 from fairml.preprocessing import (
@@ -89,6 +85,7 @@ del processed_dat, disturbed_dat, df, dt
 ```
 
 (3) divide the training set and test set
+
 ```python
 from sklearn import model_selection
 
@@ -119,7 +116,9 @@ from fairml.facils.metric_fair import (
     unpriv_group_one, unpriv_group_two, unpriv_group_thr,
     marginalised_np_mat, calc_fair_group,)
 -->
+
 (4) train one ensemble classifier
+
 ```python
 from sklearn import ensemble
 from sklearn import metrics
@@ -148,6 +147,7 @@ acc_qtb = get_accuracy(y_tst, hp_qtb_tst)
 ```
 
 (5) compute the discriminative risk and three group fairness measures
+
 ```python
 from fairml.discriminative_risk import hat_L_fair
 from pyfair.marble.metric_fair import (
@@ -170,6 +170,7 @@ grp_sa2 = get_grp_fairness(y_tst, hens_tst, pos_label, nsa_idx_tst[1])
 ```
 
 (6) get sub-ensembles using different pruning methods
+
 ```python
 from fairml.dr_pareto_optimal import POAF_PEP as POAF
 from fairml.dr_pareto_optimal import Centralised_EPAF_Pruning as EPAF_C
@@ -213,7 +214,6 @@ for criterion in ['DP', 'EO', 'PQP']:
             criterion, idx_priv=nsa_idx_trn[i])
 ```
 
-
 ## Empirical result reproduction
 
 The [empirical](https://github.com/eustomaqua/FairML/tree/master/findings) data are released with FairML. To reproduce our [results](https://arxiv.org/pdf/2301.10813), you may do as follows.
@@ -245,6 +245,7 @@ python wp1_main_plot.py -exp mCV_expt8 --name-ens Bagging                       
 ```
 
 Below are the empirical results in the Appendix
+
 ```shell
 python wp1_main_plot.py -exp mCV_expt8 --name-ens AdaBoostM1 --nb-cls 11 --nb-pru 5  # Fig.10 & 12(e-h)
 python wp1_main_plot.py -exp mCV_expt8 --name-ens SAMME --nb-cls 11 --nb-pru 5         # Fig.11 & 12(i-l)

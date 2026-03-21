@@ -10,20 +10,15 @@ We release our code in the [FairML](https://github.com/eustomaqua/FairML) reposi
 
 To get started quickly, see [an example](getting-started.md) here.
 
-<!--
-- *Increasing Fairness via Combination with Learning Guarantees* [[arXiv 2301.10813]](https://arxiv.org/abs/2301.10813)
--->
-
-
 ## Acknowledgement
 
-<!--
-This research is funded by the European Union (MSCA, FairML, project no. 101106768). Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or the European Research Executive Agency (REA). Neither the European Union nor the granting authority can be held responsible for them.
--->
 This research is funded by the European Union (MSCA, FairML, project no. 101106768). 
 Views and opinions expressed are those of the author(s) only and do not necessarily reflect those of the European Union or the Research Executive Agency. Neither the European Union nor the granting authority can be held responsible for them.
 
-
 <!--
+- *Increasing Fairness via Combination with Learning Guarantees* [[arXiv 2301.10813]](https://arxiv.org/abs/2301.10813)
+
+This research is funded by the European Union (MSCA, FairML, project no. 101106768). Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or the European Research Executive Agency (REA). Neither the European Union nor the granting authority can be held responsible for them.
+
 This is an official released library for the project [FairML](https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/how-to-participate/org-details/999999999/project/101106768/program/43108390/details>), funded by the European Union.
 -->
