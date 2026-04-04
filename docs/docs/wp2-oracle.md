@@ -72,15 +72,14 @@ dt = German()  # Ricci()
 df = dt.load_raw_dataset()
 processed_dat = preprocess(dt, df)
 disturbed_dat = adversarial(dt, df, ratio=.97)
+pos_label = dt.get_positive_class_val('')
+non_sa, _ = transform_unpriv_tag(dt, processed_dat['original'])
+
 processed_dat = processed_dat['numerical-binsensitive']
 disturbed_dat = disturbed_dat['numerical-binsensitive']
-
-pos_label = dt.get_positive_class_val('')
-non_sa, _ = transform_unpriv_tag(dt, processed_dat)
 X, y = transform_X_and_y(dt, processed_dat)
 Xp, _ = transform_X_and_y(dt, disturbed_dat)
 y[y == 2] = 0  # only for German()
-
 del processed_dat, disturbed_dat, df, dt
 ```
 
@@ -234,22 +233,32 @@ python wp1_main_plot.py -exp mCV_expt8 --name-ens AdaBoostM1 --nb-cls 11 --nb-pr
 python wp1_main_plot.py -exp mCV_expt8 --name-ens SAMME --nb-cls 11 --nb-pru 5         # Fig.12 & 13(i-l)
 python wp1_main_plot.py -exp mCV_expt10 --name-ens Bagging --nb-iter 2 --nb-cls 11       # Fig. 7
 ```
--->
 
-```shell
-python wp1_main_plot.py --draw -exp mCV_expt4 --gather           # Fig. 1
-python wp1_case_plot.py                                                                # Fig. 2
 python wp1_main_plot.py -exp mCV_exp11h --nb-cls 11 --gather  # Fig. 3, 4, 5 & 6
 python wp1_main_plot.py --draw -exp mCV_expt6 --gather --nb-pru 7  # Fig. 7 & 8, and Tables 2 to 3
 python wp1_main_plot.py -exp mCV_expt8 --name-ens Bagging                                            # Fig. 9 & 12(a-d)
-```
 
-Below are the empirical results in the Appendix
-
-```shell
 python wp1_main_plot.py -exp mCV_expt8 --name-ens AdaBoostM1 --nb-cls 11 --nb-pru 5  # Fig.10 & 12(e-h)
 python wp1_main_plot.py -exp mCV_expt8 --name-ens SAMME --nb-cls 11 --nb-pru 5         # Fig.11 & 12(i-l)
 python wp1_main_plot.py -exp mCV_expt8 --gather                              # Fig. 15 & 14
 python wp1_main_plot.py -exp mCV_expt8 --gather --tab                      # Tables 4 to 8
 python wp1_main_plot.py -exp mCV_expt10 --name-ens Bagging --nb-iter 2 --nb-cls 11       # Fig. 13
+-->
+
+```shell
+python wp1_main_plot.py --draw -exp mCV_expt4 --gather           # Fig. 1
+python wp1_case_plot.py                                                                # Fig. 2
+python wp1_main_plot.py -exp mCV_exp11h --nb-cls 11 --gather  # Fig. 3 & 4
+python wp1_main_plot.py --draw -exp mCV_expt6 --gather --nb-pru 7  # Fig. 5 & 6, and Tables 2 to 3
+python wp1_main_plot.py -exp mCV_expt8 --name-ens Bagging                                            # Fig. 7 & 10(a-d)
+```
+
+Below are the empirical results in the Appendix
+
+```shell
+python wp1_main_plot.py -exp mCV_expt8 --name-ens AdaBoostM1 --nb-cls 11 --nb-pru 5  # Fig. 8 & 10(e-h)
+python wp1_main_plot.py -exp mCV_expt8 --name-ens SAMME --nb-cls 11 --nb-pru 5         # Fig. 9 & 10(i-l)
+python wp1_main_plot.py -exp mCV_expt8 --gather                              # Fig. 11 & 13
+python wp1_main_plot.py -exp mCV_expt8 --gather --tab                      # Tables 4 to 8
+python wp1_main_plot.py -exp mCV_expt10 --name-ens Bagging --nb-iter 2 --nb-cls 11       # Fig. 12
 ```

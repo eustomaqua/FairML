@@ -570,6 +570,9 @@ else:
     else:
         kwargs['tab'] = args.tab
 if not gather:
+    if trial_type[-5:] == 'expt8' and name_ens != 'Bagging':
+        nb_cls = 11  # default: 21
+        nb_pru = 5   # default: 11
     case = OracleDrawing(trial_type, name_ens, nb_cls, nb_pru,
                          nb_iter, **kwargs)
 elif trial_type[-5:] in ('expt3', 'xpt11', 'expt8'):

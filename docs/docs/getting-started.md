@@ -174,6 +174,7 @@ $ rm tmp.tar.gz
 ## Documentation
 
 ```shell
+# source activate py38
 # pip install mkdocs  # 1.6.1
 # pip install mkdocs-material
 

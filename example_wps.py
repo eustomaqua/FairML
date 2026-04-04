@@ -5,7 +5,7 @@
 from sklearn import ensemble
 from sklearn import model_selection
 from sklearn import metrics
-# import pdb
+import pdb
 # import pandas as pd
 import numpy as np
 import time
@@ -47,13 +47,15 @@ dt = German()  # Ricci()
 df = dt.load_raw_dataset()
 processed_dat = preprocess(dt, df)
 disturbed_dat = adversarial(dt, df, ratio=.97)
+non_sa, _ = transform_unpriv_tag(dt, processed_dat['original'], 'both')
 processed_dat = processed_dat['numerical-binsensitive']
 disturbed_dat = disturbed_dat['numerical-binsensitive']
 pos_label = dt.get_positive_class_val('')
-non_sa, _ = transform_unpriv_tag(dt, processed_dat)
+# non_sa, _ = transform_unpriv_tag(dt, processed_dat)
 X, y = transform_X_and_y(dt, processed_dat)
 Xp, _ = transform_X_and_y(dt, disturbed_dat)
 y[y == 2] = 0  # only for German()
+# pdb.set_trace()
 
 
 kf = model_selection.KFold(n_splits=5)
@@ -165,11 +167,11 @@ elegant_print([
         get_accuracy(y_tst, hens_tst),
         get_accuracy(y_tst, hp_qtb_tst)),
     "| Discriminative risk  |  {:.5f} | {:.5f}  |".format(
-        hat_L_fair(hens_trn, hp_qtb_trn)[0],
-        hat_L_loss(hens_trn, y_trn)[0]),
+        hat_L_fair(hens_trn, hp_qtb_trn),  # [0],
+        hat_L_loss(hens_trn, y_trn)),      # [0]),
     "|   0/1 loss function  |  {:.5f} | {:.5f}  |".format(
-        hat_L_fair(hens_tst, hp_qtb_tst)[0],
-        hat_L_loss(hens_tst, y_tst)[0]),
+        hat_L_fair(hens_tst, hp_qtb_tst),  # [0],
+        hat_L_loss(hens_tst, y_tst)),      # [0]),
     "| Group fairness 1: DP | {:.6f} , {:.6f} | {:.6f} , {:.6f} |".format(
         bias_trn[0][0], bias_trn[1][0], bias_tst[0][0], bias_tst[1][0]),
     "| Group fairness 2: EO | {:.6f} , {:.6f} | {:.6f} , {:.6f} |".format(
@@ -223,11 +225,11 @@ def get_subensemble(yhat_trn, yhat_tst, yp_qtb_trn, yp_qtb_tst,
             get_accuracy(y_tst, hens_tst),
             get_accuracy(y_tst, hp_qtb_tst)),
         "| Discriminative risk  |  {:.5f} | {:.5f}  |".format(
-            hat_L_fair(hens_trn, hp_qtb_trn)[0],
-            hat_L_loss(hens_trn, y_trn)[0]),
+            hat_L_fair(hens_trn, hp_qtb_trn),  # [0],
+            hat_L_loss(hens_trn, y_trn)),      # [0]),
         "|   0/1 loss function  |  {:.5f} | {:.5f}  |".format(
-            hat_L_fair(hens_tst, hp_qtb_tst)[0],
-            hat_L_loss(hens_tst, y_tst)[0]),
+            hat_L_fair(hens_tst, hp_qtb_tst),  # [0],
+            hat_L_loss(hens_tst, y_tst)),      # [0]),
         "| Group fairness 1: DP | {:.6f} , {:.6f} | {:.6f} , {:.6f} |".format(
             bias_trn[0][0], bias_trn[1][0], bias_tst[0][0], bias_tst[1][0]),
         "| Group fairness 2: EO | {:.6f} , {:.6f} | {:.6f} , {:.6f} |".format(
