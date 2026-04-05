@@ -136,6 +136,8 @@ class OracleDrawing(object):
         assert os.path.exists(filename), filename
         raw_dframe = self._iterator.load_raw_dataset(filename)
 
+        # pdb.set_trace()
+
         if self._trial_type.endswith('expt10'):
             self._iterator.schedule_mspaint(raw_dframe, None)
         else:
@@ -278,6 +280,7 @@ class OracleGatheredDrawing(object):
             assert os.path.exists(filename), filename
             tmp_df = iterator.load_raw_dataset(filename)
 
+            # pdb.set_trace()
             nb_set, _, index = iterator.recap_sub_data(tmp_df)  # ,id_set,
             tag_col = iterator.prepare_graph()
             # START

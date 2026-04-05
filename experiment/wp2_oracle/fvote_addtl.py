@@ -5,6 +5,7 @@ import json
 import os
 import time
 import numpy as np
+import pdb
 
 from pyfair.facil.utils_const import DTY_FLT, _get_tmp_name_ens
 from pyfair.facil.utils_saver import (
@@ -1242,6 +1243,7 @@ class FairVoteDrawing(DataSetup):
             if self._trial_type.endswith('expt6'):
                 log_document += "_lam{}".format(int(self._lam * 100))
             # elegant_print(f'log_document= {log_document}.json')
+            pdb.set_trace()
 
             json_rf = open(os.path.join(
                 CURR_EXPT_DIR, log_document + ".json"), 'r')
