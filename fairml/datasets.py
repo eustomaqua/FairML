@@ -273,7 +273,7 @@ class German(Data):
 
 
 def passing_grade(row):
-    """ A passing grade in the Ricci data is defined as any grade above
+    """A passing grade in the Ricci data is defined as any grade above
     a 70 in the combined oral and written score. (See Miao 2010.)
     """
     if row['Combine'] >= 70.0:
@@ -510,7 +510,7 @@ def process_below(dataset, processed_data):
 
 
 def preprocess(dataset, data_frame, logger=None):
-    """ The preprocess function takes a pandas data frame and returns
+    """The preprocess function takes a pandas data frame and returns
     two modified data frames:
     1) all the data as given with any features that should not be used
        for training or fairness analysis removed.

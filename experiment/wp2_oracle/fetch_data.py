@@ -68,6 +68,8 @@ def calc_PR(TP, FP, FN):
 
 def calc_4Rate(TP, FP, FN, TN):
     '''
+    Computing.
+
     TPR = TP / (TP + FN)  # 真正率,召回率,命中率 hit rate
     FPR = FP / (TN + FP)  # 假正率=1-特异度,误报/虚警/误检率 false alarm
     FNR = FN / (TP + FN)  # 漏报率 miss rate，也称为漏警率、漏检率

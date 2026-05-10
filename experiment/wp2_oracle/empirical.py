@@ -363,6 +363,8 @@ class PartI_LambdaEffect(EnsembleSetup):
                                      tag, jt, wgt, lam=.5, pos_val=1):
         # abbreviated, reduced results to output
         """
+        Parameters.
+
            y     :  list,         shape= (nb_y,)
           ys,  yr:  list of list, shape= (nb_cls, nb_y)
          wgt     :  list,         shape= (nb_cls,)

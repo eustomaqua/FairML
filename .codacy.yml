@@ -4,6 +4,8 @@ exclude_paths:
   - "docs/javascripts/**"
   - "docs/docs/**"
   - "docs/source/conf.py"
+  - "experiment/widget/pkgs_AdaFair.py"
+  - "experiment/widget/pkgs_AdaFair_py36.py"
 
 # engines:
 #   pylint:

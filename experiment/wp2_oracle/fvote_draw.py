@@ -1567,6 +1567,8 @@ class PlotJ_LambdaEffect(GraphSetup):
 
     def pick_up_pru_idx(self, tag_col, rel_id=0):
         """
+        Parameters.
+
             [ut, ut.calc, us, seq]
         prus:
             La(MV), Lf(MV), Lo(MV), E[La(f)], E[Lf(f,f')], E[Lf(f)],

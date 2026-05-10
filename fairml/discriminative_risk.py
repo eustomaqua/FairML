@@ -302,7 +302,7 @@ def ED_Erho_I_loss(yt, y, wgt):
 
 @fantasy_timer
 def perturb_numpy_ver(X, sen_att, priv_val, ratio=.5):
-    """ params
+    """_params
     X       : a np.ndarray
     sen_att : list, column index of sensitive attribute(s)
     priv_val: list, privileged value for each sen-att
@@ -334,7 +334,7 @@ def perturb_numpy_ver(X, sen_att, priv_val, ratio=.5):
 
 @fantasy_timer
 def perturb_pandas_ver(X, sen_att, priv_val, ratio=.5):
-    """ params
+    """_params
     X       : a pd.DataFrame
     sen_att : list, column name(s) of sensitive attribute(s)
     priv_val: list, privileged value for each sen-att

@@ -318,6 +318,8 @@ class PartG_ImprovedPruning(PartD_ImprovedPruning):
                          fens_trn, fqtb_trn, fens_tst, fqtb_tst,
                          positive_label, X=None, indices=None):
         """
+        Parameter explanations.
+
           y_trn /tst  : list,               shape= (nb_y,)
           y_insp/pred : list of np.ndarray, shape= (nb_cls, nb_y)
          yq_insp/pred : list of np.ndarray, shape= (nb_cls, nb_y)
@@ -486,6 +488,8 @@ class PartG_ImprovedPruning(PartD_ImprovedPruning):
     def calc_reduced_fair_gather(self, y, fens,
                                  pos_val=1, idx_priv=tuple()):
         """
+        Parameters.
+
         y  :            np.ndarray
         hx :            np.ndarray
         positive_label: scalar

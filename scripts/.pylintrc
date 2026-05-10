@@ -1,0 +1,9 @@
+[MESSAGES CONTROL]
+disable = 
+    C0103,  # variable name style
+    R0912,  # too many branches
+    R0915,  # too many statements
+    R0914,  # too many local variables
+    R0913,  # too many arguments
+    E1121,  # too many positional arguments for method call
+    W0221,  # arguments number differs from overridden method
